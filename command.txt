@@ -4,4 +4,4 @@ docker run --cpus="4.0" --memory="3gb" --memory-swap="3gb" -p 7001:7001 --name m
 
 docker exec -it my-pm2-container pm2 list
 
-docker logs my-pm2-container
+docker logs my-contest-container
