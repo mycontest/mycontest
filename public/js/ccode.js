@@ -14,7 +14,7 @@ Editor.on('change', (editor) => {
     let lang = localStorage.getItem('lang') || 'text/x-c++src';
     localStorage.setItem(`${taskid}_${lang}`, code)
   } catch {
-    console.log("I have error . Ooo no i am error :) . fun.Editor.On")
+    console.log("I have error . Ooo no i am error :) fun.Editor.On")
   }
 });
 
@@ -31,7 +31,7 @@ const selectLang = () => {
     Editor.setOption("mode", lang);
     Editor.setValue(localStorage.getItem(`${taskid}_${lang}`) || data[lang] || "")
   } catch  {
-    console.log("I have error . Ooo no i am error :). fun.selectLang" )
+    console.log("I have error . Ooo no i am error :) fun.selectLang" )
   }
 }
 
@@ -41,7 +41,7 @@ const selectTheme = () => {
     localStorage.setItem('theme', theme)
     Editor.setOption("theme", theme);
   } catch  {
-    console.log("I have error . Ooo no i am error :). fun.selectLang" )
+    console.log("I have error . Ooo no i am error :) fun.selectLang" )
   }
 }
 
@@ -53,7 +53,7 @@ let langSelectStart = () => {
     document.getElementById("lang").value = lang
     document.getElementById("theme").value = theme
   } catch {
-    console.log("I have error . Ooo no i am error :) . fun.langSelectStart")
+    console.log("I have error . Ooo no i am error :) fun.langSelectStart")
   }
 }
 

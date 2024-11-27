@@ -77,28 +77,28 @@
                                     <input type="text" name="name" class="form-control" placeholder="Round 1" value="<%= arr.name %>" />
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Contente</label>
-                                    <textarea class="form-control" name="contente" id="editor1" rows="3"><%= arr.contente %></textarea>
+                                    <label class="form-label">Mazmuni</label>
+                                    <textarea class="form-control" name="content" id="editor1" rows="3"><%= arr.content %></textarea>
                                     <script>
                                         CKEDITOR.replace("editor1");
                                     </script>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Start</label>
-                                    <input type="date" name="sdate" id="sdate" class="form-control" placeholder="10:03:2000 10:00:00" />
+                                    <input type="date" name="start_date" id="start_date" class="form-control" placeholder="10:03:2000 10:00:00" />
                                     <br />
-                                    <input type="time" name="sdatetime" id="sdatetime" class="form-control" placeholder="10:03:2000 10:00:00" />
+                                    <input type="time" name="start_datetime" id="start_datetime" class="form-control" placeholder="10:03:2000 10:00:00" />
                                     <script>
-                                        dataVaulue("<%= arr.sdate %>", "sdate");
+                                        dataVaulue("<%= arr.start_date %>", "start_date");
                                     </script>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">End</label>
-                                    <input type="date" name="edate" id="edate" class="form-control" placeholder="10:03:2000 10:00:00" />
+                                    <input type="date" name="end_date" id="end_date" class="form-control" placeholder="10:03:2000 10:00:00" />
                                     <br />
-                                    <input type="time" name="edatetime" id="edatetime" class="form-control" placeholder="10:03:2000 10:00:00" />
+                                    <input type="time" name="end_datetime" id="end_datetime" class="form-control" placeholder="10:03:2000 10:00:00" />
                                     <script>
-                                        dataVaulue("<%= arr.edate %>", "edate");
+                                        dataVaulue("<%= arr.end_date %>", "end_date");
                                     </script>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Submit</button>
@@ -110,7 +110,7 @@
                         <div class="card-header">Admin panel</div>
                         <form action="/admin/addtasks" method="post" class="m-2 w-50">
                             <div class="form-group">
-                                <input type="hidden" name="cid" value="<%= cid %>" />
+                                <input type="hidden" name="contest_id" value="<%= contest_id %>" />
                                 <input type="text" class="form-control" name="tid" placeholder="Savol id" />
                             </div>
                             <button type="submit" class="mt-2 btn btn-primary">Submit</button>
@@ -135,7 +135,7 @@
                                 <% for(var i=0;i< arr2.length;i++) { %>
                                 <tr>
                                     <td><a href="/admin/tasksadd?tid=<%= arr2[i].id %>">Edit</a></td>
-                                    <td><a href="/admin/deltasks?tid=<%= arr2[i].id %>&cid=<%= cid %>">Delete</a></td>
+                                    <td><a href="/admin/deltasks?tid=<%= arr2[i].id %>&contest_id=<%= contest_id %>">Delete</a></td>
                                     <td><%= arr2[i].id %></td>
                                     <td><%= arr2[i].code %></td>
                                     <td><%= arr2[i].name %></td>

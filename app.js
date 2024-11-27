@@ -18,7 +18,7 @@ app.use(
         secret: process.env.SECRET,
         resave: false,
         saveUninitialized: false,
-        store: new FileStore({ path: path.join(__dirname, "session"), logFn: function () { } }),
+        store: new FileStore({ path: path.join(__dirname, "/session"), logFn: function () { } }),
         cookie: { maxAge: 12 * 3600000, secure: false, httpOnly: false },
     })
 );

@@ -1,10 +1,10 @@
 const express = require("express")
+const { execute } = require("uzdev/mysql")
 const router = express.Router()
 
 router.get(["/", "/about"], async (req, res) => {
-      console.log(req.data)
-      // let v_contest = await execute("SELECT * FROM v_contest ORDER BY start asc")
-      res.render("pages/about", { data: req.data, pageInfo: "main", v_contest: [] })
+      let arr = await execute("SELECT * FROM v_contest ORDER BY start_date asc")
+      res.render("pages/about", { data: req.data, pageInfo: "main", arr })
 })
 
 router.get("/news", async (req, res) => {

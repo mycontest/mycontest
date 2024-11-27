@@ -1,215 +1,215 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 
-(function(mod) {
+(function (mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
-"use strict";
+})(function (CodeMirror) {
+  "use strict";
 
-CodeMirror.defineMode("sql", function(config, parserConfig) {
-  var client         = parserConfig.client || {},
-      atoms          = parserConfig.atoms || {"false": true, "true": true, "null": true},
-      builtin        = parserConfig.builtin || set(defaultBuiltin),
-      keywords       = parserConfig.keywords || set(sqlKeywords),
-      operatorChars  = parserConfig.operatorChars || /^[*+\-%<>!=&|~^\/]/,
-      support        = parserConfig.support || {},
-      hooks          = parserConfig.hooks || {},
-      dateSQL        = parserConfig.dateSQL || {"date" : true, "time" : true, "timestamp" : true},
+  CodeMirror.defineMode("sql", function (config, parserConfig) {
+    var client = parserConfig.client || {},
+      atoms = parserConfig.atoms || { "false": true, "true": true, "null": true },
+      builtin = parserConfig.builtin || set(defaultBuiltin),
+      keywords = parserConfig.keywords || set(sqlKeywords),
+      operatorChars = parserConfig.operatorChars || /^[*+\-%<>!=&|~^\/]/,
+      support = parserConfig.support || {},
+      hooks = parserConfig.hooks || {},
+      dateSQL = parserConfig.dateSQL || { "date": true, "time": true, "timestamp": true },
       backslashStringEscapes = parserConfig.backslashStringEscapes !== false,
-      brackets       = parserConfig.brackets || /^[\{}\(\)\[\]]/,
-      punctuation    = parserConfig.punctuation || /^[;.,:]/
+      brackets = parserConfig.brackets || /^[\{}\(\)\[\]]/,
+      punctuation = parserConfig.punctuation || /^[;.,:]/
 
-  function tokenBase(stream, state) {
-    var ch = stream.next();
+    function tokenBase(stream, state) {
+      var ch = stream.next();
 
-    // call hooks from the mime type
-    if (hooks[ch]) {
-      var result = hooks[ch](stream, state);
-      if (result !== false) return result;
-    }
+      // call hooks from the mime type
+      if (hooks[ch]) {
+        var result = hooks[ch](stream, state);
+        if (result !== false) return result;
+      }
 
-    if (support.hexNumber &&
-      ((ch == "0" && stream.match(/^[xX][0-9a-fA-F]+/))
-      || (ch == "x" || ch == "X") && stream.match(/^'[0-9a-fA-F]+'/))) {
-      // hex
-      // ref: http://dev.mysql.com/doc/refman/5.5/en/hexadecimal-literals.html
-      return "number";
-    } else if (support.binaryNumber &&
-      (((ch == "b" || ch == "B") && stream.match(/^'[01]+'/))
-      || (ch == "0" && stream.match(/^b[01]+/)))) {
-      // bitstring
-      // ref: http://dev.mysql.com/doc/refman/5.5/en/bit-field-literals.html
-      return "number";
-    } else if (ch.charCodeAt(0) > 47 && ch.charCodeAt(0) < 58) {
-      // numbers
-      // ref: http://dev.mysql.com/doc/refman/5.5/en/number-literals.html
-      stream.match(/^[0-9]*(\.[0-9]+)?([eE][-+]?[0-9]+)?/);
-      support.decimallessFloat && stream.match(/^\.(?!\.)/);
-      return "number";
-    } else if (ch == "?" && (stream.eatSpace() || stream.eol() || stream.eat(";"))) {
-      // placeholders
-      return "variable-3";
-    } else if (ch == "'" || (ch == '"' && support.doubleQuote)) {
-      // strings
-      // ref: http://dev.mysql.com/doc/refman/5.5/en/string-literals.html
-      state.tokenize = tokenLiteral(ch);
-      return state.tokenize(stream, state);
-    } else if ((((support.nCharCast && (ch == "n" || ch == "N"))
+      if (support.hexNumber &&
+        ((ch == "0" && stream.match(/^[xX][0-9a-fA-F]+/))
+          || (ch == "x" || ch == "X") && stream.match(/^'[0-9a-fA-F]+'/))) {
+        // hex
+        // ref: http://dev.mysql.com/doc/refman/5.5/en/hexadecimal-literals.html
+        return "number";
+      } else if (support.binaryNumber &&
+        (((ch == "b" || ch == "B") && stream.match(/^'[01]+'/))
+          || (ch == "0" && stream.match(/^b[01]+/)))) {
+        // bitstring
+        // ref: http://dev.mysql.com/doc/refman/5.5/en/bit-field-literals.html
+        return "number";
+      } else if (ch.charCodeAt(0) > 47 && ch.charCodeAt(0) < 58) {
+        // numbers
+        // ref: http://dev.mysql.com/doc/refman/5.5/en/number-literals.html
+        stream.match(/^[0-9]*(\.[0-9]+)?([eE][-+]?[0-9]+)?/);
+        support.decimallessFloat && stream.match(/^\.(?!\.)/);
+        return "number";
+      } else if (ch == "?" && (stream.eatSpace() || stream.eol() || stream.eat(";"))) {
+        // placeholders
+        return "variable-3";
+      } else if (ch == "'" || (ch == '"' && support.doubleQuote)) {
+        // strings
+        // ref: http://dev.mysql.com/doc/refman/5.5/en/string-literals.html
+        state.tokenize = tokenLiteral(ch);
+        return state.tokenize(stream, state);
+      } else if ((((support.nCharCast && (ch == "n" || ch == "N"))
         || (support.charsetCast && ch == "_" && stream.match(/[a-z][a-z0-9]*/i)))
         && (stream.peek() == "'" || stream.peek() == '"'))) {
-      // charset casting: _utf8'str', N'str', n'str'
-      // ref: http://dev.mysql.com/doc/refman/5.5/en/string-literals.html
-      return "keyword";
-    } else if (support.escapeConstant && (ch == "e" || ch == "E")
+        // charset casting: _utf8'str', N'str', n'str'
+        // ref: http://dev.mysql.com/doc/refman/5.5/en/string-literals.html
+        return "keyword";
+      } else if (support.escapeConstant && (ch == "e" || ch == "E")
         && (stream.peek() == "'" || (stream.peek() == '"' && support.doubleQuote))) {
-      // escape constant: E'str', e'str'
-      // ref: https://www.postgresql.org/docs/current/sql-syntax-lexical.html#SQL-SYNTAX-STRINGS-ESCAPE
-      state.tokenize = function(stream, state) {
-        return (state.tokenize = tokenLiteral(stream.next(), true))(stream, state);
-      }
-      return "keyword";
-    } else if (support.commentSlashSlash && ch == "/" && stream.eat("/")) {
-      // 1-line comment
-      stream.skipToEnd();
-      return "comment";
-    } else if ((support.commentHash && ch == "#")
-        || (ch == "-" && stream.eat("-") && (!support.commentSpaceRequired || stream.eat(" ")))) {
-      // 1-line comments
-      // ref: https://kb.askmonty.org/en/comment-syntax/
-      stream.skipToEnd();
-      return "comment";
-    } else if (ch == "/" && stream.eat("*")) {
-      // multi-line comments
-      // ref: https://kb.askmonty.org/en/comment-syntax/
-      state.tokenize = tokenComment(1);
-      return state.tokenize(stream, state);
-    } else if (ch == ".") {
-      // .1 for 0.1
-      if (support.zerolessFloat && stream.match(/^(?:\d+(?:e[+-]?\d+)?)/i))
-        return "number";
-      if (stream.match(/^\.+/))
-        return null
-      // .table_name (ODBC)
-      // // ref: http://dev.mysql.com/doc/refman/5.6/en/identifier-qualifiers.html
-      if (support.ODBCdotTable && stream.match(/^[\w\d_$#]+/))
-        return "variable-2";
-    } else if (operatorChars.test(ch)) {
-      // operators
-      stream.eatWhile(operatorChars);
-      return "operator";
-    } else if (brackets.test(ch)) {
-      // brackets
-      return "bracket";
-    } else if (punctuation.test(ch)) {
-      // punctuation
-      stream.eatWhile(punctuation);
-      return "punctuation";
-    } else if (ch == '{' &&
-        (stream.match(/^( )*(d|D|t|T|ts|TS)( )*'[^']*'( )*}/) || stream.match(/^( )*(d|D|t|T|ts|TS)( )*"[^"]*"( )*}/))) {
-      // dates (weird ODBC syntax)
-      // ref: http://dev.mysql.com/doc/refman/5.5/en/date-and-time-literals.html
-      return "number";
-    } else {
-      stream.eatWhile(/^[_\w\d]/);
-      var word = stream.current().toLowerCase();
-      // dates (standard SQL syntax)
-      // ref: http://dev.mysql.com/doc/refman/5.5/en/date-and-time-literals.html
-      if (dateSQL.hasOwnProperty(word) && (stream.match(/^( )+'[^']*'/) || stream.match(/^( )+"[^"]*"/)))
-        return "number";
-      if (atoms.hasOwnProperty(word)) return "atom";
-      if (builtin.hasOwnProperty(word)) return "type";
-      if (keywords.hasOwnProperty(word)) return "keyword";
-      if (client.hasOwnProperty(word)) return "builtin";
-      return null;
-    }
-  }
-
-  // 'string', with char specified in quote escaped by '\'
-  function tokenLiteral(quote, backslashEscapes) {
-    return function(stream, state) {
-      var escaped = false, ch;
-      while ((ch = stream.next()) != null) {
-        if (ch == quote && !escaped) {
-          state.tokenize = tokenBase;
-          break;
+        // escape constant: E'str', e'str'
+        // ref: https://www.postgresql.org/docs/current/sql-syntax-lexical.html#SQL-SYNTAX-STRINGS-ESCAPE
+        state.tokenize = function (stream, state) {
+          return (state.tokenize = tokenLiteral(stream.next(), true))(stream, state);
         }
-        escaped = (backslashStringEscapes || backslashEscapes) && !escaped && ch == "\\";
+        return "keyword";
+      } else if (support.commentSlashSlash && ch == "/" && stream.eat("/")) {
+        // 1-line comment
+        stream.skipToEnd();
+        return "comment";
+      } else if ((support.commentHash && ch == "#")
+        || (ch == "-" && stream.eat("-") && (!support.commentSpaceRequired || stream.eat(" ")))) {
+        // 1-line comments
+        // ref: https://kb.askmonty.org/en/comment-syntax/
+        stream.skipToEnd();
+        return "comment";
+      } else if (ch == "/" && stream.eat("*")) {
+        // multi-line comments
+        // ref: https://kb.askmonty.org/en/comment-syntax/
+        state.tokenize = tokenComment(1);
+        return state.tokenize(stream, state);
+      } else if (ch == ".") {
+        // .1 for 0.1
+        if (support.zerolessFloat && stream.match(/^(?:\d+(?:e[+-]?\d+)?)/i))
+          return "number";
+        if (stream.match(/^\.+/))
+          return null
+        // .table_name (ODBC)
+        // // ref: http://dev.mysql.com/doc/refman/5.6/en/identifier-qualifiers.html
+        if (support.ODBCdotTable && stream.match(/^[\w\d_$#]+/))
+          return "variable-2";
+      } else if (operatorChars.test(ch)) {
+        // operators
+        stream.eatWhile(operatorChars);
+        return "operator";
+      } else if (brackets.test(ch)) {
+        // brackets
+        return "bracket";
+      } else if (punctuation.test(ch)) {
+        // punctuation
+        stream.eatWhile(punctuation);
+        return "punctuation";
+      } else if (ch == '{' &&
+        (stream.match(/^( )*(d|D|t|T|ts|TS)( )*'[^']*'( )*}/) || stream.match(/^( )*(d|D|t|T|ts|TS)( )*"[^"]*"( )*}/))) {
+        // dates (weird ODBC syntax)
+        // ref: http://dev.mysql.com/doc/refman/5.5/en/date-and-time-literals.html
+        return "number";
+      } else {
+        stream.eatWhile(/^[_\w\d]/);
+        var word = stream.current().toLowerCase();
+        // dates (standard SQL syntax)
+        // ref: http://dev.mysql.com/doc/refman/5.5/en/date-and-time-literals.html
+        if (dateSQL.hasOwnProperty(word) && (stream.match(/^( )+'[^']*'/) || stream.match(/^( )+"[^"]*"/)))
+          return "number";
+        if (atoms.hasOwnProperty(word)) return "atom";
+        if (builtin.hasOwnProperty(word)) return "type";
+        if (keywords.hasOwnProperty(word)) return "keyword";
+        if (client.hasOwnProperty(word)) return "builtin";
+        return null;
       }
-      return "string";
-    };
-  }
-  function tokenComment(depth) {
-    return function(stream, state) {
-      var m = stream.match(/^.*?(\/\*|\*\/)/)
-      if (!m) stream.skipToEnd()
-      else if (m[1] == "/*") state.tokenize = tokenComment(depth + 1)
-      else if (depth > 1) state.tokenize = tokenComment(depth - 1)
-      else state.tokenize = tokenBase
-      return "comment"
     }
-  }
 
-  function pushContext(stream, state, type) {
-    state.context = {
-      prev: state.context,
-      indent: stream.indentation(),
-      col: stream.column(),
-      type: type
-    };
-  }
-
-  function popContext(state) {
-    state.indent = state.context.indent;
-    state.context = state.context.prev;
-  }
-
-  return {
-    startState: function() {
-      return {tokenize: tokenBase, context: null};
-    },
-
-    token: function(stream, state) {
-      if (stream.sol()) {
-        if (state.context && state.context.align == null)
-          state.context.align = false;
+    // 'string', with char specified in quote escaped by '\'
+    function tokenLiteral(quote, backslashEscapes) {
+      return function (stream, state) {
+        var escaped = false, ch;
+        while ((ch = stream.next()) != null) {
+          if (ch == quote && !escaped) {
+            state.tokenize = tokenBase;
+            break;
+          }
+          escaped = (backslashStringEscapes || backslashEscapes) && !escaped && ch == "\\";
+        }
+        return "string";
+      };
+    }
+    function tokenComment(depth) {
+      return function (stream, state) {
+        var m = stream.match(/^.*?(\/\*|\*\/)/)
+        if (!m) stream.skipToEnd()
+        else if (m[1] == "/*") state.tokenize = tokenComment(depth + 1)
+        else if (depth > 1) state.tokenize = tokenComment(depth - 1)
+        else state.tokenize = tokenBase
+        return "comment"
       }
-      if (state.tokenize == tokenBase && stream.eatSpace()) return null;
+    }
 
-      var style = state.tokenize(stream, state);
-      if (style == "comment") return style;
+    function pushContext(stream, state, type) {
+      state.context = {
+        prev: state.context,
+        indent: stream.indentation(),
+        col: stream.column(),
+        type: type
+      };
+    }
 
-      if (state.context && state.context.align == null)
-        state.context.align = true;
+    function popContext(state) {
+      state.indent = state.context.indent;
+      state.context = state.context.prev;
+    }
 
-      var tok = stream.current();
-      if (tok == "(")
-        pushContext(stream, state, ")");
-      else if (tok == "[")
-        pushContext(stream, state, "]");
-      else if (state.context && state.context.type == tok)
-        popContext(state);
-      return style;
-    },
+    return {
+      startState: function () {
+        return { tokenize: tokenBase, context: null };
+      },
 
-    indent: function(state, textAfter) {
-      var cx = state.context;
-      if (!cx) return CodeMirror.Pass;
-      var closing = textAfter.charAt(0) == cx.type;
-      if (cx.align) return cx.col + (closing ? 0 : 1);
-      else return cx.indent + (closing ? 0 : config.indentUnit);
-    },
+      token: function (stream, state) {
+        if (stream.sol()) {
+          if (state.context && state.context.align == null)
+            state.context.align = false;
+        }
+        if (state.tokenize == tokenBase && stream.eatSpace()) return null;
 
-    blockCommentStart: "/*",
-    blockCommentEnd: "*/",
-    lineComment: support.commentSlashSlash ? "//" : support.commentHash ? "#" : "--",
-    closeBrackets: "()[]{}''\"\"``"
-  };
-});
+        var style = state.tokenize(stream, state);
+        if (style == "comment") return style;
+
+        if (state.context && state.context.align == null)
+          state.context.align = true;
+
+        var tok = stream.current();
+        if (tok == "(")
+          pushContext(stream, state, ")");
+        else if (tok == "[")
+          pushContext(stream, state, "]");
+        else if (state.context && state.context.type == tok)
+          popContext(state);
+        return style;
+      },
+
+      indent: function (state, textAfter) {
+        var cx = state.context;
+        if (!cx) return CodeMirror.Pass;
+        var closing = textAfter.charAt(0) == cx.type;
+        if (cx.align) return cx.col + (closing ? 0 : 1);
+        else return cx.indent + (closing ? 0 : config.indentUnit);
+      },
+
+      blockCommentStart: "/*",
+      blockCommentEnd: "*/",
+      lineComment: support.commentSlashSlash ? "//" : support.commentHash ? "#" : "--",
+      closeBrackets: "()[]{}''\"\"``"
+    };
+  });
 
   // `identifier`
   function hookIdentifier(stream) {
@@ -268,7 +268,7 @@ CodeMirror.defineMode("sql", function(config, parserConfig) {
     // \N means NULL
     // ref: http://dev.mysql.com/doc/refman/5.5/en/null-values.html
     if (stream.eat("N")) {
-        return "atom";
+      return "atom";
     }
     // \g, etc
     // ref: http://dev.mysql.com/doc/refman/5.5/en/mysql-commands.html
@@ -309,7 +309,7 @@ CodeMirror.defineMode("sql", function(config, parserConfig) {
     backslashStringEscapes: false,
     dateSQL: set("date datetimeoffset datetime2 smalldatetime datetime time"),
     hooks: {
-      "@":   hookVar
+      "@": hookVar
     }
   });
 
@@ -323,9 +323,9 @@ CodeMirror.defineMode("sql", function(config, parserConfig) {
     dateSQL: set("date time timestamp"),
     support: set("ODBCdotTable decimallessFloat zerolessFloat binaryNumber hexNumber doubleQuote nCharCast charsetCast commentHash commentSpaceRequired"),
     hooks: {
-      "@":   hookVar,
-      "`":   hookIdentifier,
-      "\\":  hookClient
+      "@": hookVar,
+      "`": hookIdentifier,
+      "\\": hookClient
     }
   });
 
@@ -339,9 +339,9 @@ CodeMirror.defineMode("sql", function(config, parserConfig) {
     dateSQL: set("date time timestamp"),
     support: set("ODBCdotTable decimallessFloat zerolessFloat binaryNumber hexNumber doubleQuote nCharCast charsetCast commentHash commentSpaceRequired"),
     hooks: {
-      "@":   hookVar,
-      "`":   hookIdentifier,
-      "\\":  hookClient
+      "@": hookVar,
+      "`": hookIdentifier,
+      "\\": hookClient
     }
   });
 
@@ -364,14 +364,14 @@ CodeMirror.defineMode("sql", function(config, parserConfig) {
     identifierQuote: "\"",  //ref: http://sqlite.org/lang_keywords.html
     hooks: {
       // bind-parameters ref:http://sqlite.org/lang_expr.html#varparam
-      "@":   hookVar,
-      ":":   hookVar,
-      "?":   hookVar,
-      "$":   hookVar,
+      "@": hookVar,
+      ":": hookVar,
+      "?": hookVar,
+      "$": hookVar,
       // The preferred way to escape Identifiers is using double quotes, ref: http://sqlite.org/lang_keywords.html
-      "\"":   hookIdentifierDoublequote,
+      "\"": hookIdentifierDoublequote,
       // there is also support for backticks, ref: http://sqlite.org/lang_keywords.html
-      "`":   hookIdentifier
+      "`": hookIdentifier
     }
   });
 
@@ -379,25 +379,25 @@ CodeMirror.defineMode("sql", function(config, parserConfig) {
   // is called Cassandra to avoid confusion with Contextual Query Language
   CodeMirror.defineMIME("text/x-cassandra", {
     name: "sql",
-    client: { },
+    client: {},
     keywords: set("add all allow alter and any apply as asc authorize batch begin by clustering columnfamily compact consistency count create custom delete desc distinct drop each_quorum exists filtering from grant if in index insert into key keyspace keyspaces level limit local_one local_quorum modify nan norecursive nosuperuser not of on one order password permission permissions primary quorum rename revoke schema select set storage superuser table three to token truncate ttl two type unlogged update use user users using values where with writetime"),
     builtin: set("ascii bigint blob boolean counter decimal double float frozen inet int list map static text timestamp timeuuid tuple uuid varchar varint"),
     atoms: set("false true infinity NaN"),
     operatorChars: /^[<>=]/,
-    dateSQL: { },
+    dateSQL: {},
     support: set("commentSlashSlash decimallessFloat"),
-    hooks: { }
+    hooks: {}
   });
 
   // this is based on Peter Raganitsch's 'plsql' mode
   CodeMirror.defineMIME("text/x-plsql", {
-    name:       "sql",
-    client:     set("appinfo arraysize autocommit autoprint autorecovery autotrace blockterminator break btitle cmdsep colsep compatibility compute concat copycommit copytypecheck define describe echo editfile embedded escape exec execute feedback flagger flush heading headsep instance linesize lno loboffset logsource long longchunksize markup native newpage numformat numwidth pagesize pause pno recsep recsepchar release repfooter repheader serveroutput shiftinout show showmode size spool sqlblanklines sqlcase sqlcode sqlcontinue sqlnumber sqlpluscompatibility sqlprefix sqlprompt sqlterminator suffix tab term termout time timing trimout trimspool ttitle underline verify version wrap"),
-    keywords:   set("abort accept access add all alter and any array arraylen as asc assert assign at attributes audit authorization avg base_table begin between binary_integer body boolean by case cast char char_base check close cluster clusters colauth column comment commit compress connect connected constant constraint crash create current currval cursor data_base database date dba deallocate debugoff debugon decimal declare default definition delay delete desc digits dispose distinct do drop else elseif elsif enable end entry escape exception exception_init exchange exclusive exists exit external fast fetch file for force form from function generic goto grant group having identified if immediate in increment index indexes indicator initial initrans insert interface intersect into is key level library like limited local lock log logging long loop master maxextents maxtrans member minextents minus mislabel mode modify multiset new next no noaudit nocompress nologging noparallel not nowait number_base object of off offline on online only open option or order out package parallel partition pctfree pctincrease pctused pls_integer positive positiven pragma primary prior private privileges procedure public raise range raw read rebuild record ref references refresh release rename replace resource restrict return returning returns reverse revoke rollback row rowid rowlabel rownum rows run savepoint schema segment select separate session set share snapshot some space split sql start statement storage subtype successful synonym tabauth table tables tablespace task terminate then to trigger truncate type union unique unlimited unrecoverable unusable update use using validate value values variable view views when whenever where while with work"),
-    builtin:    set("abs acos add_months ascii asin atan atan2 average bfile bfilename bigserial bit blob ceil character chartorowid chr clob concat convert cos cosh count dec decode deref dual dump dup_val_on_index empty error exp false float floor found glb greatest hextoraw initcap instr instrb int integer isopen last_day least length lengthb ln lower lpad ltrim lub make_ref max min mlslabel mod months_between natural naturaln nchar nclob new_time next_day nextval nls_charset_decl_len nls_charset_id nls_charset_name nls_initcap nls_lower nls_sort nls_upper nlssort no_data_found notfound null number numeric nvarchar2 nvl others power rawtohex real reftohex round rowcount rowidtochar rowtype rpad rtrim serial sign signtype sin sinh smallint soundex sqlcode sqlerrm sqrt stddev string substr substrb sum sysdate tan tanh to_char text to_date to_label to_multi_byte to_number to_single_byte translate true trunc uid unlogged upper user userenv varchar varchar2 variance varying vsize xml"),
+    name: "sql",
+    client: set("appinfo arraysize autocommit autoprint autorecovery autotrace blockterminator break btitle cmdsep colsep compatibility compute concat copycommit copytypecheck define describe echo editfile embedded escape exec execute feedback flagger flush heading headsep instance linesize lno loboffset logsource long longchunksize markup native newpage numformat numwidth pagesize pause pno recsep recsepchar release repfooter repheader serveroutput shiftinout show showmode size spool sqlblanklines sqlcase sqlcode sqlcontinue sqlnumber sqlpluscompatibility sqlprefix sqlprompt sqlterminator suffix tab term termout time timing trimout trimspool ttitle underline verify version wrap"),
+    keywords: set("abort accept access add all alter and any array arraylen as asc assert assign at attributes audit authorization avg base_table begin between binary_integer body boolean by case cast char char_base check close cluster clusters colauth column comment commit compress connect connected constant constraint crash create current currval cursor data_base database date dba deallocate debugoff debugon decimal declare default definition delay delete desc digits dispose distinct do drop else elseif elsif enable end entry escape exception exception_init exchange exclusive exists exit external fast fetch file for force form from function generic goto grant group having identified if immediate in increment index indexes indicator initial initrans insert interface intersect into is key level library like limited local lock log logging long loop master maxextents maxtrans member minextents minus mislabel mode modify multiset new next no noaudit nocompress nologging noparallel not nowait number_base object of off offline on online only open option or order out package parallel partition pctfree pctincrease pctused pls_integer positive positiven pragma primary prior private privileges procedure public raise range raw read rebuild record ref references refresh release rename replace resource restrict return returning returns reverse revoke rollback row rowid rowlabel rownum rows run savepoint schema segment select separate session set share snapshot some space split sql start statement storage subtype successful synonym tabauth table tables tablespace task terminate then to trigger truncate type union unique unlimited unrecoverable unusable update use using validate value values variable view views when whenever where while with work"),
+    builtin: set("abs acos add_months ascii asin atan atan2 average bfile bfilename bigserial bit blob ceil character chartorowid chr clob concat convert cos cosh count dec decode deref dual dump dup_val_on_index empty error exp false float floor found glb greatest hextoraw initcap instr instrb int integer isopen last_day least length lengthb ln lower lpad ltrim lub make_ref max min mlslabel mod months_between natural naturaln nchar nclob new_time next_day nextval nls_charset_decl_len nls_charset_id nls_charset_name nls_initcap nls_lower nls_sort nls_upper nlssort no_data_found notfound null number numeric nvarchar2 nvl others power rawtohex real reftohex round rowcount rowidtochar rowtype rpad rtrim serial sign signtype sin sinh smallint soundex sqlcode sqlerrm sqrt stddev string substr substrb sum systart_date tan tanh to_char text to_date to_label to_multi_byte to_number to_single_byte translate true trunc uid unlogged upper user userenv varchar varchar2 variance varying vsize xml"),
     operatorChars: /^[*\/+\-%<>!=~]/,
-    dateSQL:    set("date time timestamp"),
-    support:    set("doubleQuote nCharCast zerolessFloat binaryNumber hexNumber")
+    dateSQL: set("date time timestamp"),
+    support: set("doubleQuote nCharCast zerolessFloat binaryNumber hexNumber")
   });
 
   // Created to support specific hive keywords

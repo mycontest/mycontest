@@ -1,4 +1,0 @@
-select c.customerNumber, c.customerName , ifnull(sum(amount),0) as Balans from customers c
-    left join  payments p ON p.customerNumber  = c.customerNumber
-group by c.customerNumber
-order by Balans 

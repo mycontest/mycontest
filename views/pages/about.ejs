@@ -25,27 +25,25 @@
                                         <th>Nomi</th>
                                         <th>Boshlanish</th>
                                         <th>Tugash</th>
-                                        <th style="width: 50px">Davomliligi(soat)</th>
+                                        <th style="width: 50px">Uzunlik</th>
                                         <th>Holati</th>
                                         <th>Ko'rish</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <% for(var i=0;i< v_contest.length;i++) { %>
+                                    <% for(var i=0;i< arr.length;i++) { %>
                                     <tr>
                                         <th scope="row">
-                                            <a href="/contest/<%= v_contest[i].id %>" class="btn btn-sm"><%= i+1 %></a>
+                                            <a href="/contest/<%= arr[i].id %>" class="btn btn-sm"><%= i+1 %></a>
                                         </th>
-                                        <td><%= v_contest[i].name %></td>
-                                        <td><%= v_contest[i].start %></td>
-                                        <td><%= v_contest[i].end %></td>
+                                        <td><b><%= arr[i].name %></b></td>
+                                        <td><%= arr[i].start_date %></td>
+                                        <td><%= arr[i].end_date %></td>
+                                        <td><%= arr[i].during_time %>+</td>
                                         <td>
-                                            <span class="badge bg-primary"><%= v_contest[i].ctime %>+</span>
+                                            <span class="badge bg-<% if (arr[i].eventnum == '1') { %>primary <% } else if (arr[i].eventnum == '0') { %>success <% } else { %>danger <% } %>"><%= arr[i].event %></span>
                                         </td>
-                                        <td>
-                                            <span class="badge bg-<% if (v_contest[i].eventnum == '1') { %>primary <% } else if (v_contest[i].eventnum == '0') { %>success <% } else { %>danger <% } %>"><%= v_contest[i].event %></span>
-                                        </td>
-                                        <td><a href="/contest/<%= v_contest[i].id %>" class="btn btn-primary btn-sm">Kirish</a></td>
+                                        <td><a href="/contest/<%= arr[i].contest_id %>" class="btn btn-primary btn-sm">Kirish</a></td>
                                     </tr>
                                     <% } %>
                                 </tbody>

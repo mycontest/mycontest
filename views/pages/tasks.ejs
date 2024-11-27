@@ -17,11 +17,7 @@
 
 <body>
 
-  <% if(data.user_id) { %>
-  <%- include("../basic/topnav.ejs") %>
-  <% } else { %>
-  <%- include("../basic/stopnav.ejs") %>
-  <% } %>
+  <% if(data.user_id) { %>  <%- include("../basic/topnav.ejs") %> <% } else { %>  <%- include("../basic/stopnav.ejs") %> <% } %>
 
   <div class="container">
     <div class="row">
@@ -194,14 +190,12 @@
 
 <% if(data.user_id){ %>
 <script>
-  let taskid = "<%= task.id %>";
-  let contestid = "<%= contest.id %>";
-
+  let taskid = "<%= task.task_id %>";
+  let contestid = "<%= contest.contest_id %>";
   let setInput = (e) => {
     console.log(e)
     localStorage.setItem(`cinput`, e)
     window.open("/compiler");
-
   }
 </script>
 <script src="/js/api2.js"></script>

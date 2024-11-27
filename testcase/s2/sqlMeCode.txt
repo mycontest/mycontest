@@ -1,1 +1,0 @@
-SELECT min(orderDate) as Min,max(orderDate) as Max FROM orders 

@@ -21,7 +21,7 @@ let getAttemptsMe = () => {
       tb = tb + ` <tr> <td scope="row"><a href="/contest/${contestid}/mycode?id=${x.id}" target="_blank"><span class="badge bg-primary">${x.id}</span></a></td>
            <td><a href="./tasks?task_id=${x.tasks_id}" ><span class="badge bg-light text-dark">${len4(x.tasks_id)}</span></a></td>
            <td> <span class="badge bg-primary">${x.lang}</span></td>
-           <td> <span class="badge  ${x.eventnum == 1 ? 'bg-success' : (x.eventnum ==0? 'bg-secondary' :'bg-danger')}">${x.event}</span></td>
+           <td> <span class="badge  ${x.eventnum == 1 ? 'bg-success' : (x.eventnum == 0 ? 'bg-secondary' : 'bg-danger')}">${x.event}</span></td>
            <td>${x.time}Ms</td>
            <td>${x.memory}Kb</td></tr>`
     }

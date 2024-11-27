@@ -1,34 +1,28 @@
 const { execute } = require("uzdev/mysql");
 const { fnCatch } = require("uzdev/function");
 
-exports.checkAuth = fnCatch(async (req, res, next) => {
+exports.authCheck = fnCatch(async (req, res, next) => {
     req.data = req.session.data || {}
     return next();
 })
 
-exports.authGood = fnCatch(async (req, res, next) => {
-    if (!req.session.uid) {
-        if (req.data.cid) return res.redirect("/contest/" + req.data.cid)
+exports.authStop = fnCatch(async (req, res, next) => {
+    if (!req.session.user_id) {
+        if (req.data.contest_id) return res.redirect("/contest/" + req.data.contest_id)
         res.redirect("/")
     }
     next();
 })
 
 exports.authAdmin = fnCatch(async (req, res, next) => {
-    let isAdmin = await query("SELECT * FROM users WHERE role = 'admin' and id = ?", [req.data.user_id])
-    if (!isAdmin.err && isAdmin.length != 0) return next();
-    res.Error("Sahifa topilmadi!")
+    if (req.data?.role == 'admin') return next();
+    throw new Error("Siz admin emassiz!")
 })
 
-exports.authAdminIS = fnCatch(async (uid) => {
-    let isAdmin = await query("SELECT * FROM users WHERE role='admin' and id=?", [uid])
-    return (!isAdmin.err && isAdmin.length != 0)
-})
-
-exports.authContest = fnCatch(async (req, res, cid) => {
-    const { query } = require("../database/db.fun")
-    req.data.cid = cid;
-    let contest = await query(`SELECT  * FROM v_contest WHERE id=?`, [req.data.cid])
+exports.authContest = fnCatch(async (req, res, next) => {
+    req.data.contest_id = req.params.id;
+    let contest = await execute(`SELECT  * FROM v_contest WHERE contest_id = ?`, [req.data.contest_id])
     if (contest.length == 0) return res.redirect("/about")
-    req.data.contest = contest[0]
+    req.data.contest = contest[0];
+    next();
 })

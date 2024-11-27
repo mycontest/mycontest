@@ -4,7 +4,6 @@ const path = require("path")
 const fs = require("fs")
 
 let sort = (arr)=>{
-    
     let ans = []
     let i=0;
     while(true){
