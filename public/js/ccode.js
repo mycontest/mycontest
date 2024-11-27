@@ -30,8 +30,8 @@ const selectLang = () => {
     localStorage.setItem('lang', lang)
     Editor.setOption("mode", lang);
     Editor.setValue(localStorage.getItem(`${taskid}_${lang}`) || data[lang] || "")
-  } catch  {
-    console.log("I have error . Ooo no i am error :) fun.selectLang" )
+  } catch {
+    console.log("I have error . Ooo no i am error :) fun.selectLang")
   }
 }
 
@@ -40,8 +40,8 @@ const selectTheme = () => {
     const theme = document.getElementById("theme").value;
     localStorage.setItem('theme', theme)
     Editor.setOption("theme", theme);
-  } catch  {
-    console.log("I have error . Ooo no i am error :) fun.selectLang" )
+  } catch {
+    console.log("I have error . Ooo no i am error :) fun.selectLang")
   }
 }
 
@@ -58,14 +58,14 @@ let langSelectStart = () => {
 }
 
 
-$(document).ready(()=>{
+$(document).ready(() => {
   console.log("Start:)");
   langSelectStart()
 })
- 
+
 
 let data = {
-  'text/x-mysql' : "select 1;",
+  'text/x-mysql': "select 1;",
   'text/x-csrc': `#include <stdio.h>
 int main(){
     int a,b;    
@@ -117,5 +117,4 @@ public class Sum{
   }
 }`
 }
- 
- 
+

@@ -34,12 +34,11 @@ router.post("/sign-up", fnCatch(async (req, res) => {
     try {
       const { username, password, full_name } = req.body
       await signSchema.validateAsync({ username, password, full_name });
-      let user = await query("SELECT * FROM users WHERE username = ?", [username], 2);
-      if (!user || user.length != 0)
-        return res.redirect("/sign-up?err=Bunaqa username mavjud!")
-      await query("INSERT INTO users (username, password, full_name) values (?, md5(?), ?)", [username, password + ":" + process.env.SECRET, full_name])
+      let user = await execute("SELECT * FROM users WHERE username = ?", [username], 1);
+      if (user) return res.redirect("/sign-up?err=Bunaqa username mavjud!")
+      await execute("INSERT INTO users (username, password, full_name) values (?, md5(?), ?)", [username, password + ":" + process.env.SECRET, full_name])
       res.redirect("/sign-in?scc=Ro'yxatdan muvaffaqiyatli o'tdingiz.")
-    } catch {
+    } catch (err) {
       res.redirect("/sign-up?err=Kiritilgan ma'lumotlar noto‘g‘ri.")
     }
   })

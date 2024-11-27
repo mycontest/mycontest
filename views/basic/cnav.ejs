@@ -1,9 +1,10 @@
 <div class="col col-lg-2">
     <div class="card">
         <div class="card-header">
-            <a href="/contest/<%= data.contest_id %>" style="text-decoration: none">Musobaqa</a>
+            <b>Menyu</b>
         </div>
         <ul class="list-group list-group-flush">
+            <a href="/contest/<%= data.contest_id %>" class="list-group-item list-group-item-action <% if (pageInfo == 'main') { %> active <% } %>">Musobaqa</a>
             <a href="/contest/<%= data.contest_id %>/tasks" class="list-group-item list-group-item-action <% if (pageInfo == 'tasks') { %> active <% } %>">Masalalar</a>
             <a href="/contest/<%= data.contest_id %>/attempts" class="list-group-item list-group-item-action <% if (pageInfo == 'attempts') { %> active <% } %>">Urinishlar</a>
             <a href="/contest/<%= data.contest_id %>/retings" class="list-group-item list-group-item-action <% if (pageInfo == 'retings') { %> active <% } %>">Natijalar</a>
@@ -16,11 +17,11 @@
                 <%= contest.start_date %>
             </li>
             <li class="li-list list-group-item">
-                <i class="fa fa-window-close" aria-hidden="true"></i>
+                <i class="fa fa-calendar-times-o" aria-hidden="true"></i>
                 <%= contest.end_date %>
             </li>
             <li class="li-list list-group-item">
-                <i class="fa fa-hourglass-end" aria-hidden="true"></i>
+                <i class="fa fa-hourglass" aria-hidden="true"></i>
                 <span id="current_date"></span>
             </li>
             <li class="li-list list-group-item"><span class="badge bg-<% if (contest.eventnum == '1') { %>primary <% } else if (contest.eventnum == '0') { %>success <% } else { %>danger <% } %>"><%= contest.event %></span></li>

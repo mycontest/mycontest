@@ -2,7 +2,6 @@ const { exec } = require('child_process');
 const { ansReturn } = require("./res")
 const path = require("path")
 
-
 let python = async (folder, timout, memory, callback) => {
     const ffolder = path.join(__dirname, `./tmp/${folder}`)
     let startTime = new Date().getTime()

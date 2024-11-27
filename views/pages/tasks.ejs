@@ -1,202 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <%- include("../basic/head.ejs") %>
+        <link rel="stylesheet" href="/codemirror/codemirror.css" />
+        <link rel="stylesheet" href="/codemirror/cobalt.css" />
+        <link rel="stylesheet" href="/codemirror/icecoder.css" />
+        <link rel="stylesheet" href="/codemirror/seti.css" />
+        <link rel="stylesheet" href="/codemirror/mbo.css" />
+        <link rel="stylesheet" href="/codemirror/show-hint.css" />
+        <!-- prism  -->
+        <link rel="stylesheet" href="/prism/prism.css" />
+        <script src="/prism/prism.js"></script>
+    </head>
 
-<head>
-  <%- include("../basic/head.ejs") %>
-  <link rel="stylesheet" href="/codemirror/codemirror.css">
-  <link rel="stylesheet" href="/codemirror/cobalt.css">
-  <link rel="stylesheet" href="/codemirror/icecoder.css">
-  <link rel="stylesheet" href="/codemirror/seti.css">
-  <link rel="stylesheet" href="/codemirror/mbo.css">
-  <link rel="stylesheet" href="/codemirror/show-hint.css">
-  <!-- prism  -->
-  <link rel="stylesheet" href="/prism/prism.css">
-  <script src="/prism/prism.js"></script>
+    <body>
+        <% if(data.user_id) { %> <%- include("../basic/topnav.ejs") %> <% } else { %> <%- include("../basic/stopnav.ejs") %> <% } %>
 
-</head>
+        <div class="container">
+            <div class="row">
+                <%- include("../basic/cnav.ejs") %>
+                <div class="col-7">
+                    <div class="card col-12" aria-hidden="true">
+                        <div class="card-header">
+                            <b><%- task.name %></b>
+                        </div>
+                        <div class="card-body">
+                            <p aria-hidden="true"><%- task.sub_text %></p>
+                            <p>
+                                <b>Kirish:</b>
+                                <%- task.inp_text %>
+                            </p>
+                            <p>
+                                <b>Chiqish:</b>
+                                <%- task.out_text %>
+                            </p>
+                            <% if(task.example.length) { %>
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" style="width: 3rem">#</th>
+                                        <th scope="col">Kirish</th>
+                                        <th scope="col">Chiqish</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% for (var i=0;i< task.example.length;i++) { %>
+                                    <tr>
+                                        <td scope="row"><%- i + 1 %></td>
+                                        <td>
+                                            <pre style="border-left: 0px; white-space: pre-wrap; word-break: break-all"><%- task.example[i].inp %></pre>
+                                        </td>
+                                        <td>
+                                            <pre style="border-left: 0px; white-space: pre-wrap; word-break: break-all"><%- task.example[i].out %></pre>
+                                        </td>
+                                    </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                            <% } %>
+                        </div>
+                        <div class="card-footer text-muted">
+                            <span class="badge bg-primary">Time: <%= task.time %>Ms</span>
+                            <span class="badge bg-success">Memory: <%= task.memory %>Mb</span>
+                        </div>
+                    </div>
 
-<body>
-
-  <% if(data.user_id) { %>  <%- include("../basic/topnav.ejs") %> <% } else { %>  <%- include("../basic/stopnav.ejs") %> <% } %>
-
-  <div class="container">
-    <div class="row">
-      <%- include("../basic/cnav.ejs") %>
-      <div class="col-7">
-        <div class="card col-12" aria-hidden="true">
-          <div class="card-header">
-            <b><%- task.name %></b>
-          </div>
-          <div class="card-body">
-            <p aria-hidden="true">
-              <%- task.sub_text %>
-            </p>
-            <p><b>Kirish: </b>
-              <%- task.inp_text %>
-            </p>
-            <p><b>Chiqish: </b>
-              <%- task.out_text %>
-            </p>
-            <% if(task.example.length) { %>
-            <table class="table table-bordered ">
-              <thead>
-                <tr>
-                  <th scope="col" style="width: 3rem;">#</th>
-                  <th scope="col">Kirish</th>
-                  <th scope="col">Chiqish</th> 
-                </tr>
-              </thead>
-              <tbody>
-                <% for (var i=0;i< task.example.length;i++) { %>
-                <tr>
-                  <td scope="row">
-                    <button class="btn " onclick="setInput(`<%- task.example[i].inp %>`)">
-                      <i class="fa fa-play" aria-hidden="true"></i>
-                    </button>
-                  </td>
-                  <td>
-                    <pre style="border-left: 0px;white-space: pre-wrap; word-break: break-all;"><%- task.example[i].inp %></pre>
-                  </td>
-                  <td>
-                    <pre style="border-left: 0px;white-space: pre-wrap;  word-break: break-all;"><%- task.example[i].out %></pre>
-                  </td>
-                </tr>
-                <% } %>
-              </tbody>
-            </table>
-            <% } %>
-          </div>
-          <div class="card-footer text-muted">
-            <span class="badge bg-primary">Time: <%= task.time %>Ms</span>
-            <span class="badge bg-success">Memory: <%= task.memory %>Mb</span>
-          </div>
-        </div>
-
-        <% if(contest.eventnum==2 || data.isAdmin==1){ %>
-        <div class="card" style="margin-top:1rem">
-          <div class="card-header">
-            <b>Topshiriqning yechimi</b>
-          </div>
-          <div class="card-body" id="answer">
-            <%- task.comment_text %>
-            <%- include("../basic/www") %>
-          </div>
-        </div>
-        <% } %>
-
-        <% if(data.user_id){ %>
-        <div class="card col-12" style="margin-top:1rem">
-          <div class="card-header">
-            <b>Yechimini yuborish</b>
-          </div>
-          <div class="card-body" style="max-width: 800px;">
-            <form class="info" method="POST" id="fcode">
-              <input type="hidden" name="task_id" value="<%= task.id %>">
-              <input type="hidden" id="code" name="code" value="">
-              <div class="mb-3">
-                <textarea id='code-view' style="border-right: 6px;" cols="50" rows="50"></textarea>
-              </div>
-              <div class="row g-3">
-                <div class="col">
-                  <select onchange="selectLang()" name="lang" id='lang'   class="form-select btn-sm">
-                    <% for(var j=0;j< lang.length;j++){ %>
-                    <option value="<%= lang[j].code %>"><%= lang[j].name %></option>
+                    <% if(contest.eventnum == 2 || data.role=='admin'){ %>
+                    <div class="card" style="margin-top: 1rem">
+                        <div class="card-header">
+                            <b>Topshiriqning yechimi</b>
+                        </div>
+                        <div class="card-body" id="answer"><%- task.comment_text %></div>
+                    </div>
+                    <% } %> <% if(data.user_id){ %>
+                    <div class="card col-12" style="margin-top: 1rem">
+                        <div class="card-header">
+                            <b>Yechimini yuborish</b>
+                        </div>
+                        <div class="card-body" style="max-width: 800px">
+                            <form class="info" method="POST" id="fcode">
+                                <input type="hidden" name="task_id" value="<%= task.task_id %>" />
+                                <input type="hidden" id="code" name="code" value="" />
+                                <div class="mb-3">
+                                    <textarea id="code-view" style="border-right: 6px" cols="50" rows="50"></textarea>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col">
+                                        <select onchange="selectLang()" name="lang" id="lang" class="form-select btn-sm">
+                                            <% for(var j=0;j< lang.length;j++){ %>
+                                            <option value="<%= lang[j].code %>"><%= lang[j].name %></option>
+                                            <% } %>
+                                        </select>
+                                    </div>
+                                    <link rel="stylesheet" href="/codemirror/cobalt.css" />
+                                    <link rel="stylesheet" href="/codemirror/icecoder.css" />
+                                    <link rel="stylesheet" href="/codemirror/seti.css" />
+                                    <link rel="stylesheet" href="/codemirror/mbo.css" />
+                                    <link rel="stylesheet" href="/codemirror/show-hint.css" />
+                                    <!-- prism  -->
+                                    <div class="col">
+                                        <select onchange="selectTheme()" id="theme" class="form-select btn-sm">
+                                            <option value="cobalt">Cobalt</option>
+                                            <option value="icecoder">Icecoder</option>
+                                            <option value="seti">Seti</option>
+                                            <option value="mbo">Mbo</option>
+                                            <option value="show-hint">Show hint</option>
+                                        </select>
+                                    </div>
+                                    <div class="col" style="text-align-last: right">
+                                        <button type="button" class="btn btn-primary btn-sm" onclick="sendCode()">Yuborish</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card col-12 mt-2">
+                        <div class="card-header">
+                            <b>Urinishlar</b>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Id</th>
+                                        <th scope="col">Savol</th>
+                                        <th scope="col">Tili</th>
+                                        <th scope="col">Holati</th>
+                                        <th scope="col">Vaqt</th>
+                                        <th scope="col">Xotira</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="data"></tbody>
+                            </table>
+                        </div>
+                        <div style="display: flex; justify-content: end">
+                            <button class="btn me-2" onclick="setPage(-1)">
+                                <span aria-hidden="true">&laquo;</span>
+                                Keyingi
+                            </button>
+                            <button class="btn me-2" onclick="setPage(+1)">
+                                Oldingi
+                                <span aria-hidden="true">&raquo;</span>
+                            </button>
+                        </div>
+                    </div>
                     <% } %>
-                  </select>
                 </div>
-                <link rel="stylesheet" href="/codemirror/cobalt.css">
-                <link rel="stylesheet" href="/codemirror/icecoder.css">
-                <link rel="stylesheet" href="/codemirror/seti.css">
-                <link rel="stylesheet" href="/codemirror/mbo.css">
-                <link rel="stylesheet" href="/codemirror/show-hint.css">
-                <!-- prism  -->
-                <div class="col">
-                  <select onchange="selectTheme()"  id='theme'  class="form-select btn-sm">
-                          <option value="cobalt">Cobalt</option>
-                          <option value="icecoder">Icecoder</option>
-                          <option value="seti">Seti</option>
-                          <option value="mbo">Mbo</option>
-                          <option value="show-hint">Show hint</option>
-                  </select>
+
+                <div class="col col-lg-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <b>Masalalar</b>
+                        </div>
+                        <ul class="list-group list-group-numbered">
+                            <% for(var i=0;i< tasks.length;i++) { %>
+                            <a href="/contest/<%= contest.contest_id %>/tasks?task_id=<%= tasks[i].task_id %>" class="li-list list-group-item list-group-item-action <% if (task.task_id === tasks[i].task_id) { %> active <% } %>">
+                                <% if(tasks[i].status==1) { %>
+                                <i class="fa fa-check" aria-hidden="true" style="font-size: 15px; color: seagreen"></i>
+                                <% } else if(tasks[i].status==2) { %>
+                                <i class="fa fa-times" aria-hidden="true" style="font-size: 15px; color: brown"></i>
+                                <% } %><%= tasks[i].name %>
+                            </a>
+                            <% } %>
+                        </ul>
+                    </div>
                 </div>
-                <div class="col" style="text-align-last:right;">
-                  <button type="button" class="btn btn-dark btn-sm" onclick="sendCode()">Yuborish</button>
-                </div>
-              </div>
-            </form>
-          </div>
+            </div>
         </div>
-        <div class="col-12 mt-2">
-          <div class="card-header">
-            <b>Urinishlar</b>
-          </div>
-          <div class="card-body">
-            <table class="table table-bordered">
-              <thead>
-                <tr>
-                  <th scope="col">Id</th>
-                  <th scope="col">Savol</th>
-                  <th scope="col">Tili</th>
-                  <th scope="col">Holati</th>
-                  <th scope="col">Vaqt</th>
-                  <th scope="col">Xotira</th>
-                </tr>
-              </thead>
-              <tbody id="data"></tbody>
-            </table>
-          </div>
-          <div style="display: flex; justify-content: end;">
-            <button class="btn me-2" onclick="setPage(-1)"> <span aria-hidden="true">&laquo;</span> Keyingi </button>
-            <button class="btn me-2" onclick="setPage(+1)"> Oldingi <span aria-hidden="true">&raquo;</span> </button>
-          </div>
-        </div>
-        <% } %>
-      </div>
 
-      <div class="col col-lg-3">
-        <div class="card">
-          <div class="card-header">
-            <b>Masalalar</b>
-          </div>
-          <ul class="list-group list-group-numbered">
-            <% for(var i=0;i<tasks.length;i++) { %>
-            <a href="/contest/<%= contest.id %>/tasks?task_id=<%= tasks[i].id %>" class="li-list list-group-item list-group-item-action <% if (task.id === tasks[i].id) { %> active <% } %> ">
-               <% if(tasks[i].status==1) { %> 
-                   <i class="fa fa-check" aria-hidden="true" style="font-size: 15px;color: seagreen;"></i>
-               <% } else if(tasks[i].status==2) { %>  
-                   <i class="fa fa-times" aria-hidden="true" style="font-size: 15px;color: brown;"></i>
-               <% } %><%= tasks[i].name %>
-            </a>
-            <% } %>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <%- include("../basic/footer.ejs") %>
-  <script src="/codemirror/codemirror.js"></script>
-  <script src="/codemirror/matchbrackets.js"></script>
-  <script src="/codemirror/javascript.js"></script>
-  <script src="/codemirror/show-hint.js"></script>
-  <script src="/codemirror/clike.js"></script>
-  <script src="/codemirror/go.js"></script>
-  <script src="/codemirror/python.js"></script>
-  <script src="/codemirror/sql.js"></script>
-  <script src="/js/ccode.js"></script>
-</body>
-
+        <%- include("../basic/footer.ejs") %>
+        <script src="/codemirror/codemirror.js"></script>
+        <script src="/codemirror/matchbrackets.js"></script>
+        <script src="/codemirror/javascript.js"></script>
+        <script src="/codemirror/show-hint.js"></script>
+        <script src="/codemirror/clike.js"></script>
+        <script src="/codemirror/go.js"></script>
+        <script src="/codemirror/python.js"></script>
+        <script src="/codemirror/sql.js"></script>
+        <script src="/js/ccode.js"></script>
+    </body>
 </html>
 
 <% if(data.user_id){ %>
 <script>
-  let taskid = "<%= task.task_id %>";
-  let contestid = "<%= contest.contest_id %>";
-  let setInput = (e) => {
-    console.log(e)
-    localStorage.setItem(`cinput`, e)
-    window.open("/compiler");
-  }
+    let taskid = "<%= task.task_id %>";
+    let contestid = "<%= contest.contest_id %>";
+    let setInput = (e) => {
+        console.log(e);
+        localStorage.setItem(`cinput`, e);
+        window.open("/compiler");
+    };
 </script>
 <script src="/js/api2.js"></script>
 <% } %>

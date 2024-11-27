@@ -21,44 +21,6 @@
                 document.getElementById(s + "time").value = time;
             }
         </script>
-        <script>
-            tinymce.init({
-                selector: "textarea",
-                plugins: [
-                    "importcss",
-                    "searchreplace",
-                    "wordcount",
-                    "visualblocks",
-                    "codesample",
-                    "code",
-                    "a11ychecker",
-                    "advlist",
-                    "advcode",
-                    "advtable",
-                    "autolink",
-                    "checklist",
-                    "export",
-                    "lists",
-                    "link",
-                    "image",
-                    "charmap",
-                    "preview",
-                    "anchor",
-                    "searchreplace",
-                    "visualblocks",
-                    "powerpaste",
-                    "fullscreen",
-                    "formatpainter",
-                    "insertdatetime",
-                    "media",
-                    "table",
-                    "help",
-                    "wordcount",
-                ],
-                toolbar: "undo redo | formatpainter casechange blocks | bold italic backcolor | " + "alignleft aligncenter alignright alignjustify | " + "bullist numlist checklist outdent indent | removeformat | a11ycheck code table help",
-                tinycomments_author: "mensenau",
-            });
-        </script>
     </head>
 
     <body>
@@ -68,10 +30,9 @@
                 <div class="col">
                     <div class="card">
                         <div class="card-header">Admin panel</div>
-
                         <div class="container p-2">
                             <form method="post">
-                                <input type="hidden" name="id" value="<%= arr.id %>" />
+                                <input type="hidden" name="contest_id" value="<%= arr.contest_id %>" />
                                 <div class="mb-3">
                                     <label class="form-label">Nomi</label>
                                     <input type="text" name="name" class="form-control" placeholder="Round 1" value="<%= arr.name %>" />
@@ -79,9 +40,6 @@
                                 <div class="mb-3">
                                     <label class="form-label">Mazmuni</label>
                                     <textarea class="form-control" name="content" id="editor1" rows="3"><%= arr.content %></textarea>
-                                    <script>
-                                        CKEDITOR.replace("editor1");
-                                    </script>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Start</label>
@@ -111,7 +69,7 @@
                         <form action="/admin/addtasks" method="post" class="m-2 w-50">
                             <div class="form-group">
                                 <input type="hidden" name="contest_id" value="<%= contest_id %>" />
-                                <input type="text" class="form-control" name="tid" placeholder="Savol id" />
+                                <input type="text" class="form-control" name="task_id" placeholder="Savol id" />
                             </div>
                             <button type="submit" class="mt-2 btn btn-primary">Submit</button>
                         </form>
@@ -134,9 +92,9 @@
                             <tbody>
                                 <% for(var i=0;i< arr2.length;i++) { %>
                                 <tr>
-                                    <td><a href="/admin/tasksadd?tid=<%= arr2[i].id %>">Edit</a></td>
-                                    <td><a href="/admin/deltasks?tid=<%= arr2[i].id %>&contest_id=<%= contest_id %>">Delete</a></td>
-                                    <td><%= arr2[i].id %></td>
+                                    <td><a href="/admin/tasksadd?task_id=<%= arr2[i].task_id %>">Edit</a></td>
+                                    <td><a href="/admin/deltasks?task_id=<%= arr2[i].task_id %>&contest_id=<%= contest_id %>">Delete</a></td>
+                                    <td><%= arr2[i].task_id %></td>
                                     <td><%= arr2[i].code %></td>
                                     <td><%= arr2[i].name %></td>
                                     <td><%= arr2[i].all_test %></td>

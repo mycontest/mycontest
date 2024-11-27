@@ -3,11 +3,12 @@ require("dotenv").config();
 
 const express = require("express")
 const app = express()
+const { error, missed } = require("./controllers/error");
 
 // session setup
+const path = require("path");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
-const path = require("path");
 const fileUpload = require("express-fileupload");
 const FileStore = require("session-file-store")(session);
 
@@ -34,6 +35,10 @@ app.set('view engine', 'ejs');
 
 // router use 
 app.use("/", require("./router/main"))
+
+// error handling middleware
+app.use(error);
+app.use(missed);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${process.env.DOMAIN}`));

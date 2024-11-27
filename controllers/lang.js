@@ -1,43 +1,37 @@
-const { execute } = require("uzdev/mysql")
+const { execute } = require("uzdev/mysql");
 
-let langType = async (code) => {
+exports.langType = async (code) => {
    try {
-      return (await execute("SELECT * FROM lang WHERE code = ?", [code]))[0].type || 'cpp'
-   } catch {
-      return 'cpp'
+      return (await execute("SELECT * FROM lang WHERE code = ?", [code], 1)).file_type;
+   } catch (err) {
+      console.log(err.message);
+      return "cpp";
    }
-}
+};
 
-let langTypeWithName = async (name) => {
+exports.langName = async (code) => {
    try {
-      return (await execute("SELECT * FROM lang WHERE name = ?", [name]))[0].type || 'cpp'
-   } catch {
-      return 'cpp'
+      return (await execute("SELECT *FROM lang WHERE code = ?", [code], 1)).name || "-";
+   } catch (err) {
+      console.log(err.message);
+      return "-";
    }
-}
+};
 
-let langName = async (code) => {
+exports.langAll = async (type) => {
    try {
-      return (await execute("SELECT *FROM lang WHERE code = ?", [code]))[0].name || '-'
-   } catch {
-      return '-'
+      return await execute("SELECT * FROM lang WHERE contest_type = ?", [type]);
+   } catch (err) {
+      console.log(err.message);
+      return "cpp";
    }
-}
+};
 
-let langAll = async (n) => {
+exports.langIs = async (type, code) => {
    try {
-      return (await execute("SELECT * FROM lang WHERE n = ?", [n]))
-   } catch {
-      return [{ name: 'cpp' }]
+      return (await execute("SELECT * FROM lang WHERE contest_type = ? and code = ?", [type, code])).length > 0;
+   } catch (err) {
+      console.log(err.message);
+      return 0;
    }
-}
-
-let langIs = async (n, code) => {
-   try {
-      return (await execute("SELECT *FROM lang WHERE n = ? and code = ?", [n, code])).length > 0
-   } catch {
-      return 0
-   }
-}
-
-module.exports = { langAll, langName, langType, langTypeWithName, langIs }
+};
