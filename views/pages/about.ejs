@@ -33,9 +33,7 @@
                                 <tbody>
                                     <% for(var i=0;i< arr.length;i++) { %>
                                     <tr>
-                                        <th scope="row">
-                                            <a href="/contest/<%= arr[i].id %>" class="btn btn-sm"><%= i+1 %></a>
-                                        </th>
+                                        <th scope="row"><%= i+1 %></th>
                                         <td><b><%= arr[i].name %></b></td>
                                         <td><%= arr[i].start_date %></td>
                                         <td><%= arr[i].end_date %></td>
