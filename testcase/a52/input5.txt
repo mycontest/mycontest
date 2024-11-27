@@ -1,0 +1,112 @@
+2
+62 3
+P Q P P P P P P Q Q P Q Q P P Q Q Q P Q P P P P Q P Q Q P Q Q P Q P P Q Q P Q P Q Q P Q P P P Q P Q P P P Q Q P Q P Q Q P Q
+Q P Q P Q Q P P Q P P Q Q Q P Q P P P Q Q P P P Q P P P P P P P P Q P Q Q P Q P Q P Q Q P P P Q Q P Q P P P P P Q Q P Q Q Q
+P P P P Q P P Q P P P P P P Q P Q Q P Q P P P P P P P P P Q P P P Q P P P Q Q Q Q P Q Q P Q Q Q Q Q Q P Q Q P P P P Q P P P
+P P P Q P P P Q P P P P P P Q P Q P P P Q P P Q P Q Q Q P P P P Q P Q Q Q Q P P Q P Q P Q P P Q Q P Q Q Q P Q P P P P Q P Q
+P Q P P P P Q Q P Q P P P P P P P P P Q Q Q Q Q Q P P P Q P Q Q P Q P P Q Q Q Q P Q Q P P Q Q P Q P P Q Q P P Q Q Q P P Q P
+P Q Q Q P Q Q Q Q P Q Q P P P P Q P P Q P Q Q P Q Q P P Q P Q P P P P P P P P Q P Q Q Q P P Q Q P Q P Q P P Q Q P Q Q Q Q P
+Q Q Q Q Q Q P Q Q Q Q Q Q P Q P P P P P P Q Q P Q Q Q Q P Q Q Q Q Q P P Q Q P Q P Q Q P Q Q Q Q P Q Q P P Q P P Q Q Q Q Q Q
+Q P Q P P Q P Q Q P Q P Q P Q P Q P Q Q P P P Q P Q Q P Q P P P P Q P Q Q P Q Q Q P P Q P Q Q P Q Q P Q Q P Q P Q Q Q Q P P
+P P Q P Q P P P Q Q Q P Q P Q P Q P P Q P Q Q Q Q P P Q P Q Q P P P Q P P Q Q P Q Q Q Q Q P Q Q Q Q P Q Q P P P P P Q P Q Q
+Q P P P Q Q Q Q Q P Q Q Q P Q Q P Q Q Q P P P Q Q Q P Q Q Q P P P P Q Q Q P Q Q Q Q P Q Q Q Q P Q P Q Q P Q Q P P P Q P Q Q
+P P P Q Q P Q P Q Q Q P Q P P P P P P P P P P P Q Q P P Q Q Q P Q P Q Q Q Q Q P P Q Q Q Q Q P Q Q P P P P P P P P P Q Q Q Q
+Q Q Q P Q Q Q P Q Q Q P P P P P P Q P P P P Q Q Q Q P Q Q P Q Q Q Q Q P P P P P Q P P P Q Q Q Q P P Q P Q Q Q Q P Q P Q P Q
+P Q P Q Q P P Q Q Q Q P P P P Q P Q P Q Q P P P Q Q P Q P Q P P P Q Q Q Q Q P P Q P Q Q Q P Q Q Q Q Q P P Q Q Q Q Q P Q P Q
+P Q P P Q P Q Q Q P P P P Q Q Q P P Q Q P Q Q Q Q P P P Q P Q Q Q P Q P Q P P P Q Q Q Q Q P P Q P P Q Q P Q P P Q P P Q P P
+Q Q P Q Q Q Q Q P P P Q Q P Q Q Q Q Q Q Q Q Q P P P P Q P Q P Q P P Q P Q Q P Q Q P Q Q Q Q P Q P P Q P Q P P Q P Q P P P Q
+Q Q P P P P P P P P Q P Q P P Q Q Q P P P Q Q Q P Q Q P P P P Q Q Q Q Q Q Q P Q P Q Q P P Q Q P Q P Q Q Q P P P Q Q P P P P
+P Q Q P Q P Q Q Q Q P Q Q P Q Q P P Q P P Q Q P P P Q P Q P Q P Q Q Q Q P Q P P Q P P P P P P P Q P Q P Q Q Q Q Q Q P Q Q P
+Q P P P Q Q Q P P Q P Q Q P P P P Q P Q P Q P Q P Q Q P P Q Q P Q P Q Q Q P P Q P Q P Q P Q Q Q P Q P Q Q P P Q Q P P Q Q Q
+Q Q Q Q P Q Q P P Q P Q P P Q P P P P P P Q Q P Q Q P Q P Q P P Q P Q P Q Q P Q Q P P Q P Q P P P Q P Q P P Q P P P P P P P
+Q P P P Q Q Q Q Q Q Q Q Q Q P Q Q P Q Q Q P P Q P P P Q P Q P Q Q P Q P P Q P P Q Q Q P Q Q Q P Q Q P Q Q P P P Q P Q Q Q Q
+P Q P Q Q Q P P P P Q Q P P P P Q Q P Q Q Q P P Q Q Q Q P Q P Q Q P Q P Q Q Q P Q P Q P Q P Q P Q P P P P Q Q Q Q Q P P P P
+P Q P Q Q P Q Q P P Q P Q P P Q P Q P Q Q P Q Q P P P P P Q Q Q Q P Q P P Q Q P Q P P Q P Q P Q P Q Q P Q Q Q P P Q P P P P
+P P Q Q P P Q Q Q P Q P Q Q P P Q P Q P P Q P Q Q Q P Q Q P Q P Q P P P P Q Q P P P Q P Q Q Q Q P Q Q Q P Q P Q Q Q Q P P P
+Q P P Q P Q P P P P Q Q P Q Q Q Q Q Q Q Q P Q P Q P P P P Q Q P Q Q Q Q Q P P P P Q P Q P Q Q Q Q Q P Q P Q P Q P P Q Q Q P
+P P P Q P P Q Q P Q Q P Q Q Q Q P P Q P Q P Q Q P Q P Q P P Q Q Q Q Q P P Q P Q Q Q Q Q P Q P P Q P P P Q Q Q P P Q P Q Q Q
+P Q P P Q P Q Q P P P P Q Q P Q Q Q P P P P P P Q P P P P Q P Q Q P Q P Q Q P P Q Q P P P P Q Q Q Q P Q Q Q P Q P Q Q Q Q P
+Q P Q P P Q Q P Q P P Q P Q Q Q Q P P Q P P P P Q Q P Q Q P P P P P P Q P P P Q Q Q P P P Q Q Q Q P Q P Q P Q P Q Q P Q Q P
+Q Q Q P P P P P Q Q P Q Q P P P P P P Q Q P Q P Q P P Q P Q Q P P Q P P P Q P Q Q P Q P P P P P Q Q Q P Q Q P P Q P P P Q Q
+P P Q Q Q P Q Q P Q Q Q P P P P Q Q Q P P Q Q Q Q P Q P Q P P Q P P P P Q Q P P P P Q Q P P Q P Q Q Q Q Q P P Q P Q P Q Q P
+P P Q P P Q Q Q Q Q Q Q Q Q P P P P Q P P Q Q P P P Q P P Q Q Q P P Q P Q P P Q Q P P Q Q Q P Q Q P P Q P P P P P P Q Q Q P
+P Q Q Q P P P P P P Q P Q P P Q P Q P P Q Q Q P P Q P Q Q Q Q P P P P Q Q Q Q P P Q Q Q Q Q Q Q Q P Q P Q P Q Q P Q P P P Q
+Q Q P Q P Q P P Q Q Q Q P Q P Q Q Q Q Q P P P Q P P Q P Q P Q P Q Q P Q Q P Q P P Q P P P P Q Q Q Q P Q P Q P P Q Q Q Q P P
+P P Q P P P P Q Q P P Q P Q P P Q P Q P Q P Q Q Q Q Q P Q Q Q Q Q P P Q Q P Q Q Q Q P P Q P Q Q Q P P Q P Q P Q P Q P Q P P
+P P P P P Q Q Q P Q P P Q Q Q Q P P P P Q P P P Q P P P Q P Q P P Q P Q P P P P Q Q P Q P P P P Q P Q Q Q P Q P P Q Q Q P P
+P P P Q P P P P Q P P P P P Q Q Q Q Q Q P P Q Q Q P Q Q Q Q P P P P Q P Q Q Q Q Q Q Q Q Q P Q Q P P Q Q Q P P P P P P Q Q Q
+P P Q P P P Q Q Q Q P P P Q Q Q Q P Q P P P P P P P P P P P P P P Q Q Q P P Q Q Q Q Q Q P Q Q P P P P Q P P P Q P P P Q P Q
+P P P Q Q Q P Q Q Q P Q Q P P P P P P Q P Q Q P P Q Q P Q P P Q Q Q P Q Q P Q Q Q P P P Q P P Q P P Q P Q Q Q P P Q P Q P Q
+P Q Q P Q P Q Q P Q P Q Q P P P P Q Q P P Q Q P P Q Q P P P P Q P Q Q Q P Q Q Q Q Q P P P Q P P P Q P P P Q P P P P Q Q Q P
+Q P P Q P Q P Q Q Q Q Q P P P Q P Q Q Q P P Q Q P Q Q P Q P Q Q P Q P Q P Q Q Q Q Q Q Q Q P P Q P P Q P Q P Q Q P Q Q P Q P
+P Q Q P P Q Q Q P Q P Q Q Q P P P P P Q P Q P Q Q Q P P P Q Q Q P P P Q Q P P Q P Q P Q Q P Q Q P P P Q P Q Q P P P Q Q Q Q
+Q Q Q P Q P P Q P Q P Q P Q Q Q Q Q P Q Q P Q Q Q P P P P Q P P P P P Q P Q P Q P Q Q Q Q Q P Q Q P Q P P Q Q P Q Q Q P P P
+Q P Q Q P Q P Q Q Q Q Q Q P Q P Q P Q P Q P P Q P Q P P P P Q Q P P P P Q P P Q Q Q Q Q Q P P Q P P Q Q P Q Q Q Q P P Q P Q
+Q Q P P P P P P P Q Q P P Q Q Q P Q P Q P P Q Q Q P Q Q Q P P Q Q P Q P Q P Q P P Q Q P P Q Q P Q P P P Q P P Q Q P Q Q Q P
+P P P Q P P P Q P Q Q Q P P Q Q Q P P Q Q P Q P Q Q P P P P Q P P P Q P Q P Q P Q P P P P P Q P P Q P P P Q Q Q Q P P P P Q
+Q P Q P Q Q Q P Q Q Q Q P Q P P P Q Q Q P Q Q P Q P Q P Q Q Q P P P Q P Q P P P Q P Q P Q P Q P P P Q P P P Q P P Q P P P P
+P P Q Q P Q P P P Q P Q P Q P P Q P P Q P Q Q Q P P Q P P P P Q Q P P Q Q Q Q P P Q Q P Q P Q P Q P Q P P Q P Q P P P P Q Q
+Q Q Q P P P P Q P P Q P Q Q P P P Q P P Q Q Q P Q Q P Q Q P Q P Q Q P Q Q Q P P P Q Q Q P P Q Q Q P Q P P P Q P P P Q P P P
+P P Q Q Q P Q P P P Q Q P Q P P Q P P Q P Q Q Q Q P Q Q P Q Q P P Q Q P Q Q Q Q Q P Q P P Q P P Q Q Q Q Q P Q Q Q P Q Q P P
+P P Q Q P Q Q P Q Q Q P P P Q Q Q P Q Q Q Q P P Q P P P Q P P P P Q Q Q Q Q Q Q P P P P P P Q P Q P P Q P P Q Q P Q Q P P P
+P P Q P Q P Q P Q P Q Q P P P P P Q Q Q Q Q Q Q P Q P P Q Q P P Q Q P P P P Q Q Q Q P Q Q P Q Q Q P Q P P P Q Q P P P P P P
+P Q P Q P Q Q P P Q Q Q P P P Q Q Q P Q P P Q Q Q Q P P P Q Q Q P P P P Q P P P P Q Q P P P P Q P P P P Q Q P P P Q Q Q Q P
+Q Q P P P Q P Q Q P P P Q Q P Q Q P P Q P P P P P Q Q Q Q Q P P P Q Q Q P Q Q Q P Q Q P P P Q Q Q P P P P P P P P P Q P Q Q
+Q P Q Q P P Q P P P P P Q P Q Q Q P P P P Q Q P Q Q Q Q Q P P Q P P Q P Q P P Q Q Q P Q Q Q P P Q P P Q Q P P Q Q P P Q P Q
+Q Q Q P P P Q Q P Q Q P P Q P P Q P Q P P Q Q Q Q P Q Q Q Q P P P Q P P P P P Q Q P P Q Q P P P Q P Q Q Q Q Q P Q Q P Q P P
+Q Q Q P P P P P P Q P Q P P P Q Q Q P Q P P P P Q Q Q P Q Q Q P Q P Q P Q Q Q Q P Q Q Q P Q Q P Q Q Q P P P P P P P P Q P Q
+P P P P P Q P P Q P P P P Q Q P P Q P Q Q Q P P P Q Q P P P Q Q Q Q Q P Q P P P P Q P Q Q Q Q P P P Q Q P P Q Q Q Q P P P Q
+Q P Q Q Q Q P P P Q Q Q Q P P P Q Q P Q P Q Q Q P P Q P Q P P Q Q Q P Q Q P Q P P P Q P P Q P Q Q P P Q Q Q P P Q Q Q P Q P
+P P Q P Q Q Q P P P Q P Q Q Q Q P P P Q Q Q Q P Q P P P P P P Q P Q Q P Q P Q P Q P P Q Q Q Q Q P Q Q P P Q Q P P P P P Q Q
+P Q Q Q P P P P P P P P Q P P Q Q P Q P P P Q P Q Q P Q P P Q Q P Q Q P P P P Q P Q P Q P P P P P Q P Q Q P P Q Q Q P Q Q Q
+Q P Q P Q Q P P Q P P P P Q P P Q Q P Q P P Q P P P Q Q P P P Q P P Q Q P P P Q Q P Q Q P P Q P Q Q Q P P P Q Q Q Q Q P P P
+Q P Q P P P Q Q Q Q P Q P P P Q P P P P Q Q P Q Q P P P Q Q Q P Q Q Q P Q Q Q P Q P Q Q Q Q Q P Q P Q P P Q Q Q P P Q Q Q Q
+P Q Q P P P P P Q P Q P P Q Q Q Q Q Q P P Q P Q P Q P Q Q P Q P Q P P Q Q P P Q Q P Q P P Q Q P P Q P Q P P Q Q Q Q P Q Q P
+47 11
+P Q P Q P Q P Q P Q P Q Q P Q Q Q Q P P P P P Q Q Q Q Q Q Q P Q Q Q P P P P P Q Q Q P P P P P
+P P P P P P Q Q P P P P Q P P Q P Q Q P P P Q Q P Q Q Q Q Q P P Q P Q Q Q Q P Q P P P P P P P
+P P Q Q P Q P Q Q Q P Q Q Q P Q P P P Q P P P P P P Q P P P P P Q P Q Q P Q P P Q P P P Q Q P
+P P Q P P P Q Q Q Q P P P Q Q P Q P Q Q P Q Q Q Q Q P P P Q P Q Q Q P P Q Q P P Q Q P Q P Q Q
+Q P Q Q P Q P P Q Q P P P Q P P Q Q P Q P Q P P P Q P Q Q Q P Q P Q Q Q Q P P P P P P P P P Q
+Q Q Q P P P P Q P P P Q Q P Q Q Q Q P P P P Q Q Q Q P P P Q P Q Q P P Q Q Q Q Q P Q P P P Q Q
+P P Q P P Q P Q P P P P Q P P P Q P P Q Q Q P Q P P P P Q Q P P Q Q Q P P P P Q Q Q P P Q P P
+Q P P Q Q P P Q P Q P P P P Q Q P Q Q P P P Q P Q P P Q Q P Q P Q Q Q P P Q Q P Q P Q Q P P P
+Q Q P P Q P P Q Q P Q Q Q Q Q P P Q P P Q Q Q P Q P P Q P Q Q P P P Q P P P P P Q P P Q Q Q P
+P P P P P P Q P P Q Q Q P Q Q Q P P P P Q P Q P Q P Q P Q Q Q P Q P Q P P P P P P P P P P Q Q
+Q P Q Q P P P P P P Q Q P P Q P Q Q Q P Q P P Q P P P P Q Q P P P P Q P P P Q P P Q P Q Q Q P
+Q P P Q Q P P P P P P Q Q Q Q P Q Q P P Q Q Q Q Q Q Q P Q P P P Q P Q Q Q P P P Q Q P P P P Q
+Q P P P P P Q Q P Q P Q Q P P P Q P P P P P P Q P P P P Q Q Q P Q Q Q Q Q P Q P P Q Q Q P P P
+P Q Q P Q P Q Q P P Q P P Q Q Q Q P Q P Q P Q Q P Q Q P P Q P Q P Q P P Q Q Q P P Q Q Q P P Q
+P Q Q P P Q Q Q Q P Q P P Q P P Q Q Q Q P Q Q Q Q P P Q Q P P P Q P P P P P P Q Q P P P Q Q Q
+Q P Q Q P Q P P P Q P P P P P P Q Q Q P Q P Q Q Q P Q Q P P P P P P P P Q P P P P P P Q Q P Q
+Q Q P Q P P Q P P P P Q P Q Q P Q P P Q P P Q P P P Q Q Q Q P P Q P Q Q P P Q P P Q P P Q Q Q
+Q Q P Q P P P Q P Q P Q Q P P P P P P P P P P Q P P Q Q P Q P P P Q P P P Q Q P P P P Q P P Q
+Q P Q Q P Q P P Q P P Q P P Q Q P P Q Q P P Q P Q P P P P P Q P P P Q P P P P P P Q P P P P Q
+P Q P P Q Q P Q Q P Q P P P P Q Q Q Q P Q Q Q P Q P P P Q P Q Q Q P Q Q P P Q P Q P P P P P Q
+P Q P Q Q Q P Q P Q Q Q Q P Q P P P Q P P P Q Q P P Q P Q Q Q P Q Q P P Q P P P Q Q Q P Q Q P
+Q Q Q Q Q P Q Q Q Q Q P Q Q Q Q Q Q Q Q P Q Q P Q Q P P P Q Q P P P P Q Q P Q P P Q P P P P Q
+P Q P P P Q P P P Q Q Q P P Q Q P Q Q P P Q Q P Q Q Q Q Q Q P Q Q P Q P Q P P Q P P Q P P Q Q
+P Q Q P Q P P P P P Q P P Q Q P P Q Q Q Q Q P Q P Q Q Q Q P P Q Q P Q Q Q Q P Q Q Q P P P P P
+Q P Q Q Q P Q P P Q Q P Q Q Q Q P P P Q Q Q P P P P Q Q P P Q P Q P P P Q Q Q P P Q P P P Q P
+Q Q P P P P P P P P Q P P P P P Q Q P P Q P P P P P P P Q Q Q Q Q Q P P P P P Q P P Q P P P Q
+P Q P P P Q P P P Q Q Q Q P P P P Q P P Q P Q Q Q Q P Q Q P P P Q Q Q P P Q P P P P Q P Q Q Q
+Q Q P Q P P Q P P P P Q P P Q P P P Q P Q Q Q P P Q Q P P P Q P Q P Q P P Q P P Q Q Q P P Q P
+P P P P P Q P P P P P Q Q Q Q P Q Q Q P Q P Q Q Q P Q P Q Q Q Q P Q Q P P Q Q Q Q Q P P Q P Q
+P P Q Q Q Q P Q Q P Q P P Q P P P P Q Q P P Q Q Q Q Q Q Q Q Q P P P P Q P P P P Q Q P P Q P Q
+P Q P P Q Q P Q P Q P P P Q P Q P P Q P P P Q Q P Q Q Q Q P P Q Q P P Q Q P P Q P Q Q P Q P Q
+Q P P P P Q P P P Q P P P P Q P Q P Q Q P Q Q P P Q Q P P Q P Q Q P Q P P P P Q P Q Q Q P P Q
+P P P P P Q P Q P Q P Q P P Q Q Q Q P Q Q P P P P P Q P P Q Q P P P Q P P P Q Q P P Q Q Q Q P
+Q Q Q Q P Q Q Q Q P P Q P Q Q P P Q Q P P P Q P Q P Q Q Q P P Q P P P Q Q P Q P P Q P P P P P
+Q Q P Q Q Q P Q Q Q P Q Q P P Q P P P P P P Q P P P P Q Q P Q Q Q P Q P Q P P P Q P P P P P Q
+Q P Q P P P Q Q Q P Q P P Q Q Q P P P Q P Q Q P P Q Q Q P P Q Q Q Q Q P Q P P P Q Q Q P P P Q
+Q P Q P P P P P Q Q P P Q Q Q P Q Q P Q P Q Q Q Q P P Q P P P Q P P Q P P Q Q P Q P P Q P P Q
+P Q P P Q Q P Q Q Q Q Q Q P P P Q P P P P Q Q Q P P Q Q P Q Q Q P P P P Q P P Q Q Q Q P Q P Q
+Q Q Q Q Q P Q Q P P Q P Q Q Q Q P Q P P Q P P Q Q P P P P Q P Q P P P P P Q P Q Q Q Q Q P P P
+P P Q Q P Q Q Q P P P Q P P P Q Q P Q Q Q P Q Q P Q Q P P Q P Q P P P Q Q P Q P P Q P P P P Q
+P P Q P P P P P P P Q P P Q P P Q Q Q Q P Q Q P Q P P P Q P Q P P P Q P P P P Q P Q P Q Q P Q
+Q Q Q P Q Q Q Q P P P P P P P P P P Q Q P Q P P P P Q P P P P Q P P P Q P P Q Q Q P P P Q Q P
+Q Q P Q Q P P P P Q Q Q P P Q P P Q Q P P P P Q P Q P Q P Q P Q P Q Q Q Q P Q P P P P Q P Q Q
+P P Q Q P P Q P P P Q Q Q P Q P P Q Q Q Q P P P Q P P P Q P P Q P P Q P P P P P Q Q P Q P P P
+Q P P P P P Q Q Q P P P Q Q P Q P P Q P P Q Q Q P P P Q Q P P P Q P P Q Q Q Q Q P P Q P Q P Q
+Q P Q Q Q P P Q P P Q P Q Q P Q P Q Q P Q Q P Q Q Q Q Q Q P Q Q P P Q P P P P Q Q P P P P Q P
+P Q Q P Q P Q P P Q P P Q Q P P Q Q Q Q P Q P Q Q P Q P Q Q Q P P P Q P P Q Q P Q P Q P Q P P

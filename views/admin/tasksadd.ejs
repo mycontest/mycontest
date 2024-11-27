@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include("../basic/head.ejs") %>
+    <%- include("./key.ejs") %>
+        <script>
+            function dataVaulue(e, s) {
+                var now = new Date(e);
+                var utcString = now.toISOString().substring(0, 19);
+                var year = now.getFullYear();
+                var month = now.getMonth() + 1;
+                var day = now.getDate();
+                var hour = now.getHours();
+                var minute = now.getMinutes();
+                var second = now.getSeconds();
+                var localDatetime = year + "-" +
+                    (month < 10 ? "0" + month.toString() : month) + "-" +
+                    (day < 10 ? "0" + day.toString() : day) + "T" +
+                    (hour < 10 ? "0" + hour.toString() : hour) + ":" +
+                    (minute < 10 ? "0" + minute.toString() : minute) +
+                    utcString.substring(16, 19);
+                var datetimeField = document.getElementById(s);
+                datetimeField.value = localDatetime;
+            }
+        </script>
+        <script>
+            tinymce.init({
+                selector: 'textarea',
+                plugins: [
+                    'importcss', 'searchreplace', 'wordcount', 'visualblocks', 'codesample', 'code', 'a11ychecker', 'advlist',
+                    'advcode', 'advtable', 'autolink', 'checklist', 'export',
+                    'lists', 'link', 'image', 'charmap', 'preview', 'anchor', 'searchreplace', 'visualblocks',
+                    'powerpaste', 'fullscreen', 'formatpainter', 'insertdatetime', 'media', 'table', 'help', 'wordcount'
+                ],
+                toolbar: 'undo redo | formatpainter casechange blocks | bold italic backcolor | ' +
+                    'alignleft aligncenter alignright alignjustify | ' +
+                    'bullist numlist checklist outdent indent | removeformat | a11ycheck code table help',
+                tinycomments_author: 'mensenau',
+            });
+        </script>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row">
+            <%- include("../abasic/cnav.ejs") %>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-header">
+                            Admin panel
+                        </div>
+                        <div class="container p-2">
+                            <form method="post">
+                                <input type="hidden" name="id" value="<%= arr.id %>">
+                                <div class="mb-3">
+                                    <label class="form-label">Nomi</label>
+                                    <input type="text" name="name" class="form-control" placeholder="A+B" value="<%= arr.name %>">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Code</label>
+                                    <input type="text" name="code" class="form-control" placeholder="a_b_1" value="<%= arr.code %>">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">sub_text</label>
+                                    <textarea class="form-control" name="sub_text" id="editor" rows="3"><%= arr.sub_text %></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">inp_text</label>
+                                    <textarea class="form-control" name="inp_text" id="editor2" rows="3"><%= arr.inp_text %></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">out_text</label>
+                                    <textarea class="form-control" name="out_text" id="editor3" rows="3"><%= arr.out_text %></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">comment_text</label>
+                                    <textarea class="form-control" name="comment_text" id="editor4" rows="3"><%= arr.comment_text %></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Time</label>
+                                    <input type="int" name="time" class="form-control" placeholder="5000" value="<%= arr.time %>">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Memory</label>
+                                    <input type="int" name="memory" class="form-control" placeholder="60" value="<%= arr.memory %>">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Example</label>
+                                    <input type="int" name="test_count" class="form-control" placeholder="2" value="<%= arr.test_count %>">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">All test</label>
+                                    <input type="int" name="all_test" class="form-control" placeholder="5000" value="<%= arr.all_test %>">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+        </div>
+    </div>
+
+    </div>
+    </div>
+
+    <%- include("../basic/footer.ejs") %>
+</body>
+
+</html>

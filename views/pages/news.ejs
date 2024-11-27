@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include("../basic/head.ejs") %>
+    </head>
+
+    <body>
+        <% if(data.user_id) { %> <%- include("../basic/topnav.ejs") %> <% } else { %> <%- include("../basic/stopnav.ejs") %> <% } %>
+
+        <div class="container">
+            <div class="row">
+                <%- include("../basic/sidenav.ejs") %>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-header">
+                            <b>Yangliklar</b>
+                        </div>
+                        <div class="card-body">
+                            <p>
+                                2023-yilda hammangizni mycontest.uz front-end va back-end qayta qurish uchun community ga taklif qilaman!
+                                <br />
+                                <br />
+                                <span>Sana: 25.12.2022</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <%- include("../basic/footer.ejs") %>
+    </body>
+</html>

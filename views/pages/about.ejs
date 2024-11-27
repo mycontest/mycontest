@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include("../basic/head.ejs") %>
+    </head>
+
+    <body>
+        <% if(data.user_id) { %> <%- include("../basic/topnav.ejs") %> <% } else { %> <%- include("../basic/stopnav.ejs") %> <% } %>
+
+        <div class="container">
+            <div class="row">
+                <%- include("../basic/sidenav.ejs") %>
+
+                <div class="col">
+                    <div class="card">
+                        <div class="card-header">
+                            <b>Musobaqalar</b>
+                        </div>
+                        <div class="card-body">
+                            <!-- <h6>Raqobatbardosh dasturlash 🏅</h6><br> -->
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th>Nomi</th>
+                                        <th>Boshlanish</th>
+                                        <th>Tugash</th>
+                                        <th style="width: 50px">Davomliligi(soat)</th>
+                                        <th>Holati</th>
+                                        <th>Ko'rish</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% for(var i=0;i< v_contest.length;i++) { %>
+                                    <tr>
+                                        <th scope="row">
+                                            <a href="/contest/<%= v_contest[i].id %>" class="btn btn-sm"><%= i+1 %></a>
+                                        </th>
+                                        <td><%= v_contest[i].name %></td>
+                                        <td><%= v_contest[i].start %></td>
+                                        <td><%= v_contest[i].end %></td>
+                                        <td>
+                                            <span class="badge bg-primary"><%= v_contest[i].ctime %>+</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-<% if (v_contest[i].eventnum == '1') { %>primary <% } else if (v_contest[i].eventnum == '0') { %>success <% } else { %>danger <% } %>"><%= v_contest[i].event %></span>
+                                        </td>
+                                        <td><a href="/contest/<%= v_contest[i].id %>" class="btn btn-primary btn-sm">Kirish</a></td>
+                                    </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <%- include("../basic/footer.ejs") %>
+    </body>
+</html>

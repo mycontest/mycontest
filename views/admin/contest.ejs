@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include("../basic/head.ejs") %>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <%- include("../abasic/cnav.ejs") %>
+      <div class="col">
+
+        <div class="card">
+          <div class="card-header">
+            Admin panel
+          </div>
+
+          <% if(arr.length == 0 ) {  %>
+          <div class="card mt-2">
+            <div class="card-body">Malumot mavjud emas !</div>
+          </div>
+          <% } else  { %>
+          <table class="table">
+            <thead>
+              <tr>
+                <th> Edit </th>
+                <th> Id </th>
+                <th> Nomi </th>
+                <th> Holat </th>
+                <th> Start </th>
+                <th> End </th>
+              </tr>
+            </thead>
+            <tbody>
+                <% for(var i=0;i< arr.length;i++) { %>
+                    <tr>
+                        <td><a href="/admin/contestadd?cid=<%= arr[i].id %>">Edit</a></td>
+                        <td><%= arr[i].id %></td>
+                        <td><%= arr[i].name %></td>
+                        <td><%= arr[i].event %></td>
+                        <td><%= arr[i].start %></td>
+                        <td><%= arr[i].end %></td>
+                    </tr>
+                <% } %>
+            </tbody>
+          </table>
+          <% } %>
+          <nav   style="margin-left: 10px;">
+            <ul class="pagination"  style="flex-wrap: wrap;" >
+                <% for(var i=0;i< count;  i++ ) { %> 
+                   <li class="page-item <%= i==page?'active':'' %>" ><a class="page-link" href="?page=<%= i %>"><%= i+1 %></a></li>
+                <% } %>
+            </ul>
+          </nav>
+         
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div>
+  </div>
+
+  <%- include("../basic/footer.ejs") %>
+</body>
+
+</html>

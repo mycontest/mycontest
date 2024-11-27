@@ -1,0 +1,3 @@
+SELECT productLine , count(*) as Count  FROM products
+group by  productLine
+order by Count desc

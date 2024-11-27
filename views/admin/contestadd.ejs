@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include("../basic/head.ejs") %> <%- include("./key.ejs") %>
+        <script>
+            function dataVaulue(e, s) {
+                let now = new Date(
+                    new Date(e).toLocaleString("en-US", {
+                        timeZone: "Etc/Universal",
+                    })
+                );
+                console.log(now);
+                let year = now.getFullYear();
+                let month = now.getMonth() + 1;
+                let day = now.getDate();
+                let hour = now.getHours();
+                let minute = now.getMinutes();
+                let date = year + "-" + (month < 10 ? "0" + month : month) + "-" + (day < 10 ? "0" + day : day);
+                let time = (hour < 10 ? "0" + hour : hour) + ":" + (minute < 10 ? "0" + minute : minute);
+                document.getElementById(s).value = date;
+                document.getElementById(s + "time").value = time;
+            }
+        </script>
+        <script>
+            tinymce.init({
+                selector: "textarea",
+                plugins: [
+                    "importcss",
+                    "searchreplace",
+                    "wordcount",
+                    "visualblocks",
+                    "codesample",
+                    "code",
+                    "a11ychecker",
+                    "advlist",
+                    "advcode",
+                    "advtable",
+                    "autolink",
+                    "checklist",
+                    "export",
+                    "lists",
+                    "link",
+                    "image",
+                    "charmap",
+                    "preview",
+                    "anchor",
+                    "searchreplace",
+                    "visualblocks",
+                    "powerpaste",
+                    "fullscreen",
+                    "formatpainter",
+                    "insertdatetime",
+                    "media",
+                    "table",
+                    "help",
+                    "wordcount",
+                ],
+                toolbar: "undo redo | formatpainter casechange blocks | bold italic backcolor | " + "alignleft aligncenter alignright alignjustify | " + "bullist numlist checklist outdent indent | removeformat | a11ycheck code table help",
+                tinycomments_author: "mensenau",
+            });
+        </script>
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="row">
+                <%- include("../abasic/cnav.ejs") %>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-header">Admin panel</div>
+
+                        <div class="container p-2">
+                            <form method="post">
+                                <input type="hidden" name="id" value="<%= arr.id %>" />
+                                <div class="mb-3">
+                                    <label class="form-label">Nomi</label>
+                                    <input type="text" name="name" class="form-control" placeholder="Round 1" value="<%= arr.name %>" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Contente</label>
+                                    <textarea class="form-control" name="contente" id="editor1" rows="3"><%= arr.contente %></textarea>
+                                    <script>
+                                        CKEDITOR.replace("editor1");
+                                    </script>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Start</label>
+                                    <input type="date" name="sdate" id="sdate" class="form-control" placeholder="10:03:2000 10:00:00" />
+                                    <br />
+                                    <input type="time" name="sdatetime" id="sdatetime" class="form-control" placeholder="10:03:2000 10:00:00" />
+                                    <script>
+                                        dataVaulue("<%= arr.sdate %>", "sdate");
+                                    </script>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">End</label>
+                                    <input type="date" name="edate" id="edate" class="form-control" placeholder="10:03:2000 10:00:00" />
+                                    <br />
+                                    <input type="time" name="edatetime" id="edatetime" class="form-control" placeholder="10:03:2000 10:00:00" />
+                                    <script>
+                                        dataVaulue("<%= arr.edate %>", "edate");
+                                    </script>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card mt-2">
+                        <div class="card-header">Admin panel</div>
+                        <form action="/admin/addtasks" method="post" class="m-2 w-50">
+                            <div class="form-group">
+                                <input type="hidden" name="cid" value="<%= cid %>" />
+                                <input type="text" class="form-control" name="tid" placeholder="Savol id" />
+                            </div>
+                            <button type="submit" class="mt-2 btn btn-primary">Submit</button>
+                        </form>
+                        <% if(arr.length == 0 ) { %>
+                        <div class="card mt-2">
+                            <div class="card-body">Malumot mavjud emas !</div>
+                        </div>
+                        <% } else { %>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Edit</th>
+                                    <th>Test</th>
+                                    <th>Id</th>
+                                    <th>Code</th>
+                                    <th>Nomi</th>
+                                    <th>All test</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% for(var i=0;i< arr2.length;i++) { %>
+                                <tr>
+                                    <td><a href="/admin/tasksadd?tid=<%= arr2[i].id %>">Edit</a></td>
+                                    <td><a href="/admin/deltasks?tid=<%= arr2[i].id %>&cid=<%= cid %>">Delete</a></td>
+                                    <td><%= arr2[i].id %></td>
+                                    <td><%= arr2[i].code %></td>
+                                    <td><%= arr2[i].name %></td>
+                                    <td><%= arr2[i].all_test %></td>
+                                </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <%- include("../basic/footer.ejs") %>
+    </body>
+</html>

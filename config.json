@@ -1,0 +1,13 @@
+{
+    "app": {
+        "PORT": 1003,
+        "DOMAIN": "http://127.0.0.1",
+        "SECRET_KEY": "abcd&sdfg&1234567890&exe&nima&exeee"
+    },
+    "db": {
+        "host": "212.86.108.223",
+        "username": "admin",
+        "password": "@Bb5441550",
+        "database": "mycontets_uz"
+    }
+}

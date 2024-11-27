@@ -1,0 +1,70 @@
+ <section id="footer bg-white"></section>
+ <div class="container bg-white">
+   <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+     <div class="col-md-4 d-flex align-items-center">
+       <span class="text-muted">© 2022 MYCONTEST</span>
+     </div>
+
+     <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
+       <li class="ms-3">
+        <a class="text-muted" href="https://t.me/mycontest_chat">
+           <i class="fa fa-telegram" aria-hidden="true"></i>
+         </a>
+       </li>
+       <li class="ms-3">
+         <a class="text-muted" href="https://instagram.com/mensenvau">
+           <i class="fa fa-instagram" aria-hidden="true"></i>
+         </a>
+       </li>
+       <li class="ms-3">
+         <a class="text-muted" href="https://youtube.com/mensenvau">
+           <i class="fa fa-youtube-play" aria-hidden="true"></i>
+         </a>
+       </li>
+     </ul>
+   </footer>
+ </div>
+
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+ <div id="load" class="div">
+   <div class="spinner-border" role="status"></div>
+ </div>
+
+ <script>
+   function display() {
+     let a = (e) => {
+       if (e < 10) return '0' + e;
+       else return e;
+     }
+     var today = new Date();
+     var month = today.getMonth();
+     var day = today.getDate();
+     var year = today.getFullYear();
+     var hour = today.getHours();
+     var minute = today.getMinutes();
+     var second = today.getSeconds();
+     var output = a(year) + '-' + a(month + 1) + '-' + a(day) + " " + a(hour) + ':' + a(minute) + ":" + a(second);
+     if (document.getElementById("current_date"))
+       document.getElementById("current_date").innerText = output;
+   }
+   try {
+     display();
+   } catch {
+     console.log("Hi")
+   }
+
+   setInterval(display, 500);
+ </script>
+
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+ <script>
+   $(document).ready(function() {
+     $("#load").show();
+     $("#load").fadeOut(1000);
+   });
+ </script>
+<!-- yandex metric -->
+<script src="https://yastatic.net/share2/share.js"></script>

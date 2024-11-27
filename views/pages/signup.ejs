@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include("../basic/head") %>
+        <style>
+            .container {
+                margin-top: 50px;
+            }
+            .form-signin {
+                width: 100%;
+                max-width: 420px;
+                padding: 15px;
+                margin: auto;
+            }
+        </style>
+        <title>mycontest.dev</title>
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    </head>
+
+    <body>
+        <main class="form-signin">
+            <div class="container">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="post">
+                            <div class="mb-3">
+                                <label for="full_name" class="form-label">To'liq ism</label>
+                                <input type="text" name="full_name" class="form-control" id="full_name" required autofocus />
+                            </div>
+                            <div class="mb-3">
+                                <label for="login" class="form-label">Foydalanuvchi nomi</label>
+                                <input type="text" name="username" class="form-control" id="login" required autofocus />
+                                <p class="form-text text-muted" style="color: rgb(173, 149, 10) !important">Faqat harflardan iborat bo'lishi kerak len(3,30)</p>
+                            </div>
+                            <div class="mb-3">
+                                <label for="parol" class="form-label">Parol</label>
+                                <input type="password" name="password" class="form-control" id="parol" />
+                                <p class="form-text text-muted" style="color: rgb(173, 149, 10) !important">Harflar va belgilar len(3,30)</p>
+                            </div>
+                            <div class="form-group">
+                                <div class="mt-2 mb-2 g-recaptcha" data-sitekey="6Le40YkfAAAAAI4BJYgwpdPmW0WWg5lyLtttPrpL"></div>
+                            </div>
+
+                            <% if(err) { %>
+                            <div class="alert alert-danger" role="alert"><%= err %></div>
+                            <% } %>
+                            <button type="submit" class="btn btn-primary">Ro'yxatdan o'tish</button>
+                            <hr />
+                            <a href="/sign-in">Ro'yxatdan o'tgan bo'lsangiz!</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </body>
+</html>

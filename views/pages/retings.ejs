@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include("../basic/head.ejs") %>
+    </head>
+
+    <body>
+        <% if(data.user_id) { %> <%- include("../basic/topnav.ejs") %> <% } else { %> <%- include("../basic/stopnav.ejs") %> <% } %>
+
+        <div class="container">
+            <div class="row">
+                <%- include("../basic/cnav.ejs") %>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-header">
+                            <b>Natijalar</b>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered">
+                                <thead id="title"></thead>
+                                <tbody id="data"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <%- include("../basic/footer.ejs") %>
+        <script>
+            let getRetingsMe = () => {
+                $.get("./retings/api", (data, status) => {
+                    let tb = "";
+                    let ti = "<tr><th>#</th><th>Username</th>";
+                    for (let i = 1; i <= data.count; i++) ti = ti + `<th>#${i}</th>`;
+                    ti += "<th class='len-sm'>Soni</th><th class='len-sm'>Jarima</th><tr>";
+                    for (let x of data.data) {
+                        tb = tb + ` <tr><td class="len-sm">${x.num}</td><td class="len-sm-100"><span class="bg-username">${x.username}</span></td>`;
+                        for (let i = 1; i <= data.count; i++)
+                            tb += `<td style="text-align:center;${x["isAccept" + i] == 1 ? "color: #00bc8c!important;background: #e8f5e9;" : x["count" + i] > 0 ? "color: #e3342f!important;background: #ffb8b8;" : ""}"> ${x["count" + i] > 0 ? "+" + x["count" + i] : "-"}</td>`;
+                        tb += `<td>${x.accept}</td><td>${x.error}</td></tr>`;
+                    }
+                    if (data.data == null) {
+                        document.getElementById("title").innerHTML = "Tez";
+                    }
+                    document.getElementById("title").innerHTML = ti;
+                    document.getElementById("data").innerHTML = tb;
+                });
+            };
+
+            getRetingsMe();
+            setInterval(() => {
+                getRetingsMe();
+            }, 2000);
+        </script>
+    </body>
+</html>

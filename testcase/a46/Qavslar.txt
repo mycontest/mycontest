@@ -1,0 +1,20 @@
+Qavslar to'g'rimi 
+
+Faqat uchta turdagi belgilarni o'z ichiga olgan qator berilgan '(', ')' , '*' .
+ 
+Qavslar to'g'ri qavslar deyiladi:
+  - Har qanday chap qavs '(' tegishli o'ng qavsga ega bo'lishi kerak ')'.
+  - Har qanday o'ng qavs ')' tegishli chap qavsga ega bo'lishi kerak '('.
+  - Chap qavs '(' tegishli o'ng qavsdan oldin borishi kerak  ')'.
+  - '*'bitta o'ng qavs ')' yoki bitta chap qavs '(' yoki bo'sh satrga almashtirish mumkin "".
+
+
+input 
+
+ Yagona qatorda S satir (0<len(S)<100) 
+
+output
+
+ Agar berilgan qator to'g'ri qavlar bo'lsa HA aksi holda YO'Q 
+
+

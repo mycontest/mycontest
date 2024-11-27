@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include("../basic/head") %>
+
+        <style>
+            .container {
+                margin-top: 50px;
+            }
+
+            .form-signin {
+                width: 100%;
+                max-width: 420px;
+                padding: 15px;
+                margin: auto;
+            }
+        </style>
+
+        <title>MyContest</title>
+
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    </head>
+
+    <body>
+        <main class="form-signin">
+            <div class="container">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="post">
+                            <div class="mb-3">
+                                <label for="login" class="form-label">Foydalanuvchi nomi</label>
+                                <input type="text" name="username" class="form-control" id="login" aria-describedby="login" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="parol" class="form-label">Parol</label>
+                                <input type="password" name="password" class="form-control" id="parol" />
+                            </div>
+                            <div class="form-group">
+                                <div class="mt-2 mb-2 g-recaptcha" data-sitekey="6Le40YkfAAAAAI4BJYgwpdPmW0WWg5lyLtttPrpL"></div>
+                            </div>
+                            <% if(err) { %>
+                            <div class="alert alert-danger" role="alert"><%= err %></div>
+                            <% } %> <% if(scc) { %>
+                            <div class="alert alert-success" role="alert"><%= scc %></div>
+                            <% } %>
+                            <button type="submit" class="btn btn-primary">Kirish</button>
+                            <hr />
+                            <a href="/sign-up">Men hali ro'yxatdan o'tmaganman!</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include("../basic/head.ejs") %>
+    </head>
+
+    <body>
+        <% if(data.user_id) { %> <%- include("../basic/topnav.ejs") %> <% } else { %> <%- include("../basic/stopnav.ejs") %> <% } %>
+
+        <div class="container">
+            <div class="row">
+                <%- include("../basic/cnav.ejs") %>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-header">
+                            <b>Urinishlar</b>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Id</th>
+                                        <th scope="col">Username</th>
+                                        <th scope="col">Savol</th>
+                                        <th scope="col">Tili</th>
+                                        <th scope="col">Holati</th>
+                                        <th scope="col">Vaqt</th>
+                                        <th scope="col">Xotira</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="data"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: end; margin-top: 10px">
+                        <button class="btn me-2" onclick="setPage(-1)">
+                            <span aria-hidden="true">&laquo;</span>
+                            Keyingi
+                        </button>
+                        <button class="btn me-2" onclick="setPage(+1)">
+                            Oldingi
+                            <span aria-hidden="true">&raquo;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <%- include("../basic/footer.ejs") %>
+        <script>
+            let contestid = "<%= contest.id %>";
+        </script>
+        <script src="/js/api1.js"></script>
+    </body>
+</html>
