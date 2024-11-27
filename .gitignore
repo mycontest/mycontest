@@ -2,3 +2,4 @@
 /compiler/tmp
 
 .env
+.DS_Store

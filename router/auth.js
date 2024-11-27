@@ -28,22 +28,19 @@ router.get("/sign-up", fnCatch(async (req, res) => {
 }))
 
 router.post("/sign-up", fnCatch(async (req, res) => {
-  let h = req.body
-  const recaptchaResponse = h['g-recaptcha-response']
-
+  const recaptchaResponse = req.body['g-recaptcha-response']
   googleRecaptcha.verify({ response: recaptchaResponse }, async (error) => {
-    if (error) return res.redirect("/sign-up?err=captcha xato!")
+    if (error) return res.redirect("/sign-in?err=Captcha noto'g'ri.")
     try {
       const { username, password, full_name } = req.body
       await signSchema.validateAsync({ username, password, full_name });
-
-      let isUser = await query("SELECT *FROM users WHERE username = ?", [h.username]);
-      if (isUser.length != 0)
+      let user = await query("SELECT * FROM users WHERE username = ?", [username], 2);
+      if (!user || user.length != 0)
         return res.redirect("/sign-up?err=Bunaqa username mavjud!")
       await query("INSERT INTO users (username, password, full_name) values (?, md5(?), ?)", [username, password + ":" + process.env.SECRET, full_name])
-      res.redirect("/sign-in?scc=Muvaffaqiyatli ro'yxatdan o'tingiz!")
+      res.redirect("/sign-in?scc=Ro'yxatdan muvaffaqiyatli o'tdingiz.")
     } catch {
-      res.redirect("/sign-up?err=Ma'lumotlar xato kiritilgan!")
+      res.redirect("/sign-up?err=Kiritilgan ma'lumotlar noto‘g‘ri.")
     }
   })
 }))
