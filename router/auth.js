@@ -8,7 +8,7 @@ const GoogleRecaptcha = require('google-recaptcha');
 const googleRecaptcha = new GoogleRecaptcha({ secret: process.env.GOOGLE_SECRET })
 
 router.get("/sign-in", fnCatch(async (req, res) => {
-  return res.render("pages/signin", { err: req.query.err || "", scc: req.query.scc || "" })
+  return res.render("pages/signin", { data: req.data, err: req.query.err || "", scc: req.query.scc || "" })
 }))
 
 router.post("/sign-in", fnCatch(async (req, res) => {
@@ -24,7 +24,7 @@ router.post("/sign-in", fnCatch(async (req, res) => {
 }))
 
 router.get("/sign-up", fnCatch(async (req, res) => {
-  res.render("pages/signup", { err: req.query.err || "" })
+  res.render("pages/signup", { data: req.data, err: req.query.err || "" })
 }))
 
 router.post("/sign-up", fnCatch(async (req, res) => {

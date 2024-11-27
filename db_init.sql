@@ -112,7 +112,7 @@ create table lang (
     created_dt datetime default current_timestamp
 );
 
-insert into lang (contest_type, file_type, code, name) values (1, 'c', 'text/x-csrc', 'Clang'), (1, 'cpp', 'text/x-c++src', 'C++'), (1, 'java', 'text/x-java', 'Java'), (1, 'py', 'text/x-python', 'Python3'), (1, 'js', 'text/javascript', 'Javascript'), (1, 'cs', 'text/x-csharp', 'C#');
+insert into lang (contest_type, file_type, code, name) values (1, 'cpp', 'text/x-c++src', 'C++'), (1, 'java', 'text/x-java', 'Java'), (1, 'py', 'text/x-python', 'Python3'), (1, 'js', 'text/javascript', 'Javascript'), (1, 'cs', 'text/x-csharp', 'C#');
 
 drop table if exists attempts;
 create table attempts (

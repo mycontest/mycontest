@@ -3,7 +3,7 @@
     <head>
         <%- include("../basic/head") %>
         <style>
-            .container {
+            .mycontainer {
                 margin-top: 50px;
             }
             .form-signin {
@@ -18,8 +18,10 @@
     </head>
 
     <body>
+        <% if(data.user_id) { %> <%- include("../basic/topnav.ejs") %> <% } else { %> <%- include("../basic/stopnav.ejs") %> <% } %>
+
         <main class="form-signin">
-            <div class="container">
+            <div class="container mycontainer">
                 <div class="card">
                     <div class="card-body">
                         <form method="post">

@@ -4,7 +4,7 @@
         <%- include("../basic/head") %>
 
         <style>
-            .container {
+            .mycontainer {
                 margin-top: 50px;
             }
 
@@ -22,8 +22,10 @@
     </head>
 
     <body>
+        <% if(data.user_id) { %> <%- include("../basic/topnav.ejs") %> <% } else { %> <%- include("../basic/stopnav.ejs") %> <% } %>
+
         <main class="form-signin">
-            <div class="container">
+            <div class="container mycontainer">
                 <div class="card">
                     <div class="card-body">
                         <form method="post">
@@ -43,7 +45,7 @@
                             <% } %> <% if(scc) { %>
                             <div class="alert alert-success" role="alert"><%= scc %></div>
                             <% } %>
-                            <button type="submit" class="btn btn-primary">Kirish</button>
+                            <button type="submit" class="btn btn-primary">Tizimga kirish</button>
                             <hr />
                             <a href="/sign-up">Men hali ro'yxatdan o'tmaganman!</a>
                         </form>
