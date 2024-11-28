@@ -1,7 +1,7 @@
 const { execute } = require('uzdev/mysql');
 
 let testing = async (task_id, lang, aid, code, codetask, ctime, cmemory) => {
-   console.log(task_id, lang, aid, code, codetask, ctime, cmemory)
+   // console.log(task_id, lang, aid, code, codetask, ctime, cmemory)
    let errorRuntime = async (data) => {
       console.log(`Error message #8: ${JSON.stringify(data)}`)
       errorWrite(data);
@@ -49,7 +49,6 @@ let testing = async (task_id, lang, aid, code, codetask, ctime, cmemory) => {
             let ocur = fs.readFileSync(path.join(__dirname, `../testcase/${codetask}/output${i}.txt`), { encoding: "utf8" })
             let oout = fs.readFileSync(path.join(__dirname, `../compiler/tmp/${folder}/output.txt`), { encoding: "utf8" })
             if (data.error) errorWrite(data);
-            console.log(await trimdata(ocur), await trimdata(oout))
             if (data.error) return await execute("UPDATE attempts SET event=?, time=InlineMaxFun(time,?), memory=InlineMaxFun(memory,?), eventnum=2 WHERE id=?", [data.message, data.time, data.memory, aid])
             if (await trimdata(ocur) != await trimdata(oout))
                return await execute("UPDATE attempts SET event=?, time=InlineMaxFun(time,?), memory=InlineMaxFun(memory,?), eventnum=2 WHERE id=?", ["Wrong answer #" + (i + 1), data.time, data.memory, aid])
