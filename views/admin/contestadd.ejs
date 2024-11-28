@@ -4,11 +4,7 @@
         <%- include("../basic/head.ejs") %> <%- include("./key.ejs") %>
         <script>
             function dataVaulue(e, s) {
-                let now = new Date(
-                    new Date(e).toLocaleString("en-US", {
-                        timeZone: "Etc/Universal",
-                    })
-                );
+                let now = new Date(new Date(e).toLocaleString("en-US", { timeZone: "Etc/Universal" }));
                 console.log(now);
                 let year = now.getFullYear();
                 let month = now.getMonth() + 1;

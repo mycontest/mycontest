@@ -4,7 +4,7 @@ git pull
 docker build -t my-contest .
 docker stop my-contest-container
 docker rm my-contest-container
-docker run -d --cpus="3.0" --memory="3gb" --memory-swap="3gb" -p 7001:7001 --name my-contest-container my-contest
+docker run -d --cpus="4.0" --memory="5gb" --memory-swap="5gb" -p 7001:7001 --name my-contest-container my-contest
 
 docker exec -it my-pm2-container pm2 list
 

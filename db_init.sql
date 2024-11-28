@@ -92,14 +92,12 @@ insert into contest (name, type, content, start_date, end_date) values ('Test #0
         </ul>
     </section>', now(), now() + 100);-- Example data for tasks table
 insert into tasks (name, sub_text, inp_text, out_text, time, memory, test_count, all_test, code, comment_text) values
-('Task 1: Solve Linear Equation',  'Solve the linear equation ax + b = 0 for x.', 'Input: Two integers a and b (a != 0).',
+('Solve Linear Equation',  'Solve the linear equation ax + b = 0 for x.', 'Input: Two integers a and b (a != 0).',
 'Output: The value of x.', 1000, 64, 2, 2, '', 'Solve the equation efficiently and correctly.'),
 
-('Task 2: Find the Largest Number', 'Find the largest number in a given list of integers.', 'Input: A list of integers.', 'Output: The largest integer in the list.', 1000, 128, 2, 2, '', 'Make sure to handle both positive and negative integers.'),
+('Find the Largest Number', 'Find the largest number in a given list of integers.', 'Input: A list of integers.', 'Output: The largest integer in the list.', 1000, 128, 2, 2, '', 'Make sure to handle both positive and negative integers.')
 
-('Task 3: Fibonacci Sequence','Generate the nth Fibonacci number.', 'Input: An integer n.', 'Output: The nth Fibonacci number.', 1000, 64, 2, 2, '', 'Implement this function with optimal performance.');
-
-insert into contest_tasks (contest_id, task_id) values (1, 1), (1, 2), (1, 3);
+insert into contest_tasks (contest_id, task_id) values (1, 1), (1, 2);
 
 drop table if exists lang;
 create table lang (
