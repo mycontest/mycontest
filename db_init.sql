@@ -43,7 +43,7 @@ drop table if exists contest;
 create table contest (
     contest_id int auto_increment primary key,
     name varchar(255) not null,
-    type int,
+    type int default 1,
     content text,
     start_date datetime not null,
     end_date datetime not null,
