@@ -49,7 +49,7 @@ app.get("/attempts", async (req, res) => {
       res.render("pages/attempts", { data: req.data, pageInfo: "attempts", contest: req.data.contest });
 });
 
-app.get("/attempts/api", async (req, res) => {
+app.get("/attempts/all", async (req, res) => {
       try {
             let page = Math.max(0, req.query.page || 0);
             if (req.data.contest.eventnum == 0 && !(req.data?.role == "admin")) return res.redirect("/contest/" + req.data.contest_id);
@@ -61,7 +61,7 @@ app.get("/attempts/api", async (req, res) => {
       }
 });
 
-app.get("/attempts/v2api", [authStop], async (req, res) => {
+app.get("/attempts/one", [authStop], async (req, res) => {
       try {
             let page = Math.max(0, req.query.page || 0);
             if (req.data.contest.eventnum == 0 && !(req.data?.role == "admin")) return res.redirect("/contest/" + req.data.contest_id);
@@ -81,23 +81,23 @@ app.get("/retings", async (req, res) => {
 app.get("/retings/api", async (req, res) => {
       try {
             if (req.data.contest.eventnum == 0 && !(req.data?.role == "admin")) return res.redirect("/contest/" + req.data.contest_id);
-            let count = (await execute(`SELECT count(*) as n FROM vw_tasks WHERE contest_id = ?`, [req.data.contest_id]))[0].n;
+            let count = (await execute(`SELECT count(*) as count FROM vw_tasks WHERE contest_id = ?`, [req.data.contest_id], 1)).count;
             let tasks = await execute(`SELECT name, task_id FROM vw_tasks WHERE contest_id = ?`, [req.data.contest_id]);
-            let data = await execute(getQuery(tasks), [req.data.contest.start_date, req.data.contest_id]);
-            res.json({ data, count, user_id: req.data.user_id });
+            let ratings = (await execute(getQuery(tasks), [req.data.contest.start_date, req.data.contest_id]))[1];
+            res.json({ ratings, count, user_id: req.data.user_id });
       } catch (err) {
             return res.redirect(`/contest/${req.data.contest_id}?err=${err.message}`);
       }
 });
 
-app.get("/mycode", [authStop], async (req, res) => {
+app.get("/code", [authStop], async (req, res) => {
       try {
             let tasks = await execute(`SELECT name, task_id FROM vw_tasks WHERE contest_id =? `, [req.data.contest_id]);
             let iscode = await execute("SELECT * FROM attempts WHERE user_id = ? and id=?", [req.data.user_id, req.query.id]);
             if (iscode.length != 0) {
                   let p = path.join(__dirname, "../compiler/tmp/" + parseInt(req.query.id) + "v/Main." + (await langType(iscode[0].lang)));
                   let e = path.join(__dirname, "../compiler/tmp/" + parseInt(req.query.id) + "v/err.txt");
-                  return res.render("pages/mycode", { data: req.data, pageInfo: "mycode", tasks, contest: req.data.contest, sid: req.query.id, code: readCode(p), err: readCode(e) });
+                  return res.render("pages/code", { data: req.data, pageInfo: "code", tasks, contest: req.data.contest, sid: req.query.id, code: readCode(p), err: readCode(e) });
             }
             res.redirect("/about");
       } catch (err) {

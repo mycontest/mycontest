@@ -5,7 +5,7 @@
     </head>
 
     <body>
-        <% if(data.user_id) { %> <%- include("../basic/topnav.ejs") %> <% } else { %> <%- include("../basic/stopnav.ejs") %> <% } %>
+        <%- include(data.user_id ? "../basic/topnav.ejs" : "../basic/stopnav.ejs") %>
 
         <div class="container">
             <div class="row">
@@ -16,7 +16,7 @@
                             <b>Natijalar</b>
                         </div>
                         <div class="card-body">
-                            <table class="table table-bordered">
+                            <table class="table table-sm table-bordered">
                                 <thead id="title"></thead>
                                 <tbody id="data"></tbody>
                             </table>
@@ -25,32 +25,51 @@
                 </div>
             </div>
         </div>
+
         <%- include("../basic/footer.ejs") %>
+
         <script>
-            let getRetingsMe = () => {
-                $.get("./retings/api", (data, status) => {
-                    let tb = "";
-                    let ti = "<tr><th>#</th><th>Username</th>";
-                    for (let i = 1; i <= data.count; i++) ti = ti + `<th>#${i}</th>`;
-                    ti += "<th class='len-sm'>Soni</th><th class='len-sm'>Jarima</th><tr>";
-                    for (let x of data.data) {
-                        tb = tb + ` <tr><td class="len-sm">${x.num}</td><td class="len-sm-100"><span class="bg-username">${x.username}</span></td>`;
-                        for (let i = 1; i <= data.count; i++)
-                            tb += `<td style="text-align:center;${x["isAccept" + i] == 1 ? "color: #00bc8c!important;background: #e8f5e9;" : x["count" + i] > 0 ? "color: #e3342f!important;background: #ffb8b8;" : ""}"> ${x["count" + i] > 0 ? "+" + x["count" + i] : "-"}</td>`;
-                        tb += `<td>${x.accept}</td><td>${x.error}</td></tr>`;
+            // Function to update table data
+            const getRatingsMe = () => {
+                $.get("./retings/api", (data) => {
+                    const title = document.getElementById("title");
+                    const table_data = document.getElementById("data");
+
+                    let table_headers = "<tr><th>#</th><th>Username</th>";
+                    for (let i = 1; i <= data.count; i++) {
+                        table_headers += `<th>#${i}</th>`;
                     }
-                    if (data.data == null) {
-                        document.getElementById("title").innerHTML = "Tez";
-                    }
-                    document.getElementById("title").innerHTML = ti;
-                    document.getElementById("data").innerHTML = tb;
+                    table_headers += "<th >Soni</th><th >Jarima</th></tr>";
+                    title.innerHTML = table_headers;
+
+                    let table_rows = data.ratings
+                        .map((x) => {
+                            let row = `<tr>
+                            <td >${x.num}</td>
+                            <td >
+                                <span class="bg-username">${x.full_name}(${x.username})</span>
+                            </td>`;
+
+                            for (let i = 1; i <= data.count; i++) {
+                                const is_accepted = x["is_accept" + i] === 1;
+                                const count = x["count" + i];
+                                const accept_time = x["accept_time" + i];
+                                const color_style = is_accepted ? "color: #00bc8c!important; background: #e8f5e9;" : count > 0 ? "color: #e3342f!important; background: #ffb8b8;" : "";
+                                row += `<td style="text-align:center; ${color_style}"> ${is_accepted ? `+${accept_time}` : `-${count > 0 ? count : ""}`}</td>`;
+                            }
+
+                            row += `<td>${x.accept}</td><td>${x.penalty}</td></tr>`;
+                            return row;
+                        })
+                        .join("");
+
+                    table_data.innerHTML = table_rows || "<tr><td colspan='100%'>Tez</td></tr>";
                 });
             };
 
-            getRetingsMe();
-            setInterval(() => {
-                getRetingsMe();
-            }, 5000);
+            // Initial call and interval refresh
+            getRatingsMe();
+            setInterval(getRatingsMe, 5000);
         </script>
     </body>
 </html>

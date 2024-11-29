@@ -139,8 +139,8 @@ select
     c.content,
     count(ct.task_id) as task_count,
     CONCAT(
-        FLOOR(TIMESTAMPDIFF(SECOND, c.start_date, c.end_date) / 3600), ':',
-        LPAD(MOD(TIMESTAMPDIFF(SECOND, c.start_date, c.end_date) / 60, 60), 2, '0')
+        LPAD(FLOOR(TIMESTAMPDIFF(SECOND, c.start_date, c.end_date) / 3600), 2, '0'), ':',
+        LPAD(MOD(FLOOR(TIMESTAMPDIFF(SECOND, c.start_date, c.end_date) / 60), 60), 2, '0')
     ) AS during_time,
     case
         when now() > c.end_date then 'Tugagan'

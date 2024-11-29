@@ -119,7 +119,7 @@
                             <b>Urinishlar</b>
                         </div>
                         <div class="card-body">
-                            <table class="table table-bordered">
+                            <table class="table table-sm table-bordered">
                                 <thead>
                                     <tr>
                                         <th scope="col">Id</th>
@@ -133,12 +133,12 @@
                                 <tbody id="data"></tbody>
                             </table>
                         </div>
-                        <div style="display: flex; justify-content: end">
-                            <button class="btn me-2" onclick="setPage(-1)">
+                        <div style="display: flex; justify-content: end; margin-bottom: 10px">
+                            <button class="btn btn-sm me-2" onclick="setPage(-1)">
                                 <span aria-hidden="true">&laquo;</span>
                                 Keyingi
                             </button>
-                            <button class="btn me-2" onclick="setPage(+1)">
+                            <button class="btn btn-sm me-2" onclick="setPage(+1)">
                                 Oldingi
                                 <span aria-hidden="true">&raquo;</span>
                             </button>
@@ -152,9 +152,9 @@
                         <div class="card-header">
                             <b>Masalalar</b>
                         </div>
-                        <ul class="list-group list-group-numbered">
+                        <ul class="list-group list-group-flush">
                             <% for(var i=0;i< tasks.length;i++) { %>
-                            <a href="/contest/<%= contest.contest_id %>/tasks?task_id=<%= tasks[i].task_id %>" class="li-list list-group-item list-group-item-action <% if (task.task_id === tasks[i].task_id) { %> active <% } %>">
+                            <a href="/contest/<%= contest.contest_id %>/tasks?task_id=<%= tasks[i].task_id %>" class="list-group-item list-group-item-action <% if (task.task_id === tasks[i].task_id) { %> active <% } %>">
                                 <% if(tasks[i].status==1) { %>
                                 <i class="fa fa-check" aria-hidden="true" style="font-size: 15px; color: seagreen"></i>
                                 <% } else if(tasks[i].status==2) { %>
@@ -177,7 +177,7 @@
         <script src="/codemirror/go.js"></script>
         <script src="/codemirror/python.js"></script>
         <script src="/codemirror/sql.js"></script>
-        <script src="/js/ccode.js"></script>
+        <script src="/javascript/main.editor.js"></script>
     </body>
 </html>
 
@@ -191,5 +191,5 @@
         window.open("/compiler");
     };
 </script>
-<script src="/js/api2.js"></script>
+<script src="/javascript/main.api_one.js"></script>
 <% } %>

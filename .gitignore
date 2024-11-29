@@ -1,5 +1,6 @@
-/node_modules
 /compiler/tmp
+/node_modules
+/session
 
 .env
 .DS_Store

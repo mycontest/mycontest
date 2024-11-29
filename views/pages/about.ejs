@@ -17,7 +17,7 @@
                             <b>Musobaqalar</b>
                         </div>
                         <div class="card-body">
-                            <table class="table table-bordered">
+                            <table class="table table-sm table-bordered">
                                 <thead>
                                     <tr>
                                         <th>#</th>
@@ -32,13 +32,13 @@
                                 <tbody>
                                     <% for(var i=0;i< arr.length;i++) { %>
                                     <tr>
-                                        <th><%= i+1 %></th>
+                                        <td><%= i+1 %></td>
                                         <td><b><%= arr[i].name %></b></td>
                                         <td><%= arr[i].start_date %></td>
                                         <td><%= arr[i].end_date %></td>
                                         <td><%= arr[i].during_time %>+</td>
                                         <td>
-                                            <span class="badge bg-<% if (arr[i].eventnum == '1') { %>primary <% } else if (arr[i].eventnum == '0') { %>success <% } else { %>danger <% } %>"><%= arr[i].event %></span>
+                                            <span class="badge text-<% if (arr[i].eventnum == '1') { %> primary <% } else if (arr[i].eventnum == '0') { %>success <% } else { %>danger <% } %>"><%= arr[i].event %></span>
                                         </td>
                                         <td><a href="/contest/<%= arr[i].contest_id %>" class="btn btn-primary btn-sm">Kirish</a></td>
                                     </tr>

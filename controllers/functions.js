@@ -32,30 +32,35 @@ exports.readExample = async (task) => {
 exports.getQuery = (tasks) => {
     let str = ""
     for (let i = 0; i < tasks.length; i++) {
-        str += `COALESCE(MAX(CASE WHEN task_id = ${tasks[i].task_id} THEN count END),0) count${i + 1}, COALESCE(MAX(CASE WHEN task_id = ${tasks[i].task_id} THEN accept END),0)  isAccept${i + 1},`
+        str += `COALESCE(MAX(CASE WHEN task_id = ${tasks[i].task_id} THEN count END),0) count${i + 1}, COALESCE(MAX(CASE WHEN task_id = ${tasks[i].task_id} THEN accept END),0) is_accept${i + 1}, COALESCE(MAX(CASE WHEN task_id = ${tasks[i].task_id} THEN accept_time END),0) accept_time${i + 1},`
     }
 
-    let ans = `
-    with cte as (
-        select user_id,
-               task_id,
-               count(*) as count ,
-               max(IF(eventnum = 1, 1, 0)) as accept,
-               sum(IF(eventnum > 1, 1, 0)) * 10 + COALESCE(TIMESTAMPDIFF(MINUTE,?, MIN(IF(eventnum=1, created_dt,null))),0) as error
-        from attempts
-        where contest_id = ?
-        group by user_id, task_id
-    )
-     SELECT         users.username,
-                    users.full_name,
-                    ${str}
-                    COALESCE(SUM(error),0)as error,
-                    COALESCE(SUM(accept),0) as accept,
-                    dense_rank() over (ORDER BY COALESCE(SUM(accept),0) desc,COALESCE(SUM(error),0)) as num
-    FROM cte INNER JOIN  users ON cte.user_id =  users.user_id and users.role<>'admin'
-    GROUP BY users.username,users.full_name 
-    ORDER BY accept desc, error`
-    return ans;
+    return `
+        set @contest_time = ?;
+
+        with cte as (
+            select user_id,
+                task_id,
+                count(*) as count ,
+                max(if(eventnum = 1, 1, 0)) as accept,
+                min(CONCAT(LPAD(FLOOR(TIMESTAMPDIFF(SECOND, @contest_time, created_dt) / 3600), 2, '0'), ':', LPAD(MOD(FLOOR(TIMESTAMPDIFF(SECOND, @contest_time, created_dt) / 60), 60), 2, '0')) ) as accept_time,
+                sum(if(eventnum > 1, 1, 0)) * 10 + COALESCE(TIMESTAMPDIFF(MINUTE, @contest_time, min(if(eventnum = 1, created_dt, null))), 0) as penalty
+            from attempts
+            where contest_id = ?
+            group by user_id, task_id
+        )
+
+        SELECT
+            users.username,
+            users.full_name,
+            ${str}
+            COALESCE(SUM(if(accept=1, penalty, 0)), 0) as penalty,
+            COALESCE(SUM(accept), 0) as accept,
+            dense_rank() over (ORDER BY COALESCE(SUM(accept),0) desc, COALESCE(SUM(if(accept=1, penalty, 0)),0)) as num
+        FROM cte
+        INNER JOIN users ON cte.user_id = users.user_id and users.role <> 'admin'
+        GROUP BY users.username, users.full_name
+        ORDER BY accept desc, penalty`;
 }
 
 

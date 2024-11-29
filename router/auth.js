@@ -13,14 +13,10 @@ router.get("/sign-in", fnCatch(async (req, res) => {
 
 router.post("/sign-in", fnCatch(async (req, res) => {
   let { username, password } = req.body
-  const recaptchaResponse = req.body['g-recaptcha-response']
-  googleRecaptcha.verify({ response: recaptchaResponse }, async (error) => {
-    if (error) return res.redirect("/sign-in?err=Captcha noto'g'ri.")
-    let user = await execute("SELECT * FROM users WHERE username = ? and password = md5(?)", [username, password + ":" + process.env.SECRET], 1);
-    if (!user || user.length == 0) return res.redirect("/sign-in?err=Noto'g'ri foydalanuvchi nomi yoki parol")
-    req.session.data = user
-    res.redirect("/about")
-  })
+  let user = await execute("SELECT * FROM users WHERE username = ? and password = md5(?)", [username, password + ":" + process.env.SECRET], 1);
+  if (!user || user.length == 0) return res.redirect("/sign-in?err=Noto'g'ri foydalanuvchi nomi yoki parol")
+  req.session.data = user
+  res.redirect("/about")
 }))
 
 router.get("/sign-up", fnCatch(async (req, res) => {

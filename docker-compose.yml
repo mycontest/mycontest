@@ -7,3 +7,11 @@ services:
       - "7001:7001"
     volumes:
       - ${PWD}:/root/mycontest
+    deploy:
+      resources:
+        limits:
+          cpus: "4.0"         # Limit to 4 CPUs
+          memory: "5GB"       # Limit to 5GB of memory
+        reservations:
+          cpus: "2.0"         # Reserve 2 CPUs (optional)
+          memory: "3GB"       # Reserve 3GB of memory (optional)
