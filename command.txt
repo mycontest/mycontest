@@ -1,3 +1,12 @@
+
+# new 
+
+docker build -t mycontest_images .
+docker-compose up
+
+
+# trash
+
 docker build -t my-contest .
 
 git pull

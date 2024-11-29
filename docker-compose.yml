@@ -1,0 +1,9 @@
+version: "3.9"
+services:
+  app:
+    image: mycontest_images
+    container_name: mycontest_container
+    ports:
+      - "7001:7001"
+    volumes:
+      - ${PWD}:/root/mycontest
