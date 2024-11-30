@@ -10,7 +10,6 @@
         <div class="container">
             <div class="row">
                 <%- include("../basic/sidebar.ejs") %>
-
                 <div class="col">
                     <div class="card">
                         <div class="card-header">
@@ -32,7 +31,7 @@
                                 <tbody>
                                     <% for(var i=0;i< arr.length;i++) { %>
                                     <tr>
-                                        <td><%= i+1 %></td>
+                                        <td><%= arr[i].contest_id %></td>
                                         <td><b><%= arr[i].name %></b></td>
                                         <td><%= arr[i].start_date %></td>
                                         <td><%= arr[i].end_date %></td>

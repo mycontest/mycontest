@@ -2,12 +2,12 @@
     <div class="container">
         <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
             <a href="/about" class="d-flex align-items-center justify-content-center text-dark text-decoration-none me-lg-auto">
-                <img src="/logo/logo_main.png" alt="MYCONTEST" class="me-2" style="width: 20px" />
+                <img src="/logo/favicon.ico" alt="MYCONTEST" class="me-2" style="width: 20px" />
                 <h5 class="m-0">mycontest.dev</h5>
             </a>
 
             <% if(data.user_id) { %>
-            <div class="dropdown">
+            <div class="h-10 dropdown dropdown-sm text-end">
                 <p class="mb-0 dropdown-toggle" type="button" id="triggerId" data-bs-toggle="dropdown"><%= data.full_name %></p>
                 <div class="dropdown-menu" aria-labelledby="triggerId">
                     <a class="dropdown-item disabled" href="#">Settings</a>
@@ -19,7 +19,7 @@
                 </div>
             </div>
             <% } else { %>
-            <div class="dropdown text-end">
+            <div class="h-10 text-end">
                 <a href="/sign-in" type="button" class="btn btn-primary btn-sm">Tizimga kirish</a>
                 <a href="/sign-up" type="button" class="btn btn-primary btn-sm">Ro'yhatdan o'tish</a>
             </div>

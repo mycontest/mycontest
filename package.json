@@ -21,7 +21,6 @@
         "cookie-parser": "^1.4.6",
         "ejs": "^3.1.6",
         "express": "^4.17.1",
-        "express-file-manager": "^1.1.0",
         "express-fileupload": "^1.3.1",
         "express-session": "^1.17.2",
         "generate-password": "^1.7.0",
@@ -29,10 +28,7 @@
         "google-recaptcha": "^1.1.0",
         "joi": "^17.6.0",
         "md5": "^2.3.0",
-        "mysql2": "^2.3.0",
         "node-telegram-bot-api": "^0.56.0",
-        "nodemailer": "^6.7.3",
-        "pidusage": "^3.0.0",
         "session-file-store": "^1.5.0",
         "uid-generator": "^2.0.0",
         "uzdev": "^1.6.1"

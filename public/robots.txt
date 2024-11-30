@@ -1,0 +1,4 @@
+User-Agent: *
+Allow: /
+
+Sitemap: https://mycontest.dev/sitemap.xml

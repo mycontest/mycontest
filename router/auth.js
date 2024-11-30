@@ -2,7 +2,7 @@ const express = require("express")
 const router = express.Router()
 const { execute } = require("uzdev/mysql");
 const { fnCatch } = require("uzdev/function");
-const { signSchema } = require("../module/schema")
+const { signSchema } = require("../controllers/schema")
 
 const GoogleRecaptcha = require('google-recaptcha');
 const googleRecaptcha = new GoogleRecaptcha({ secret: process.env.GOOGLE_SECRET })

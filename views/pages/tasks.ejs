@@ -166,11 +166,6 @@
 <script>
     let taskid = "<%= task.task_id %>";
     let contestid = "<%= contest.contest_id %>";
-    let setInput = (e) => {
-        console.log(e);
-        localStorage.setItem(`cinput`, e);
-        window.open("/compiler");
-    };
 </script>
 <script src="/javascript/main.api_one.js"></script>
 <% } %>
