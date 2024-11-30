@@ -12,10 +12,16 @@
     </div>
     <div class="card mt-2">
         <ul class="list-group list-group-flush">
-            <li class="list-group-item list-group-item-action">Boshlash: <%= contest.start_date %></li>
-            <li class="list-group-item list-group-item-action">Tugash: <%= contest.end_date %></li>
             <li class="list-group-item list-group-item-action">
-                Holat:
+                <b>Boshlash:</b>
+                <span><%= contest.start_date %></span>
+            </li>
+            <li class="list-group-item list-group-item-action">
+                <b>Tugash:</b>
+                <span><%= contest.end_date %></span>
+            </li>
+            <li class="list-group-item list-group-item-action">
+                <b>Holat:</b>
                 <span class="badge text-<% if (contest.eventnum == '1') { %>primary <% } else if (contest.eventnum == '0') { %>success <% } else { %>danger <% } %>"><%= contest.event %></span>
             </li>
         </ul>
