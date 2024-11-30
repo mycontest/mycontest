@@ -1,7 +1,6 @@
 const { execute } = require('uzdev/mysql');
 
 let testing = async (task_id, lang, aid, code, codetask, ctime, cmemory) => {
-   // console.log(task_id, lang, aid, code, codetask, ctime, cmemory)
    let errorRuntime = async (data) => {
       console.log(`Error message #8: ${JSON.stringify(data)}`)
       errorWrite(data);
@@ -90,7 +89,6 @@ let testing = async (task_id, lang, aid, code, codetask, ctime, cmemory) => {
             if (lang == 'text/x-c++src') {
                if (i == 0) {
                   await cppRun(folder, async (data) => {
-                     //console.log(data)
                      if (data.error) return errorCompiler(data);
                      await cppCompiler(folder, ctime, cmemory, (data) => {
                         checkTest(data, i)
@@ -135,7 +133,6 @@ let testing = async (task_id, lang, aid, code, codetask, ctime, cmemory) => {
             if (lang == 'text/x-csharp') {
                if (i == 0) {
                   await monoRun(folder, async (data) => {
-                     // console.log(data)
                      if (data.error) return errorCompiler(data);
                      await monoCompiler(folder, ctime, cmemory, (data) => {
                         checkTest(data, i)

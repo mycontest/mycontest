@@ -56,7 +56,6 @@ app.get("/attempts/all", async (req, res) => {
             let data = await execute("SELECT * FROM vw_attempts WHERE contest_id = ? and role<>'admin' ORDER BY id desc LIMIT ?, 20", [req.data.contest_id, page * 20]);
             res.json(data);
       } catch (err) {
-            console.log(err);
             return res.json([]);
       }
 });
@@ -68,7 +67,6 @@ app.get("/attempts/one", [authStop], async (req, res) => {
             let data = await execute("SELECT * FROM vw_attempts WHERE contest_id = ? and task_id = ? and user_id = ? ORDER BY id desc LIMIT ?, 10", [req.data.contest_id, req.query.task_id, req.data.user_id, page * 10]);
             res.json(data);
       } catch (err) {
-            console.log(err);
             return res.json([]);
       }
 });

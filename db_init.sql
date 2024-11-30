@@ -33,7 +33,6 @@ create table tasks (
     memory int,
     test_count int,
     all_test int,
-    code varchar(255),
     comment_text text,
     updated_dt datetime default current_timestamp on update current_timestamp,
     created_dt datetime default current_timestamp
@@ -179,8 +178,6 @@ from attempts a
 left join users u on a.user_id = u.user_id ;
 
 select * from vw_attempts
-
-
 
 DELIMITER ;;
 CREATE DEFINER=`admin`@`%` FUNCTION `InlineMaxFun`(val1 int, val2 int) RETURNS int

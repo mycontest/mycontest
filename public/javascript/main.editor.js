@@ -14,7 +14,7 @@ Editor.on('change', (editor) => {
     let lang = localStorage.getItem('lang') || 'text/x-c++src';
     localStorage.setItem(`${taskid}_${lang}`, code)
   } catch {
-    console.log("I have error . Ooo no i am error :) fun.Editor.On")
+    console.log("Oops, something went wrong! It seems there's an error, code: Fun.Editor.On")
   }
 });
 
@@ -31,20 +31,9 @@ const selectLang = () => {
     Editor.setOption("mode", lang);
     Editor.setValue(localStorage.getItem(`${taskid}_${lang}`) || data[lang] || "")
   } catch {
-    console.log("I have error . Ooo no i am error :) fun.selectLang")
+    console.log("Oops, something went wrong! It seems there's an error, code: Fun.selectLang")
   }
 }
-
-const selectTheme = () => {
-  try {
-    const theme = document.getElementById("theme").value;
-    localStorage.setItem('theme', theme)
-    Editor.setOption("theme", theme);
-  } catch {
-    console.log("I have error . Ooo no i am error :) fun.selectLang")
-  }
-}
-
 
 let langSelectStart = () => {
   try {
@@ -53,16 +42,12 @@ let langSelectStart = () => {
     document.getElementById("lang").value = lang
     document.getElementById("theme").value = theme
   } catch {
-    console.log("I have error . Ooo no i am error :) fun.langSelectStart")
+    console.log("Oops, something went wrong! It seems there's an error, code: Fun.langSelectStart")
   }
 }
 
 
-$(document).ready(() => {
-  console.log("Start:)");
-  langSelectStart()
-})
-
+$(document).ready(() => { langSelectStart() })
 
 let data = {
   'text/x-mysql': "select 1;",

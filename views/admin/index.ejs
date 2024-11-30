@@ -5,15 +5,25 @@
     </head>
 
     <body>
-        <div class="container">
-            <%- include("../basic/navbar.ejs") %>
+        <%- include("../basic/navbar.ejs") %>
 
+        <div class="container">
             <div class="row">
-                <%- include("../abasic/cnav.ejs") %>
+                <%- include("./sidebar.ejs") %>
                 <div class="col">
                     <div class="card">
-                        <div class="card-header">Admin panel</div>
-                        <div class="card-body">Savolar qo'shish test qilish , Yangi savol qo'shish , contest yaratish</div>
+                        <div class="card-header">
+                            <b>Admin panel</b>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>Savol qo'shish</li>
+                                <li>Test sinash</li>
+                                <li>Yangi savol qo'shish</li>
+                                <li>Tanlov yaratish</li>
+                            </ul>
+                            <%- include("../basic/alert") %>
+                        </div>
                     </div>
                 </div>
             </div>

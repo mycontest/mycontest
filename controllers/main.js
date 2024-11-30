@@ -1,10 +1,10 @@
 const fs = require("fs");
+const path = require('path');
 
 exports.readCode = (code_path) => {
     try {
         return fs.readFileSync(code_path, { encoding: "utf-8" }) || 0;
     } catch (err) {
-        console.log(err.message)
         return "Not found!";
     }
 };
@@ -22,6 +22,33 @@ exports.readExample = async (task) => {
         console.log("There is an error in some read file!")
     }
     return arr;
+}
+
+exports.getFolderInfo = (folder_path) => {
+    try {
+        files = fs.readdirSync(folder_path, { withFileTypes: true })
+
+        const file_details = files.map((file) => {
+            const file_path = path.join(folder_path, file.name);
+            const stats = fs.statSync(file_path);
+
+            const last_modified = stats.mtime.toString().split("T")[0];
+            const size_in_kb = (stats.size / 1024).toFixed(2);
+
+            return {
+                name: file.name,
+                type: file.isDirectory() ? 'Directory' : 'File',
+                size: size_in_kb,
+                last_modified: last_modified,
+            };
+        });
+
+        return file_details.sort((a, b) => {
+            return a.name.localeCompare(b.name);
+        });
+    } catch (err) {
+        return [];
+    }
 }
 
 exports.getQuery = (tasks) => {
