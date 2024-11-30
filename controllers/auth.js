@@ -3,6 +3,11 @@ const { fnCatch } = require("uzdev/function");
 
 exports.authCheck = fnCatch(async (req, res, next) => {
     req.data = req.session.data || {}
+    req.cilentIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 0;
+
+    req.data.error = req.query?.error || ""
+    req.data.success = req.query?.success || ""
+
     return next();
 })
 
@@ -21,8 +26,8 @@ exports.authAdmin = fnCatch(async (req, res, next) => {
 
 exports.authContest = fnCatch(async (req, res, next) => {
     req.data.contest_id = req.params.id;
-    let contest = await execute(`SELECT  * FROM vw_contest WHERE contest_id = ?`, [req.data.contest_id])
-    if (contest.length == 0) return res.redirect("/about")
-    req.data.contest = contest[0];
+    let contest = await execute(`SELECT * FROM vw_contest WHERE contest_id = ?`, [req.data.contest_id], 1)
+    if (!contest) return res.redirect("/about")
+    req.data.contest = contest;
     next();
 })

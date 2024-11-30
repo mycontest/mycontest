@@ -5,6 +5,8 @@
                 <img src="/logo/logo_main.png" alt="MYCONTEST" class="me-2" style="width: 20px" />
                 <h5 class="m-0">mycontest.dev</h5>
             </a>
+
+            <% if(data.user_id) { %>
             <div class="dropdown">
                 <p class="mb-0 dropdown-toggle" type="button" id="triggerId" data-bs-toggle="dropdown"><%= data.full_name %></p>
                 <div class="dropdown-menu" aria-labelledby="triggerId">
@@ -16,6 +18,12 @@
                     </a>
                 </div>
             </div>
+            <% } else { %>
+            <div class="dropdown text-end">
+                <a href="/sign-in" type="button" class="btn btn-primary btn-sm">Tizimga kirish</a>
+                <a href="/sign-up" type="button" class="btn btn-primary btn-sm">Ro'yhatdan o'tish</a>
+            </div>
+            <% } %>
         </div>
     </div>
 </header>

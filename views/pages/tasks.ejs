@@ -1,23 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title><%- task.task_id %>. <%- task.name %> - <%- data.contest.name %></title>
+        <title><%- task.name %> - <%- data.contest.name %></title>
         <%- include("../basic/head.ejs") %>
         <link rel="stylesheet" href="/codemirror/codemirror.css" />
         <link rel="stylesheet" href="/codemirror/seti.css" />
-
-        <!-- <link rel="stylesheet" href="/codemirror/cobalt.css" />
-        <link rel="stylesheet" href="/codemirror/icecoder.css" />
-        <link rel="stylesheet" href="/codemirror/mbo.css" />
-        <link rel="stylesheet" href="/codemirror/show-hint.css" /> -->
     </head>
 
     <body>
-        <% if(data.user_id) { %> <%- include("../basic/topnav.ejs") %> <% } else { %> <%- include("../basic/stopnav.ejs") %> <% } %>
+        <%- include("../basic/navbar.ejs") %>
 
         <div class="container">
             <div class="row">
-                <%- include("../basic/cnav.ejs") %>
+                <%- include("../basic/contest.ejs") %>
                 <div class="col-7">
                     <div class="card col-12" aria-hidden="true">
                         <div class="card-header">

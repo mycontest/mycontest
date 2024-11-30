@@ -6,18 +6,17 @@
     </head>
 
     <body>
-        <% if(data.user_id) { %> <%- include("../basic/topnav.ejs") %> <% } else { %> <%- include("../basic/stopnav.ejs") %> <% } %>
+        <%- include("../basic/navbar.ejs") %>
 
         <div class="container">
             <div class="row">
-                <%- include("../basic/cnav.ejs") %>
+                <%- include("../basic/contest.ejs") %>
                 <div class="col">
                     <div class="card">
                         <div class="card-header">
                             <b><%- contest.name %></b>
                         </div>
                         <div class="card-body"><%- contest.content %></div>
-                        <div class="card-body ya-share2" data-curtain data-lang="uz" data-limit="3" data-services="telegram,linkedin,twitter,whatsapp,moimir,reddit"></div>
                     </div>
                 </div>
             </div>

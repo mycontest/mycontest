@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const { authStop } = require("../controllers/auth");
-const { readExample, readCode, getQuery, getTasksQuery } = require("../controllers/functions");
+const { readExample, readCode, getQuery, getTasksQuery } = require("../controllers/main");
 const { langName, langAll, langType, langIs } = require("../controllers/lang");
 const { execute } = require("uzdev/mysql");
 
@@ -21,7 +21,7 @@ app.get("/tasks", async (req, res) => {
 
             res.render("pages/tasks", { data: req.data, pageInfo: "tasks", contest, tasks, task, lang: await langAll(contest.type) });
       } catch (err) {
-            return res.redirect(`/contest/${req.data.contest_id}?err=${err.message}`);
+            return res.redirect(`/contest/${req.data.contest_id}?error=${err.message}`);
       }
 });
 
@@ -40,7 +40,7 @@ app.post("/tasks", [authStop], async (req, res) => {
 
             res.redirect(`/contest/${req.data.contest_id}/tasks?task_id=${task_id}#footer`);
       } catch (err) {
-            return res.redirect(`/contest/${req.data.contest_id}?err=${err.message}`);
+            return res.redirect(`/contest/${req.data.contest_id}?error=${err.message}`);
       }
 });
 
@@ -86,7 +86,7 @@ app.get("/retings/api", async (req, res) => {
             let ratings = (await execute(getQuery(tasks), [req.data.contest.start_date, req.data.contest_id]))[1];
             res.json({ ratings, count, user_id: req.data.user_id });
       } catch (err) {
-            return res.redirect(`/contest/${req.data.contest_id}?err=${err.message}`);
+            return res.redirect(`/contest/${req.data.contest_id}?error=${err.message}`);
       }
 });
 
@@ -101,7 +101,7 @@ app.get("/code", [authStop], async (req, res) => {
             }
             res.redirect("/about");
       } catch (err) {
-            return res.redirect(`/contest/${req.data.contest_id}?err=${err.message}`);
+            return res.redirect(`/contest/${req.data.contest_id}?error=${err.message}`);
       }
 });
 

@@ -4,7 +4,7 @@ const { execute } = require("uzdev/mysql")
 const router = express.Router()
 
 router.get(["/", "/about"], fnCatch(async (req, res) => {
-      let arr = await execute("SELECT * FROM vw_contest ORDER BY start_date asc")
+      let arr = await execute("SELECT * FROM vw_contest ORDER BY start_date desc LIMIT 100")
       res.render("pages/about", { data: req.data, pageInfo: "main", arr })
 }));
 

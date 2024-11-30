@@ -8,7 +8,7 @@
     </head>
 
     <body>
-        <% if(data.user_id) { %> <%- include("../basic/topnav.ejs") %> <% } else { %> <%- include("../basic/stopnav.ejs") %> <% } %>
+        <%- include("../basic/navbar.ejs") %>
 
         <main class="form-signin">
             <div class="container mycontainer">
@@ -23,11 +23,9 @@
                                 <label for="parol" class="form-label">Parol</label>
                                 <input type="password" name="password" class="form-control" id="parol" />
                             </div>
-                            <% if(err) { %>
-                            <div class="alert alert-danger" role="alert"><%= err %></div>
-                            <% } %> <% if(scc) { %>
-                            <div class="alert alert-success" role="alert"><%= scc %></div>
-                            <% } %>
+
+                            <%- include("../basic/alert") %>
+
                             <button type="submit" class="btn btn-primary">Tizimga kirish</button>
                             <hr />
                             <a href="/sign-up">Men hali ro'yxatdan o'tmaganman!</a>

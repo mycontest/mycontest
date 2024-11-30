@@ -6,11 +6,11 @@
     </head>
 
     <body>
-        <% if(data.user_id) { %> <%- include("../basic/topnav.ejs") %> <% } else { %> <%- include("../basic/stopnav.ejs") %> <% } %>
+        <%- include("../basic/navbar.ejs") %>
 
         <div class="container">
             <div class="row">
-                <%- include("../basic/sidenav.ejs") %>
+                <%- include("../basic/sidebar.ejs") %>
                 <div class="col">
                     <div class="card">
                         <div class="card-header">

@@ -157,7 +157,8 @@ from
 left join
     contest_tasks ct on c.contest_id = ct.contest_id
 group by
-    c.contest_id, c.name, c.start_date, c.end_date;
+    c.contest_id, c.name, c.start_date, c.end_date
+order by c.start_date desc, c.end_date desc;
 
 drop view if exists vw_tasks;
 create view vw_tasks as

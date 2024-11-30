@@ -1,10 +1,5 @@
 const fs = require("fs");
 
-exports.clientInfo = (req, res, next) => {
-    req.cilentIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 0;
-    next()
-}
-
 exports.readCode = (code_path) => {
     try {
         return fs.readFileSync(code_path, { encoding: "utf-8" }) || 0;

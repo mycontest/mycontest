@@ -1,13 +1,13 @@
 let error = (err, req, res, next) => {
     try {
-        return res.redirect(`/?err=Unexpected error, ${err?.message}!`);
+        return res.redirect(`/?error=Unexpected error, ${err?.message}!`);
     } catch (error) {
-        return res.redirect(`/?err=Json parse error!`);
+        return res.redirect(`/?error=Json parse error!`);
     }
 };
 
 let missed = (req, res, next) => {
-    res.redirect(`/?err=There is no such router!`);
+    res.redirect(`/?error=There is no such router!`);
 };
 
 module.exports = { error, missed };

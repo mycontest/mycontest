@@ -9,7 +9,7 @@
     </head>
 
     <body>
-        <% if(data.user_id) { %> <%- include("../basic/topnav.ejs") %> <% } else { %> <%- include("../basic/stopnav.ejs") %> <% } %>
+        <%- include("../basic/navbar.ejs") %>
 
         <main class="form-signin">
             <div class="container mycontainer">
@@ -33,10 +33,6 @@
                             <div class="form-group">
                                 <div class="mt-2 mb-2 g-recaptcha" data-sitekey="6LdHIYwqAAAAACCy53SAzSQkU0R500ixeV-7wga5"></div>
                             </div>
-
-                            <% if(err) { %>
-                            <div class="alert alert-danger" role="alert"><%= err %></div>
-                            <% } %>
                             <button type="submit" class="btn btn-primary">Ro'yxatdan o'tish</button>
                             <hr />
                             <a href="/sign-in">Ro'yxatdan o'tgan bo'lsangiz!</a>
