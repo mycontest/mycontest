@@ -83,7 +83,7 @@ insert into lang (group_id, file_type, code, name) values (1, 'cpp', 'text/x-c++
 
 drop table if exists attempts;
 create table attempts (
-  id int primary key auto_increment,
+  attempt_id int primary key auto_increment,
   contest_id int default '1',
   task_id int default null,
   user_id int default null,
