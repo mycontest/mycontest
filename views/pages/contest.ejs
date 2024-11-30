@@ -16,7 +16,11 @@
                         <div class="card-header">
                             <b><%- contest.name %></b>
                         </div>
-                        <div class="card-body"><%- contest.content %></div>
+                        <div class="card-body">
+                            <%- contest.content %>
+                            <br />
+                            <%- include("../basic/alert") %>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -2,9 +2,11 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const { authStop } = require("../controllers/auth");
+const { testing } = require("../controllers/testing");
 const { readExample, readCode, getQuery, getTasksQuery } = require("../controllers/main");
-const { langName, langAll, langType, langIs } = require("../controllers/lang");
+const { langType } = require("../controllers/lang");
 const { execute } = require("uzdev/mysql");
+
 
 app.get("/", async (req, res) => {
       res.render("pages/contest", { data: req.data, pageInfo: "main", contest: req.data.contest });
@@ -12,14 +14,19 @@ app.get("/", async (req, res) => {
 
 app.get("/tasks", async (req, res) => {
       try {
+            let { task_id } = req.query
             let contest = req.data.contest;
-            let [tasks, task] = await Promise.all([execute(getTasksQuery(), [req.data.user_id, req.data.contest_id]), execute(`SELECT * FROM vw_tasks WHERE contest_id=? and task_id = ?`, [req.data.contest_id, req.query.task_id || 0], 1)]);
 
-            if (!task) task = await execute(`SELECT * FROM vw_tasks WHERE contest_id = ? LIMIT 1`, [req.data.contest_id], 1);
-            if (contest.eventnum == 0 && !(req.data?.role == "admin")) return res.redirect("/contest/" + req.data.contest_id);
+            let [tasks, task, lang, row] = await Promise.all([
+                  execute(getTasksQuery(), [req.data.user_id, req.data.contest_id]),
+                  execute(`SELECT * FROM vw_tasks WHERE contest_id=? order by if(task_id = ?, 1, 0) desc`, [req.data.contest_id, task_id], 1),
+                  execute("SELECT * FROM lang WHERE group_id = (select group_id from vw_tasks order by if(task_id = ?, 1, 0) desc limit 1)", [task_id])
+            ]);
+
+            if (contest.eventnum == 0 && !(req.data?.role == "admin")) return res.redirect(`/contest/${req.data.contest_id}`);
             task.example = await readExample(task);
 
-            res.render("pages/tasks", { data: req.data, pageInfo: "tasks", contest, tasks, task, lang: await langAll(contest.type) });
+            res.render("pages/tasks", { data: req.data, pageInfo: "tasks", contest, tasks, task, lang });
       } catch (err) {
             return res.redirect(`/contest/${req.data.contest_id}?error=${err.message}`);
       }
@@ -27,19 +34,23 @@ app.get("/tasks", async (req, res) => {
 
 app.post("/tasks", [authStop], async (req, res) => {
       try {
-            const { task_id, lang, code } = req.body;
+            const { task_id, lang_code, code } = req.body;
             let contest = req.data.contest;
-            let task = await execute(`SELECT * FROM vw_tasks WHERE contest_id = ? and task_id = ? `, [req.data.contest_id, task_id]);
 
-            if (!(await langIs(contest.type, lang))) return res.redirect("/contest/" + req.data.contest_id);
-            if ((contest.eventnum != 1 || task.length == 0) && !(req.data?.role == "admin")) return res.redirect("/contest/" + req.data.contest_id);
+            let [task, lang] = await Promise.all([
+                  execute(`SELECT * FROM vw_tasks WHERE contest_id = ? and task_id = ? `, [req.data.contest_id, task_id], 1),
+                  execute("SELECT * FROM lang WHERE group_id = (select group_id from vw_tasks where task_id = ?) and code = ?", [task_id, lang_code], 1)
+            ]);
 
-            const testing = require("../controllers/testing");
-            let ins = await execute("INSERT INTO attempts (task_id, user_id, lang, contest_id) values (?,?,?,?)", [task_id, req.data.user_id, await langName(lang), req.data.contest_id]);
-            testing(task_id, lang, ins.insertId, code, task[0].task_id, task[0].time, task[0].memory);
+            if (!lang) return res.redirect(`/contest/${contest.contest_id}?error=Dasturlash tili tanlanmagan!`);
+            if ((contest.eventnum != 1 || !task) && !(req.data?.role == "admin")) return res.redirect(`/contest/${req.data.contest_id}`);
+
+            let ins = await execute("INSERT INTO attempts (task_id, user_id, lang, contest_id) values (?,?,?,?)", [task_id, req.data.user_id, lang.name, req.data.contest_id]);
+            testing(task_id, lang_code, ins.insertId, code, task.time, task.memory);
 
             res.redirect(`/contest/${req.data.contest_id}/tasks?task_id=${task_id}#footer`);
       } catch (err) {
+            console.log(err.message)
             return res.redirect(`/contest/${req.data.contest_id}?error=${err.message}`);
       }
 });

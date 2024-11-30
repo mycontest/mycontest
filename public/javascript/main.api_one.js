@@ -14,7 +14,7 @@ const renderTableRows = (data) => {
   return data.map(x => `
     <tr>
       <td scope="row">
-        <a href="/contest/${contestid}/code?id=${x.id}" target="_blank">${x.id} </a>
+        <a href="/contest/${contest_id}/code?id=${x.id}" target="_blank">${x.id} </a>
       </td>
       <td>
         <a href="./tasks?task_id=${x.task_id}">${len4(x.task_id)}</a>
@@ -31,7 +31,7 @@ const renderTableRows = (data) => {
 
 // Fetch attempts and update the table
 const getAttemptsMe = () => {
-  $.get(`/contest/${contestid}/attempts/one?task_id=${taskid}&page=${page}`, (data, status) => {
+  $.get(`/contest/${contest_id}/attempts/one?task_id=${task_id}&page=${page}`, (data, status) => {
     if (status !== 'success' || !Array.isArray(data)) {
       console.error('Failed to fetch data or invalid response');
       return;

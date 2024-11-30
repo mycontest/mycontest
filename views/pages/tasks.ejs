@@ -72,7 +72,7 @@
                             <b>Yechimini yuborish</b>
                         </div>
                         <div class="card-body" style="max-width: 800px">
-                            <form class="info" method="POST" id="fcode">
+                            <form class="info" method="POST" id="form_code">
                                 <input type="hidden" name="task_id" value="<%= task.task_id %>" />
                                 <input type="hidden" id="code" name="code" value="" />
                                 <div class="mb-3">
@@ -80,13 +80,14 @@
                                 </div>
                                 <div class="row g-3">
                                     <div class="col">
-                                        <select onchange="selectLang()" name="lang" id="lang" class="form-select btn-sm">
-                                            <% for(var j=0;j< lang.length;j++){ %>
+                                        <select onchange="langSelect()" name="lang_code" id="lang_code" class="form-select form-select-sm">
+                                            <% for(var j = 0; j < lang.length;j++){ if(j==0) { %>
+                                            <option value="<%= lang[j].code %>" selected><%= lang[j].name %></option>
+                                            <% } else { %>
                                             <option value="<%= lang[j].code %>"><%= lang[j].name %></option>
-                                            <% } %>
+                                            <% } } %>
                                         </select>
                                     </div>
-
                                     <div class="col"></div>
                                     <div class="col" style="text-align-last: right">
                                         <button type="button" class="btn btn-primary btn-sm" onclick="sendCode()">Yuborish</button>
@@ -95,6 +96,7 @@
                             </form>
                         </div>
                     </div>
+
                     <div class="card col-12 mt-2">
                         <div class="card-header">
                             <b>Urinishlar</b>
@@ -164,8 +166,8 @@
 
 <% if(data.user_id){ %>
 <script>
-    let taskid = "<%= task.task_id %>";
-    let contestid = "<%= contest.contest_id %>";
+    let task_id = "<%= task.task_id %>";
+    let contest_id = "<%= contest.contest_id %>";
 </script>
 <script src="/javascript/main.api_one.js"></script>
 <% } %>

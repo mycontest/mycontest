@@ -25,6 +25,7 @@ select * from users ;
 drop table if exists tasks;
 create table tasks (
     task_id int auto_increment primary key,
+    group_id int,
     name varchar(255) not null,
     sub_text text,
     inp_text text,
@@ -42,7 +43,6 @@ drop table if exists contest;
 create table contest (
     contest_id int auto_increment primary key,
     name varchar(255) not null,
-    type int default 1,
     content text,
     start_date datetime not null,
     end_date datetime not null,
@@ -61,47 +61,17 @@ create table contest_tasks (
     created_dt datetime default current_timestamp
 );
 
-insert into contest (name, type, content, start_date, end_date) values ('Test #0', 1,  '<header>
-        <h4>Buxoro Davlat Universiteti Saralash Bosqichi</h4>
-    </header>
-
-    <section>
-        <h5>Maqsad:</h5>
-        <p>Saralash bosqichi universitetga kirishga ariza topshirgan abituriyentlarning bilim va ko‘nikmalarini baholash, eng malakali talabalarni tanlab olish uchun mo‘ljallangan.</p>
-
-        <h5>Jarayon:</h5>
-        <ul>
-            <li><strong>Arizalar qabul qilish:</strong> Arizalar universitetning rasmiy saytida qabul qilinadi.</li>
-            <li><strong>Imtihon:</strong> Test imtihonlari umumiy bilim va ixtisoslashgan fanlardan o‘tkaziladi.</li>
-            <li><strong>Intervyu:</strong> Yaxshi natijalar ko‘rsatgan abituriyentlar bilan intervyu o‘tkaziladi.</li>
-            <li><strong>Natijalar:</strong> Yakuniy natijalar rasmiy sayt orqali e''lon qilinadi.</li>
-        </ul>
-
-        <h5>Tavsiyalar:</h5>
-        <ul>
-            <li>Test savollariga tayyorlaning.</li>
-            <li>O‘z fikrlaringizni aniq ifodalashga o‘rganing.</li>
-        </ul>
-
-        <h5>Afzalliklar:</h5>
-        <ul>
-            <li>Yuqori malakali o‘qituvchilar.</li>
-            <li>Zamonaviy o‘quv infratuzilmasi.</li>
-            <li>Xalqaro hamkorlik va karyera imkoniyatlari.</li>
-        </ul>
-    </section>', now(), now() + 100);-- Example data for tasks table
-insert into tasks (name, sub_text, inp_text, out_text, time, memory, test_count, all_test, code, comment_text) values
-('Solve Linear Equation',  'Solve the linear equation ax + b = 0 for x.', 'Input: Two integers a and b (a != 0).',
-'Output: The value of x.', 1000, 64, 2, 2, '', 'Solve the equation efficiently and correctly.'),
-
-('Find the Largest Number', 'Find the largest number in a given list of integers.', 'Input: A list of integers.', 'Output: The largest integer in the list.', 1000, 128, 2, 2, '', 'Make sure to handle both positive and negative integers.')
+insert into contest (name, type, content, start_date, end_date) values ('Test #0', 1,  '<header><h4>Buxoro Davlat Universiteti Saralash Bosqichi</h4>', now(), now() + 100);-- Example data for tasks table
+insert into tasks (name, sub_text, inp_text, out_text, time, memory, test_count, all_test, comment_text) values
+('Solve Linear Equation',  'Solve the linear equation ax + b = 0 for x.', 'Input: Two integers a and b (a != 0).', 'Output: The value of x.', 1000, 64, 2, 2, 'Solve the equation efficiently and correctly.'),
+('Find the Largest Number', 'Find the largest number in a given list of integers.', 'Input: A list of integers.', 'Output: The largest integer in the list.', 1000, 128, 2, 2, 'Make sure to handle both positive and negative integers.')
 
 insert into contest_tasks (contest_id, task_id) values (1, 1), (1, 2);
 
 drop table if exists lang;
 create table lang (
     lang_id int auto_increment primary key,
-    contest_type int,
+    group_id int,
     file_type varchar(255) not null,
     name varchar(255) not null,
     code varchar(255) not null,
@@ -109,7 +79,7 @@ create table lang (
     created_dt datetime default current_timestamp
 );
 
-insert into lang (contest_type, file_type, code, name) values (1, 'cpp', 'text/x-c++src', 'C++'), (1, 'java', 'text/x-java', 'Java'), (1, 'py', 'text/x-python', 'Python3'), (1, 'js', 'text/javascript', 'Javascript'), (1, 'cs', 'text/x-csharp', 'C#');
+insert into lang (group_id, file_type, code, name) values (1, 'cpp', 'text/x-c++src', 'C++'), (1, 'java', 'text/x-java', 'Java'), (1, 'py', 'text/x-python', 'Python3'), (1, 'js', 'text/javascript', 'Javascript'), (1, 'cs', 'text/x-csharp', 'C#');
 
 drop table if exists attempts;
 create table attempts (
@@ -131,7 +101,6 @@ drop view if exists vw_contest;
 create view vw_contest as
 select
     c.contest_id,
-    c.type,
     c.name,
     c.start_date,
     c.end_date,
@@ -193,3 +162,6 @@ begin
 
 end ;;
 DELIMITER ;
+
+
+SELECT JSON_ARRAYAGG(JSON_OBJECT('lang_id', lang_id, 'code', code)) as list FROM lang

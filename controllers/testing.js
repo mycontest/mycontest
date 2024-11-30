@@ -1,6 +1,7 @@
 const { execute } = require('uzdev/mysql');
 
-let testing = async (task_id, lang, aid, code, codetask, ctime, cmemory) => {
+exports.testing = async (task_id, lang, aid, code, ctime, cmemory) => {
+   console.log(task_id, lang, aid, code, ctime, cmemory)
    let errorRuntime = async (data) => {
       console.log(`Error message #8: ${JSON.stringify(data)}`)
       errorWrite(data);
@@ -45,7 +46,7 @@ let testing = async (task_id, lang, aid, code, codetask, ctime, cmemory) => {
 
       let checkTest = async (data, i) => {
          try {
-            let ocur = fs.readFileSync(path.join(__dirname, `../testcase/${codetask}/output${i}.txt`), { encoding: "utf8" })
+            let ocur = fs.readFileSync(path.join(__dirname, `../testcase/${task_id}/output${i}.txt`), { encoding: "utf8" })
             let oout = fs.readFileSync(path.join(__dirname, `../compiler/tmp/${folder}/output.txt`), { encoding: "utf8" })
             if (data.error) errorWrite(data);
             if (data.error) return await execute("UPDATE attempts SET event=?, time=InlineMaxFun(time,?), memory=InlineMaxFun(memory,?), eventnum=2 WHERE id=?", [data.message, data.time, data.memory, aid])
@@ -72,15 +73,15 @@ let testing = async (task_id, lang, aid, code, codetask, ctime, cmemory) => {
 
             try {
                if (lang != 'text/x-mysql') {
-                  fs.copyFileSync(path.join(__dirname, `../testcase/${codetask}/input${i}.txt`), path.join(__dirname, `../compiler/tmp/${folder}/input.txt`))
+                  fs.copyFileSync(path.join(__dirname, `../testcase/${task_id}/input${i}.txt`), path.join(__dirname, `../compiler/tmp/${folder}/input.txt`))
                }
             } catch (err) {
                console.log(`Error message #2: ${err.message}`)
             }
 
             if (lang == 'text/x-mysql') {
-               let config = require(path.join(__dirname, `../testcase/${codetask}/configdb.json`))
-               let sqlMeCode = fs.readFileSync(path.join(__dirname, `../testcase/${codetask}/sqlMeCode.txt`), { encoding: "utf8" })
+               let config = require(path.join(__dirname, `../testcase/${task_id}/configdb.json`))
+               let sqlMeCode = fs.readFileSync(path.join(__dirname, `../testcase/${task_id}/sqlMeCode.txt`), { encoding: "utf8" })
                await sql(code, sqlMeCode, config, ctime, cmemory, (data) => {
                   checkTestSQL(data, i)
                });
@@ -169,6 +170,4 @@ let testing = async (task_id, lang, aid, code, codetask, ctime, cmemory) => {
          return errorRuntime("Error trim run");
       }
    }
-}
-
-module.exports = testing
+} 
