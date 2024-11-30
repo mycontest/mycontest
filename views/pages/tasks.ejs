@@ -3,14 +3,12 @@
     <head>
         <%- include("../basic/head.ejs") %>
         <link rel="stylesheet" href="/codemirror/codemirror.css" />
-        <link rel="stylesheet" href="/codemirror/cobalt.css" />
-        <link rel="stylesheet" href="/codemirror/icecoder.css" />
         <link rel="stylesheet" href="/codemirror/seti.css" />
+
+        <!-- <link rel="stylesheet" href="/codemirror/cobalt.css" />
+        <link rel="stylesheet" href="/codemirror/icecoder.css" />
         <link rel="stylesheet" href="/codemirror/mbo.css" />
-        <link rel="stylesheet" href="/codemirror/show-hint.css" />
-        <!-- prism  -->
-        <link rel="stylesheet" href="/prism/prism.css" />
-        <script src="/prism/prism.js"></script>
+        <link rel="stylesheet" href="/codemirror/show-hint.css" /> -->
     </head>
 
     <body>
@@ -92,21 +90,8 @@
                                             <% } %>
                                         </select>
                                     </div>
-                                    <link rel="stylesheet" href="/codemirror/cobalt.css" />
-                                    <link rel="stylesheet" href="/codemirror/icecoder.css" />
-                                    <link rel="stylesheet" href="/codemirror/seti.css" />
-                                    <link rel="stylesheet" href="/codemirror/mbo.css" />
-                                    <link rel="stylesheet" href="/codemirror/show-hint.css" />
-                                    <!-- prism  -->
-                                    <div class="col">
-                                        <select onchange="selectTheme()" id="theme" class="form-select btn-sm">
-                                            <option value="cobalt">Cobalt</option>
-                                            <option value="icecoder">Icecoder</option>
-                                            <option value="seti">Seti</option>
-                                            <option value="mbo">Mbo</option>
-                                            <option value="show-hint">Show hint</option>
-                                        </select>
-                                    </div>
+
+                                    <div class="col"></div>
                                     <div class="col" style="text-align-last: right">
                                         <button type="button" class="btn btn-primary btn-sm" onclick="sendCode()">Yuborish</button>
                                     </div>
