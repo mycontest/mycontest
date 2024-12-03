@@ -1,7 +1,7 @@
 Image build:
 
 ```sh
-cd docker && docker build --build-arg SCRIPT_NAME=run_test_1.sh -t run_test_1
+cd checker/docker && docker build --build-arg SCRIPT_NAME=run_test_1.sh -t run_test_1 .
 ```
 
 Backups MYSQL:
