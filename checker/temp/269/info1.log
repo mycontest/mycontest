@@ -1,0 +1,2 @@
+timeout: invalid time interval '2000ms'
+Try 'timeout --help' for more information.

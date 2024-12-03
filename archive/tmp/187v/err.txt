@@ -1,0 +1,1 @@
+{"message":"Time limit exceeded","error":1,"time":1003,"memory":-2670.592,"errorMessage":{"code":null,"killed":true,"signal":"SIGTERM","cmd":"cd /Users/mensenvau/Projects/test/mycontest/compiler/tmp/187v && ./Main.out < input.txt > output.txt"}}

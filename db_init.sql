@@ -61,7 +61,7 @@ create table contest_tasks (
     created_dt datetime default current_timestamp
 );
 
-insert into contest (name, type, content, start_date, end_date) values ('Test #0', 1,  '<header><h4>Buxoro Davlat Universiteti Saralash Bosqichi</h4>', now(), now() + 100);-- Example data for tasks table
+insert into contest (name, content, start_date, end_date) values ('Sinov #0', '<header><h4>Buxoro Davlat Universiteti Saralash Bosqichi</h4>', now(), now() + 100);-- Example data for tasks table
 insert into tasks (name, sub_text, inp_text, out_text, time, memory, test_count, all_test, comment_text) values
 ('Solve Linear Equation',  'Solve the linear equation ax + b = 0 for x.', 'Input: Two integers a and b (a != 0).', 'Output: The value of x.', 1000, 64, 2, 2, 'Solve the equation efficiently and correctly.'),
 ('Find the Largest Number', 'Find the largest number in a given list of integers.', 'Input: A list of integers.', 'Output: The largest integer in the list.', 1000, 128, 2, 2, 'Make sure to handle both positive and negative integers.')
@@ -72,27 +72,45 @@ drop table if exists lang;
 create table lang (
     lang_id int auto_increment primary key,
     group_id int,
-    file_type varchar(255) not null,
     name varchar(255) not null,
     code varchar(255) not null,
+    script_compilation varchar(200) not null,
+    script_run varchar(200) not null,
+    file_type varchar(255) not null,
+    image_name varchar(255) not null,
     updated_dt datetime default current_timestamp on update current_timestamp,
     created_dt datetime default current_timestamp
 );
 
-insert into lang (group_id, file_type, code, name) values (1, 'cpp', 'text/x-c++src', 'C++'), (1, 'java', 'text/x-java', 'Java'), (1, 'py', 'text/x-python', 'Python3'), (1, 'js', 'text/javascript', 'Javascript'), (1, 'cs', 'text/x-csharp', 'C#');
+insert into lang (group_id, file_type, code, name, script_compilation, script_run, image_name) values
+(1, 'cpp', 'text/x-c++src', 'GNU GCC C++20', 'g++ -O2 -lm -fno-stack-limit -std=c++20 -x c++ source.cpp -o executable', './executable', 'run_test_1'),
+(1, 'java', 'text/x-java', 'Java 21.0.5', 'javac Main.java', 'java Main', 'run_test_1'),
+(1, 'py', 'text/x-python', 'Python 3.12.3', '-', 'python3 source.py', 'run_test_1'),
+(1, 'js', 'text/javascript', 'Node.js 18.20.5', '-', 'node source.js', 'run_test_1'),
+(1, 'cs', 'text/x-csharp', 'C# Mono', 'mono-csc source.cs', 'mono source.exe', 'run_test_1'),
+(1, 'go', 'text/x-go', 'Golang', '-', 'go run source.go', 'run_test_1');
 
 drop table if exists attempts;
 create table attempts (
   attempt_id int primary key auto_increment,
-  contest_id int default '1',
+  contest_id int default 1,
   task_id int default null,
   user_id int default null,
-  time int default '0',
-  memory int default '0',
-  event char(200) default 'Kutish',
-  eventnum int default '0',
-  err_testnum int default '0',
+  time int default 0,
+  memory int default 0,
+  event char(200) default 'Running',
+  event_num int default 0,
+  comment varchar(3000) default '',
   lang char(200) default 'c++',
+  updated_dt datetime default current_timestamp on update current_timestamp,
+  created_dt datetime default current_timestamp
+);
+
+drop table if exists news;
+create table news (
+  news_id int primary key auto_increment,
+  title varchar(200),
+  content varchar(2000),
   updated_dt datetime default current_timestamp on update current_timestamp,
   created_dt datetime default current_timestamp
 );
@@ -112,14 +130,14 @@ select
     ) AS during_time,
     case
         when now() > c.end_date then 'Tugagan'
-        when now() between c.start_date and c.end_date then 'Davom etmoqda'
-        else 'Boshlanmagan'
+        when now() between c.start_date and c.end_date then 'Faol'
+        else 'Boshlanmadi'
     end as event,
     case
         when now() > c.end_date then 2
         when now() between c.start_date and c.end_date then 1
         else 0
-    end as eventnum
+    end as event_num
 from
     contest c
 left join
@@ -146,22 +164,7 @@ select
 from attempts a
 left join users u on a.user_id = u.user_id ;
 
-select * from vw_attempts
-
-DELIMITER ;;
-CREATE DEFINER=`admin`@`%` FUNCTION `InlineMaxFun`(val1 int, val2 int) RETURNS int
-    READS SQL DATA
-    DETERMINISTIC
-begin
-
-   if(val1 > val2)  then return val1;
-
-   else return coalesce(val2,val1,0);
-
-  end if;
-
-end ;;
-DELIMITER ;
+select * from vw_attempts ;
 
 
-SELECT JSON_ARRAYAGG(JSON_OBJECT('lang_id', lang_id, 'code', code)) as list FROM lang
+UPDATE attempts SET event = 'Accepted', event_num = 0, time = GREATEST(time, COALESCE(1000, 0)), memory = GREATEST(memory, COALESCE(1000, 0)), comment = ? WHERE attempt_id = ?

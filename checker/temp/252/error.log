@@ -1,0 +1,21 @@
+source.cpp:1:26: warning: character constant too long for its type
+    1 | const readline = require('readline');
+      |                          ^~~~~~~~~~
+source.cpp:7:13: error: empty character constant
+    7 | rl.question('', input => {
+      |             ^~
+source.cpp:1:7: error: 'readline' does not name a type
+    1 | const readline = require('readline');
+      |       ^~~~~~~~
+source.cpp:2:7: error: 'rl' does not name a type
+    2 | const rl = readline.createInterface({
+      |       ^~
+source.cpp:5:2: error: expected unqualified-id before ')' token
+    5 | });
+      |  ^
+source.cpp:7:1: error: 'rl' does not name a type
+    7 | rl.question('', input => {
+      | ^~
+source.cpp:11:2: error: expected unqualified-id before ')' token
+   11 | });
+      |  ^

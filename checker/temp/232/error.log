@@ -1,0 +1,4 @@
+source.java:3: error: class Main is public, should be declared in a file named Main.java
+public class Main {
+       ^
+1 error
