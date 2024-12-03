@@ -1,9 +1,0 @@
-#!/bin/bash
-
-printf "Running linter:\n\n"
-eslint .
-lintResult=$?
-
-echo "Finished linting."
-
-! (( $lintResult ))
