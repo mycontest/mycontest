@@ -2,7 +2,7 @@
 require("dotenv").config({ path: "../.env" });
 
 const { spawn, execSync } = require("child_process");
-const { execute } = require("uzdev/mysql")
+const { execute } = require("uzdev/mysql");
 const path = require("path");
 const fs = require("fs");
 
@@ -26,9 +26,24 @@ const cleanString = (input) => {
     }
 };
 
-function getParseLog(log) {
-    const result = {};
+const clearFolder = async (temp_dir) => {
+    const patterns = [/^input\d*\.txt$/, , /^output\d*\.txt$/, /^info\d*\.log$/];
 
+    fs.readdir(temp_dir, (err, files) => {
+        if (err) return console.error(`Failed to read directory: ${err}`);
+        files
+            .filter(file => patterns.some(pattern => pattern.test(file)))
+            .forEach(file => {
+                const file_path = path.join(temp_dir, file);
+                fs.unlink(file_path, err =>
+                    err ? console.error(`Failed to delete ${file_path}: ${err}`) : console.log(`Deleted: ${file_path}`)
+                );
+            });
+    });
+}
+
+const getParseLog = (log) => {
+    const result = {};
     const elapsed_time_regex = /Elapsed \(wall clock\) time \(h:mm:ss or m:ss\): ([0-9:.\s]+)/;
     const max_rss_regex = /Maximum resident set size \(kbytes\): (\d+)/;
     const cpu_usage_regex = /Percent of CPU this job got: (\d+)%/;
@@ -82,7 +97,7 @@ const runChecker = async (attempt_id, task_id, temp_dir, test_count, time_limit,
 
             if (cleanString(current_output) !== cleanString(expected_output)) return updateStatus(attempt_id, `Wrong answer #${test_number}`, 2, time_run, info_log.memory_usage_kb, output.message);
             if (test_count != test_number) return updateStatus(attempt_id, `Test #${test_number}`, 0, time_run, info_log.memory_usage_kb, output.message);
-            updateStatus(attempt_id, `Accepted`, 1, time_run, info_log.memory_usage_kb, output.message);
+            await updateStatus(attempt_id, `Accepted`, 1, time_run, info_log.memory_usage_kb, output.message);
         } catch (err) {
             console.error(`Error processing output: ${err.message}`);
             updateStatus(attempt_id, 'Server Error', 10, 0, 0, err.message);
@@ -95,6 +110,7 @@ const runChecker = async (attempt_id, task_id, temp_dir, test_count, time_limit,
     });
 
     process.on("close", (code) => {
+        setTimeout(() => { clearFolder(temp_dir); }, 1000);
         console.log("Docker process ended with code: ", code);
     });
 };
