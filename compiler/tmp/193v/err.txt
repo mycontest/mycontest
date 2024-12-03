@@ -1,0 +1,1 @@
+{"message":"Runtime error","error":1,"time":7,"memory":77.824,"errorMessage":{"code":1,"killed":false,"signal":null,"cmd":"cd /root/mycontest/compiler/tmp/193v && ./Main.out < input.txt > output.txt"}}
