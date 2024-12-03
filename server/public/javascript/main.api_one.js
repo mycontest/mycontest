@@ -21,7 +21,7 @@ const renderTableRows = (data) => {
       </td>
       <td>${x.lang}</td>
       <td>
-        <span class="${x.eventnum === 1 ? 'text-success' : (x.eventnum === 0 ? 'text-secondary' : 'text-danger')}">  ${x.event} </span>
+        <span class="${x.event_num === 1 ? 'text-success' : (x.event_num === 0 ? 'text-secondary' : 'text-danger')}">  ${x.event} </span>
       </td>
       <td>${x.time} Ms</td>
       <td>${x.memory} Kb</td>

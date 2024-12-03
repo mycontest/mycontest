@@ -63,9 +63,9 @@ exports.getQuery = (tasks) => {
             select user_id,
                 task_id,
                 count(*) as count ,
-                max(if(eventnum = 1, 1, 0)) as accept,
+                max(if(event_num = 1, 1, 0)) as accept,
                 min(CONCAT(LPAD(FLOOR(TIMESTAMPDIFF(SECOND, @contest_time, created_dt) / 3600), 2, '0'), ':', LPAD(MOD(FLOOR(TIMESTAMPDIFF(SECOND, @contest_time, created_dt) / 60), 60), 2, '0')) ) as accept_time,
-                sum(if(eventnum > 1, 1, 0)) * 10 + COALESCE(TIMESTAMPDIFF(MINUTE, @contest_time, min(if(eventnum = 1, created_dt, null))), 0) as penalty
+                sum(if(event_num > 1, 1, 0)) * 10 + COALESCE(TIMESTAMPDIFF(MINUTE, @contest_time, min(if(event_num = 1, created_dt, null))), 0) as penalty
             from attempts
             where contest_id = ?
             group by user_id, task_id
@@ -88,7 +88,7 @@ exports.getQuery = (tasks) => {
 exports.getTasksQuery = () => {
     return `SELECT t1.name, t1.task_id, ifnull(status, 0) as status FROM vw_tasks t1
             LEFT JOIN (
-                SELECT contest_id, task_id, min(if(eventnum > 0, eventnum, 10)) as status FROM attempts
+                SELECT contest_id, task_id, min(if(event_num > 0, event_num, 10)) as status FROM attempts
                 WHERE user_id = ?
                 GROUP BY contest_id, task_id
             ) as t2
