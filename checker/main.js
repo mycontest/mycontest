@@ -60,7 +60,7 @@ function getParseLog(log) {
 }
 
 const runChecker = async (attempt_id, task_id, temp_dir, test_count, time_limit, memory_limit, script_compilation, script_run, image_name) => {
-    const dockerArgs = ["run", "--rm", "-v", `${temp_dir}:/app/sandbox`, "--cpus", "2", "--memory", "64MB", image_name, "bash", "-c", `./${image_name}.sh ${test_count} /app/sandbox '${script_compilation}' '${script_run}' ${time_limit}`];
+    const dockerArgs = ["run", "--rm", "-v", `${temp_dir}:/app/sandbox`, "--cpus", "2", "--memory", "64m", image_name, "bash", "-c", `./${image_name}.sh ${test_count} /app/sandbox '${script_compilation}' '${script_run}' ${time_limit}`];
     const process = spawn("docker", dockerArgs);
 
     process.stdout.on("data", async (data) => {
