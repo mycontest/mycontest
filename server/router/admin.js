@@ -48,7 +48,7 @@ app.get("/deltasks", async (req, res) => {
 
 app.post("/contestadd", async (req, res) => {
     try {
-        let { contest_id, start_date, end_date, name, content, start_datetime, end_datetime } = req.body;
+        let { contest_id, start_date, end_date, name, content } = req.body;
         if (contest_id > 0) await execute("UPDATE contest SET start_date=?, end_date=?, name=?, content=? WHERE contest_id = ?", [start_date, end_date, name, content, contest_id]);
         else contest_id = (await execute("INSERT INTO contest (start_date, end_date , name , content) VALUE (?,?,?,?) ", [start_date, end_date, name, content])).insertId;
         res.redirect("/admin/contestadd?contest_id=" + contest_id);
@@ -82,7 +82,7 @@ app.get("/tasksadd", async (req, res) => {
     try {
         let task_id = req.query.task_id;
         let task = await execute("SELECT * FROM tasks WHERE task_id = ?", [task_id], 1) || {};
-        let files = getFolderInfo(path.join(__dirname, '../../compiler/testcase', task_id || "-1"))
+        let files = getFolderInfo(path.join(__dirname, '../../checker/testcase', task_id || "-1"))
         res.render("admin/tasksadd", { data: req.data, pageInfo: "tasksadd", task, files });
     } catch (err) {
         res.redirect(`/admin?error=${err.message}`);
@@ -103,7 +103,7 @@ app.post("/tasksadd", async (req, res) => {
 app.post("/taskszip", async (req, res) => {
     try {
         const task_id = req.body.task_id;
-        const upload_path = path.join(__dirname, '../../compiler/testcase', task_id);
+        const upload_path = path.join(__dirname, '../../checker/testcase', task_id);
 
         if (!req.files || !req.files.zip_file) return res.redirect(`/admin?error=No file uploaded.`);
 
@@ -128,6 +128,36 @@ app.post("/taskszip", async (req, res) => {
                 });
         });
 
+    } catch (err) {
+        res.redirect(`/admin?error=${err.message}`);
+    }
+});
+
+app.get("/news", async (req, res) => {
+    try {
+        let news = await execute("SELECT * FROM news ORDER BY news_id DESC LIMIT 20", []);
+        res.render("admin/news", { data: req.data, pageInfo: "news", news });
+    } catch (err) {
+        res.redirect(`/admin?error=${err.message}`);
+    }
+});
+
+app.get("/newsadd", async (req, res) => {
+    try {
+        let news_id = req.query.news_id;
+        let news = (await execute("SELECT * FROM news WHERE news_id = ?", [news_id], 1)) || {};
+        res.render("admin/newsadd", { data: req.data, pageInfo: "newsadd", news, news_id: req.query.news_id });
+    } catch (err) {
+        res.redirect(`/admin?error=${err.message}`);
+    }
+});
+
+app.post("/newsadd", async (req, res) => {
+    try {
+        let { news_id, title, content } = req.body;
+        if (news_id > 0) await execute("UPDATE news SET title = ?, content = ? WHERE news_id = ?", [title, content, news_id]);
+        else news_id = (await execute("INSERT INTO news (title, content) VALUE (?, ?) ", [title, content])).insertId;
+        res.redirect("/admin/newsadd?news_id=" + news_id);
     } catch (err) {
         res.redirect(`/admin?error=${err.message}`);
     }

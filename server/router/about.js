@@ -9,7 +9,8 @@ router.get(["/", "/about"], fnCatch(async (req, res) => {
 }));
 
 router.get("/news", async (req, res) => {
-      res.render("pages/news", { data: req.data, pageInfo: "news" })
+      let arr = await execute("SELECT * FROM news ORDER BY news_id DESC LIMIT 20", []);
+      res.render("pages/news", { data: req.data, pageInfo: "news", arr })
 });
 
 module.exports = router

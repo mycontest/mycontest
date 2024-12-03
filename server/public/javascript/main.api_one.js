@@ -56,4 +56,9 @@ const getAttemptsMe = () => {
 getAttemptsMe();
 
 // Auto-refresh every 3 seconds
-setInterval(getAttemptsMe, 5000);
+let count = 0;
+let it = setInterval(() => {
+  getAttemptsMe();
+  count++;
+  if (count > 20) clearInterval(it);
+}, 2000);

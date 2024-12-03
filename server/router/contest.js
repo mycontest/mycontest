@@ -47,17 +47,9 @@ app.post("/tasks", [authStop], async (req, res) => {
             const child = fork("../checker/main.js");
             child.send({ attempt_id: ins.insertId, task_id: task_id, lang_id: lang.lang_id, code });
 
-            child.on("message", (message) => {
-                  console.log("Message from child:", message);
-            });
-
-            child.on("error", (error) => {
-                  console.error("Child process error:", error);
-            });
-
-            child.on("exit", (code) => {
-                  console.log(`Child process exited with code ${code}`);
-            });
+            child.on("message", (message) => { console.log("Message from child:", message); });
+            child.on("error", (error) => { console.error("Child process error:", error); });
+            child.on("exit", (code) => { console.log(`Child process exited with code ${code}`); });
 
             res.redirect(`/contest/${req.data.contest_id}/tasks?task_id=${task_id}#footer`);
       } catch (err) {

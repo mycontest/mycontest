@@ -16,11 +16,13 @@
                         <div class="card-header">
                             <b>Yangliklar</b>
                         </div>
+                        <% for(var i = 0; i < arr.length; i++) { %>
                         <div class="card-body">
-                            <b>👋 Salom Talabalar,</b>
-                            <p>Sizni erta tongda Buxoro Davlat Universitetida o‘tkaziladigan saralash bosqichiga taklif qilamiz. Birinchi o‘rinni egallagan ishtirokchi keyingi bosqichga o‘tadi."</p>
-                            <span>Sana: 27.11.2024</span>
+                            <b><%= arr[i].title %></b>
+                            <p><%- arr[i].content %></p>
+                            <span>Sana: <%= arr[i].created_dt %></span>
                         </div>
+                        <% } %>
                     </div>
                 </div>
             </div>
