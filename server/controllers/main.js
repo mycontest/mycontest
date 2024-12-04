@@ -64,7 +64,17 @@ exports.getQuery = (tasks) => {
                 task_id,
                 count(*) as count ,
                 max(if(event_num = 1, 1, 0)) as accept,
-                min(CONCAT(LPAD(FLOOR(TIMESTAMPDIFF(SECOND, @contest_time, created_dt) / 3600), 2, '0'), ':', LPAD(MOD(FLOOR(TIMESTAMPDIFF(SECOND, @contest_time, created_dt) / 60), 60), 2, '0')) ) as accept_time,
+                min(CONCAT(
+                        CASE
+                            WHEN CHAR_LENGTH(FLOOR(TIMESTAMPDIFF(SECOND, @contest_time, created_dt) / 3600)) < 2 THEN LPAD(FLOOR(TIMESTAMPDIFF(SECOND, @contest_time, created_dt) / 3600), 2, '0')
+                            ELSE FLOOR(TIMESTAMPDIFF(SECOND, @contest_time, created_dt) / 3600)
+                        END,
+                        ':',
+                        CASE
+                            WHEN CHAR_LENGTH(MOD(FLOOR(TIMESTAMPDIFF(SECOND, @contest_time, created_dt) / 60), 60)) < 2 THEN LPAD(MOD(FLOOR(TIMESTAMPDIFF(SECOND, @contest_time, created_dt) / 60), 60), 2, '0')
+                            ELSE MOD(FLOOR(TIMESTAMPDIFF(SECOND, @contest_time, created_dt) / 60), 60)
+                        END
+                )) as accept_time,
                 sum(if(event_num > 1, 1, 0)) * 10 + COALESCE(TIMESTAMPDIFF(MINUTE, @contest_time, min(if(event_num = 1, created_dt, null))), 0) as penalty
             from attempts
             where contest_id = ?
