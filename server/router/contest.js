@@ -3,8 +3,8 @@ const app = express();
 const path = require("path");
 const { authStop } = require("../controllers/auth");
 const { readExample, readCode, getQuery, getTasksQuery } = require("../controllers/main");
+const { runMain } = require("../../checker/main");
 const { execute } = require("uzdev/mysql");
-const { fork } = require("child_process");
 
 // const { testing } = require("../../compiler/testing");
 
@@ -44,12 +44,7 @@ app.post("/tasks", [authStop], async (req, res) => {
 
             let ins = await execute("INSERT INTO attempts (task_id, user_id, contest_id, lang) values (?, ?, ?, ?)", [task_id, req.data.user_id, req.data.contest_id, lang.name]);
 
-            const child = fork("../checker/main.js");
-            child.send({ attempt_id: ins.insertId, task_id: task_id, lang_id: lang.lang_id, code });
-
-            child.on("message", (message) => { console.log("Message from child:", message); });
-            child.on("error", (error) => { console.error("Child process error:", error); });
-            child.on("exit", (code) => { console.log(`Child process exited with code ${code}`); });
+            runMain(ins.insertId, task_id, lang.lang_id, code);
 
             res.redirect(`/contest/${req.data.contest_id}/tasks?task_id=${task_id}#footer`);
       } catch (err) {

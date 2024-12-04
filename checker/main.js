@@ -139,10 +139,13 @@ const runMain = async (attempt_id, task_id, lang_id, code, is_rerun = false) => 
     }
 };
 
-process.on('message', async (input) => {
-    const { attempt_id, task_id, lang_id, code } = input
-    runMain(attempt_id, task_id, lang_id, code);
-})
+
+module.exports = { runMain }
+
+// process.on('message', async (input) => {
+//     const { attempt_id, task_id, lang_id, code } = input
+//     runMain(attempt_id, task_id, lang_id, code);
+// })
 
 /* 
 1,1,GNU GCC 14.1 C++20
