@@ -1,0 +1,2 @@
+g++: fatal error: Killed signal terminated program cc1plus
+compilation terminated.

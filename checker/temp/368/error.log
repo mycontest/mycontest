@@ -1,0 +1,4 @@
+Main.java:1: error: class, interface, enum, or record expected
+print(sum(map(int,input().split())))
+^
+1 error
