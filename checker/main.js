@@ -78,6 +78,8 @@ const runChecker = async (attempt_id, task_id, temp_dir, test_count, time_limit,
     const dockerArgs = ["run", "--rm", "-v", `${temp_dir}:/app/sandbox`, "--cpus", "2", "--memory", "64m", "--memory-swap", "100m", image_name, "bash", "-c", `./${image_name}.sh ${test_count} /app/sandbox '${script_compilation}' '${script_run}' ${time_limit}`];
     const process = spawn("docker", dockerArgs);
 
+    console.log(dockerArgs.join(" "))
+
     process.stdout.on("data", async (data) => {
         try {
             const output = JSON.parse(data.toString());

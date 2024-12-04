@@ -83,12 +83,12 @@ create table lang (
 );
 
 insert into lang (group_id, file_type, code, name, script_compilation, script_run, image_name) values
-(1, 'cpp', 'text/x-c++src', 'GNU GCC C++20', 'g++ -O2 -lm -fno-stack-limit -std=c++20 -x c++ source.cpp -o executable', './executable', 'run_test_1'),
+(1, 'cpp', 'text/x-c++src', 'GNU GCC C++20', 'g++ source.cpp -o executable -std=c++20', './executable', 'run_test_1'),
 (1, 'java', 'text/x-java', 'Java 21.0.5', 'javac Main.java', 'java Main', 'run_test_1'),
 (1, 'py', 'text/x-python', 'Python 3.12.3', '-', 'python3 source.py', 'run_test_1'),
 (1, 'js', 'text/javascript', 'Node.js 18.20.5', '-', 'node source.js', 'run_test_1'),
-(1, 'cs', 'text/x-csharp', 'C# Mono', 'mono-csc source.cs', 'mono source.exe', 'run_test_1'),
-(1, 'go', 'text/x-go', 'Golang', '-', 'go run source.go', 'run_test_1');
+(1, 'cs', 'text/x-csharp', 'C# Mono', 'mono-csc source.cs', 'mono source.exe', 'run_test_1');
+# (1, 'go', 'text/x-go', 'Golang', '-', 'go run source.go', 'run_test_1');
 
 drop table if exists attempts;
 create table attempts (
