@@ -20,7 +20,7 @@ app.get("/tasks", async (req, res) => {
             let [tasks, task, lang, row] = await Promise.all([
                   execute(getTasksQuery(), [req.data.user_id, req.data.contest_id]),
                   execute(`SELECT * FROM vw_tasks WHERE contest_id=? order by if(task_id = ?, 1, 0) desc`, [req.data.contest_id, task_id], 1),
-                  execute("SELECT * FROM lang WHERE group_id = (select group_id from vw_tasks order by if(task_id = ?, 1, 0) desc limit 1)", [task_id]),
+                  execute("SELECT * FROM lang WHERE group_id in (select group_id from vw_tasks where contest_id = ? order by if(task_id = ?, 1, 0) desc)", [req.data.contest_id, task_id]),
             ]);
 
             if (contest.event_num == 0 && !(req.data?.role == "admin")) return res.redirect(`/contest/${req.data.contest_id}`);
@@ -37,7 +37,7 @@ app.post("/tasks", [authStop], async (req, res) => {
             const { task_id, lang_code, code } = req.body;
             let contest = req.data.contest;
 
-            let [task, lang] = await Promise.all([execute(`SELECT * FROM vw_tasks WHERE contest_id = ? and task_id = ? `, [req.data.contest_id, task_id], 1), execute("SELECT * FROM lang WHERE group_id = (select group_id from vw_tasks where task_id = ?) and code = ?", [task_id, lang_code], 1)]);
+            let [task, lang] = await Promise.all([execute(`SELECT * FROM vw_tasks WHERE contest_id = ? and task_id = ? `, [req.data.contest_id, task_id], 1), execute("SELECT * FROM lang WHERE group_id in (select group_id from vw_tasks where task_id = ? and contest_id = ?) and code = ?", [task_id, req.data.contest_id, lang_code], 1)]);
 
             if (!lang) return res.redirect(`/contest/${contest.contest_id}?error=Dasturlash tili tanlanmagan!`);
             if ((contest.event_num != 1 || !task) && !(req.data?.role == "admin")) return res.redirect(`/contest/${req.data.contest_id}`);
