@@ -125,8 +125,15 @@ select
     c.content,
     count(ct.task_id) as task_count,
     CONCAT(
-        LPAD(FLOOR(TIMESTAMPDIFF(SECOND, c.start_date, c.end_date) / 3600), 2, '0'), ':',
-        LPAD(MOD(FLOOR(TIMESTAMPDIFF(SECOND, c.start_date, c.end_date) / 60), 60), 2, '0')
+        CASE
+            WHEN CHAR_LENGTH(FLOOR(TIMESTAMPDIFF(SECOND, c.start_date, c.end_date) / 3600)) < 2 THEN LPAD(FLOOR(TIMESTAMPDIFF(SECOND, c.start_date, c.end_date) / 3600), 2, '0')
+            ELSE FLOOR(TIMESTAMPDIFF(SECOND, c.start_date, c.end_date) / 3600)
+        END,
+        ':',
+        CASE
+            WHEN CHAR_LENGTH(MOD(FLOOR(TIMESTAMPDIFF(SECOND, c.start_date, c.end_date) / 60), 60)) < 2 THEN LPAD(MOD(FLOOR(TIMESTAMPDIFF(SECOND, c.start_date, c.end_date) / 60), 60), 2, '0')
+            ELSE MOD(FLOOR(TIMESTAMPDIFF(SECOND, c.start_date, c.end_date) / 60), 60)
+        END
     ) AS during_time,
     case
         when now() > c.end_date then 'Tugagan'
@@ -168,3 +175,16 @@ select * from vw_attempts ;
 
 
 UPDATE attempts SET event = 'Accepted', event_num = 0, time = GREATEST(time, COALESCE(1000, 0)), memory = GREATEST(memory, COALESCE(1000, 0)), comment = ? WHERE attempt_id = ?
+
+
+
+
+
+
+    CONCAT(LPAD(FLOOR(TIMESTAMPDIFF(SECOND, @contest_time, created_dt) / 3600), 2, '0'), ':', LPAD(MOD(FLOOR(TIMESTAMPDIFF(SECOND, @contest_time, created_dt) / 60), 60), 2, '0')) ) as accept_time,
+
+
+CASE
+            WHEN CHAR_LENGTH(FLOOR(TIMESTAMPDIFF(SECOND, c.start_date, c.end_date) / 3600)) < 2 THEN LPAD(FLOOR(TIMESTAMPDIFF(SECOND, c.start_date, c.end_date) / 3600), 2, '0')
+            ELSE FLOOR(TIMESTAMPDIFF(SECOND, c.start_date, c.end_date) / 3600)
+        END
