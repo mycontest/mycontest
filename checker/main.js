@@ -10,7 +10,7 @@ const updateStatus = async (attempt_id, event, event_num, time, memory, comment)
     console.log(attempt_id, event, event_num, time, memory, comment)
     try {
         await execute(
-            "UPDATE attempts SET event = ?, event_num = ?, time = GREATEST(time, COALESCE(?, 0)), memory = GREATEST(memory, COALESCE(?, 0)), comment = ? WHERE attempt_id = ?",
+            "UPDATE attempts SET event = if(event_num = 2, event, ?), event_num = ?, time = GREATEST(time, COALESCE(?, 0)), memory = GREATEST(memory, COALESCE(?, 0)), comment = ? WHERE attempt_id = ?",
             [event, event_num, time, memory, comment, attempt_id]
         );
     } catch (err) {
