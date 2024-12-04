@@ -44,7 +44,7 @@ app.post("/tasks", [authStop], async (req, res) => {
 
             let ins = await execute("INSERT INTO attempts (task_id, user_id, contest_id, lang) values (?, ?, ?, ?)", [task_id, req.data.user_id, req.data.contest_id, lang.name]);
 
-            runMain(ins.insertId, task_id, lang.lang_id, code);
+            runMain(ins.insertId, req.data.contest_id, task_id, lang.lang_id, code);
 
             res.redirect(`/contest/${req.data.contest_id}/tasks?task_id=${task_id}#footer`);
       } catch (err) {

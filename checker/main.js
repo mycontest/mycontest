@@ -117,11 +117,11 @@ const runChecker = async (attempt_id, task_id, temp_dir, test_count, time_limit,
     });
 };
 
-const runMain = async (attempt_id, task_id, lang_id, code, is_rerun = false) => {
+const runMain = async (attempt_id, contest_id, task_id, lang_id, code, is_rerun = false) => {
     try {
         const [task, lang] = await Promise.all([
             execute(`SELECT * FROM tasks WHERE task_id = ?`, [task_id], 1),
-            execute("SELECT * FROM lang WHERE group_id = (SELECT group_id FROM vw_tasks WHERE task_id = ?) AND lang_id = ?", [task_id, lang_id], 1)
+            execute("SELECT * FROM lang WHERE group_id in (SELECT group_id FROM vw_tasks WHERE task_id = ? and contest_id = ?) AND lang_id = ?", [task_id, contest_id, lang_id], 1)
         ]);
 
         const temp_dir = path.join(__dirname, `temp/${attempt_id}`);
