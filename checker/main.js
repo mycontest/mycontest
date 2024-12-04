@@ -132,7 +132,7 @@ const runMain = async (attempt_id, task_id, lang_id, code, is_rerun = false) => 
         if (!is_rerun) fs.writeFileSync(source_file, code);
 
         execSync(`cp ${test_input} ${temp_dir}`);
-        await runChecker(attempt_id, task_id, temp_dir, task.test_count, task.time, task.memory, lang.script_compilation, lang.script_run, lang.image_name);
+        await runChecker(attempt_id, task_id, temp_dir, task.all_test, task.time, task.memory, lang.script_compilation, lang.script_run, lang.image_name);
     } catch (err) {
         console.error(`Error in runMain: ${err.message}`);
         updateStatus(attempt_id, 'Server Error', 10, 0, 0, err.message);
