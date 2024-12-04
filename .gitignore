@@ -1,10 +1,8 @@
-/server/node_modules
-/checker/node_modules
-/session
+# Ignore node_modules
+/server/node_modules/
+/checker/node_modules/
+/session/
 
-server/node_modules
-checker/node_modules
-session
-
+# Miscellaneous
 .env
 .DS_Store
