@@ -1,0 +1,7 @@
+source.cpp:1:1: error: 'import' does not name a type
+    1 | import java.util.Scanner;
+      | ^~~~~~
+source.cpp:1:1: note: C++20 'import' only available with '-fmodules-ts', which is not yet enabled with '-std=c++20'
+source.cpp:3:1: error: expected unqualified-id before 'public'
+    3 | public class Main {
+      | ^~~~~~
