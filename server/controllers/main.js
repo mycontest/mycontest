@@ -12,7 +12,7 @@ exports.readCode = (code_path) => {
 exports.readExample = async (task) => {
     let arr = []
     try {
-        for (let i = 1; i < task.test_count; i++) {
+        for (let i = 1; i <= task.test_count; i++) {
             let inp = fs.readFileSync(path.join(__dirname, `../../checker/testcase/${task.task_id}/input${i}.txt`))
             let out = fs.readFileSync(path.join(__dirname, `../../checker/testcase/${task.task_id}/output${i}.txt`))
             arr.push({ inp, out })

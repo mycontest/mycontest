@@ -81,6 +81,7 @@
                             <table class="table">
                                 <thead>
                                     <tr>
+                                        <th>#</th>
                                         <th>Name</th>
                                         <th>Type</th>
                                         <th>Size</th>
@@ -90,6 +91,7 @@
                                 <tbody>
                                     <% for(var i=0;i< files.length;i++) { %>
                                     <tr>
+                                        <td><%= i + 1 %></td>
                                         <td><%= files[i].name %></td>
                                         <td><%= files[i].type %></td>
                                         <td><%= files[i].size %>Kb</td>

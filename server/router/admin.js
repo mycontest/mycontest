@@ -1,9 +1,9 @@
 const express = require("express");
 const app = express();
-const unzipper = require('unzipper');
 const path = require("path");
 const fs = require("fs");
 const { execute } = require("uzdev/mysql/index.js");
+const { exec } = require('child_process');
 const { getFolderInfo } = require("../controllers/main");
 
 app.get("/", async (req, res) => {
@@ -105,31 +105,43 @@ app.post("/taskszip", async (req, res) => {
         const task_id = req.body.task_id;
         const upload_path = path.join(__dirname, '../../checker/testcase', task_id);
 
-        if (!req.files || !req.files.zip_file) return res.redirect(`/admin?error=No file uploaded.`);
-
-        const zip_file = req.files.zip_file;
-        if (fs.existsSync(upload_path)) {
-            fs.rmSync(upload_path, { recursive: true, force: true });
-            fs.mkdirSync(upload_path, { recursive: true });
-        } else {
-            fs.mkdirSync(upload_path, { recursive: true });
+        // Ensure a file was uploaded
+        if (!req.files || !req.files.zip_file) {
+            return res.redirect(`/admin?error=No file uploaded.`);
         }
 
-        zip_file.mv(path.join(upload_path, 'temp.zip'), (err) => {
-            if (err) return res.status(500).send(err);
-            fs.createReadStream(path.join(upload_path, 'temp.zip'))
-                .pipe(unzipper.Extract({ path: upload_path }))
-                .on('close', () => {
-                    res.redirect(`/admin/tasksadd?task_id=${task_id}&success=File unzipped to ${upload_path}`);
-                    fs.unlinkSync(path.join(upload_path, 'temp.zip'));
-                })
-                .on('error', (err) => {
-                    res.redirect(`/admin?error=${err.message}`);
-                });
-        });
+        const zip_file = req.files.zip_file;
 
-    } catch (err) {
-        res.redirect(`/admin?error=${err.message}`);
+        // Ensure the upload path is ready
+        if (fs.existsSync(upload_path)) {
+            fs.rmSync(upload_path, { recursive: true, force: true });
+        }
+        fs.mkdirSync(upload_path, { recursive: true });
+
+        const temp_zip_path = path.join(upload_path, 'temp.zip');
+
+        // Move the uploaded file to a temporary location
+        await zip_file.mv(temp_zip_path);
+
+        // Extract the ZIP file using the 'unzip' command
+        exec(`unzip -o ${temp_zip_path} -d ${upload_path}`, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`Unzip error: ${error.message}`);
+                return res.redirect(`/admin?error=Unzip failed: ${error.message}`);
+            }
+
+            if (stderr) {
+                console.warn(`Unzip stderr: ${stderr}`);
+            }
+
+            // Clean up temporary ZIP file
+            fs.unlinkSync(temp_zip_path);
+
+            res.redirect(`/admin/tasksadd?task_id=${task_id}&success=File unzipped to ${upload_path}`);
+        });
+    } catch (error) {
+        console.error("Error during file upload or extraction:", error);
+        res.redirect(`/admin?error=${error.message}`);
     }
 });
 
