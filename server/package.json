@@ -9,14 +9,14 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/mensenvau/Katrip-back-end.git"
+        "url": "git+https://github.com/mycontest/mycontest"
     },
     "author": "",
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/mensenvau/Katrip-back-end/issues"
+        "url": "https://github.com/mycontest/mycontest/issues"
     },
-    "homepage": "https://github.com/mensenvau/Katrip-back-end#readme",
+    "homepage": "https://github.com/mycontest/mycontest#readme",
     "dependencies": {
         "cookie-parser": "^1.4.6",
         "ejs": "^3.1.6",

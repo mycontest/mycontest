@@ -16,8 +16,8 @@ create table users (
 );
 
 insert into users (full_name, email, username, password, role)
-values ('Utkir Khujaev', 'balkibumen@gmail.com', 'admin', md5('!123456:A9fG3kL1mNpQrS7tUvWzYx8J6oVb'), 'admin'),
-       ('Utkir Khujaev', 'balkibumen@gmail.com', 'user', md5('!123456:A9fG3kL1mNpQrS7tUvWzYx8J6oVb'), 'user');
+values ('Utkir Khujaev', 'balkibumen@gmail.com', 'admin', md5('<YOUR_PASSWORD>:<ENV.SECRET>'), 'admin'),
+       ('Utkir Khujaev', 'balkibumen@gmail.com', 'user', md5('!<YOUR_PASSWORD>:<ENV.SECRET>'), 'user');
 
 select * from users ;
 
