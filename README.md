@@ -11,6 +11,12 @@
    cd Katrip-back-end
    ```
 
+   Image build:
+
+```sh
+cd checker/docker && docker build --build-arg SCRIPT_NAME=run_test_1.sh -t run_test_1 .
+```
+
 2. Install dependencies:
 
    ```sh
