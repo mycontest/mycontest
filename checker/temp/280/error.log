@@ -1,4 +1,0 @@
-source.cpp: In function 'int main()':
-source.cpp:12:3: error: 'z' was not declared in this scope
-   12 |   z
-      |   ^

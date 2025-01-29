@@ -1,4 +1,0 @@
-source.cpp: In function 'int main()':
-source.cpp:10:9: error: 'i' was not declared in this scope
-   10 |   while(i<10000) { cout<<"A"; }
-      |         ^

@@ -1,8 +1,8 @@
 // load environment variables
 require("dotenv").config({ path: "../.env" });
 
-const express = require("express")
-const app = express()
+const express = require("express");
+const app = express();
 const { error, missed } = require("./controllers/error");
 
 // session setup
@@ -15,26 +15,26 @@ const FileStore = require("session-file-store")(session);
 // cookie parser
 app.use(cookieParser(process.env.SECRET));
 app.use(
-    session({
-        secret: process.env.SECRET,
-        resave: false,
-        saveUninitialized: false,
-        store: new FileStore({ path: path.join(__dirname, "/session"), logFn: function () { } }),
-        cookie: { maxAge: 12 * 3600000, secure: false, httpOnly: false },
-    })
+  session({
+    secret: process.env.SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: new FileStore({ path: path.join(__dirname, "/session"), logFn: function () {} }),
+    cookie: { maxAge: 12 * 3600000, secure: false, httpOnly: false },
+  })
 );
 
-// file upload 
-app.use(fileUpload({ limits: { fileSize: process.env.LIMIT }, }));
+// file upload
+app.use(fileUpload({ limits: { fileSize: process.env.LIMIT } }));
 
 // config
-app.use(express.urlencoded({ extended: false, limit: process.env.LIMIT }))
-app.use(express.json({ limit: process.env.LIMIT }))
-app.use(express.static('public'));
-app.set('view engine', 'ejs');
+app.use(express.urlencoded({ extended: false, limit: process.env.LIMIT }));
+app.use(express.json({ limit: process.env.LIMIT }));
+app.use(express.static("public"));
+app.set("view engine", "ejs");
 
-// router use 
-app.use("/", require("./router/main"))
+// router use
+app.use("/", require("./router/main"));
 
 // error handling middleware
 app.use(error);

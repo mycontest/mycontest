@@ -1,4 +1,0 @@
-source.java:3: error: class Sum is public, should be declared in a file named Sum.java
-public class Sum {
-       ^
-1 error
