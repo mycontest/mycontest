@@ -5,7 +5,6 @@
 /session/
 
 # Miscellaneous
-.env
 .DS_Store
 
 # if you want

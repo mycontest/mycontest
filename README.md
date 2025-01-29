@@ -1,7 +1,5 @@
 # mycontest.uz
 
-# mycontest.uz
-
 ## Installation
 
 1. Clone the repository:
@@ -11,7 +9,7 @@
    cd Katrip-back-end
    ```
 
-   Image build:
+Image build:
 
 ```sh
 cd checker/docker && docker build --build-arg SCRIPT_NAME=run_test_1.sh -t run_test_1 .
