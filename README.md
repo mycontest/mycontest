@@ -71,7 +71,7 @@ Check out the live demo of mycontest.dev: [Demo Link](https://mycontest.dev)
 
 ### Installation Guide (Video)
 
-For a step-by-step installation guide, watch our [YouTube installation video](https://www.youtube.com/watch?v=your_video_id).
+For a step-by-step installation guide, watch our [YouTube installation video]([https://www.youtube.com/watch?v=your_video_id](http://youtube.com/mensenvau)).
 
 ### Telegram Channel
 
