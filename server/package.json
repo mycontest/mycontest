@@ -18,6 +18,7 @@
     },
     "homepage": "https://github.com/mycontest/mycontest#readme",
     "dependencies": {
+        "adm-zip": "^0.5.16",
         "cookie-parser": "^1.4.6",
         "ejs": "^3.1.6",
         "express": "^4.17.1",
@@ -29,6 +30,8 @@
         "google-recaptcha": "^1.1.0",
         "joi": "^17.6.0",
         "md5": "^2.3.0",
+        "multer": "^2.0.2",
+        "mysql2": "^3.16.0",
         "node-telegram-bot-api": "^0.56.0",
         "session-file-store": "^1.5.0",
         "uid-generator": "^2.0.0",

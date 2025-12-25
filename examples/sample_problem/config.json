@@ -1,0 +1,11 @@
+{
+  "title": "Two Sum",
+  "slug": "two-sum",
+  "difficulty": "easy",
+  "problem_type": "python",
+  "description": "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.\n\nYou may assume that each input would have exactly one solution, and you may not use the same element twice.\n\nYou can return the answer in any order.",
+  "template_code": "def twoSum(nums, target):\n    \"\"\"\n    :type nums: List[int]\n    :type target: int\n    :rtype: List[int]\n    \"\"\"\n    # Your code here\n    pass",
+  "time_limit": 1000,
+  "memory_limit": 128,
+  "points_per_case": 20
+}
