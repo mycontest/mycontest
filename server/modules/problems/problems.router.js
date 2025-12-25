@@ -4,8 +4,8 @@
 
 const express = require('express');
 const router = express.Router();
-const { fnWrap } = require('../../utils');
-const { authRequired } = require('../auth/auth.service');
+const { validate, authRequired } = require('../../middleware');
+const { schemaSubmit } = require('./problems.schema');
 
 const {
     problemsHome,
@@ -15,10 +15,10 @@ const {
     problemsSubmissionView
 } = require('./problems.controller');
 
-router.get('/', fnWrap(problemsHome));
-router.get('/problems', fnWrap(problemsList));
-router.get('/problems/:id', fnWrap(problemsView));
-router.post('/problems/:id/submit', authRequired, fnWrap(problemsSubmit));
-router.get('/submissions/:id', fnWrap(problemsSubmissionView));
+router.get('/', problemsHome);
+router.get('/problems', problemsList);
+router.get('/problems/:id', problemsView);
+router.post('/problems/:id/submit', authRequired, validate(schemaSubmit), problemsSubmit);
+router.get('/submissions/:id', problemsSubmissionView);
 
 module.exports = router;

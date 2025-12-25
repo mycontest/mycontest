@@ -2,6 +2,7 @@
  * Problems Controller
  */
 
+const fnWrap = require('../../utils/fnWrap');
 const {
     fnGetAllProblems,
     fnGetProblemById,
@@ -13,22 +14,22 @@ const {
 const { fnJudgeSubmission } = require('../compiler/compiler.service');
 const { dbQueryOne } = require('../../utils');
 
-const problemsHome = async (req, res) => {
+const problemsHome = fnWrap(async (req, res) => {
     const problems = await fnGetAllProblems();
     res.render('pages/home', { title: 'Home', problems });
-};
+});
 
-const problemsList = async (req, res) => {
+const problemsList = fnWrap(async (req, res) => {
     const problems = await fnGetAllProblems();
     res.render('pages/problems', { title: 'Problems', problems });
-};
+});
 
-const problemsView = async (req, res) => {
+const problemsView = fnWrap(async (req, res) => {
     const problem = await fnGetProblemById(req.params.id);
     res.render('pages/problem', { title: problem.title, problem });
-};
+});
 
-const problemsSubmit = async (req, res) => {
+const problemsSubmit = fnWrap(async (req, res) => {
     const { lang_id, code_body } = req.body;
     const result = await fnSubmitSolution(
         req.session.user.user_id,
@@ -54,15 +55,15 @@ const problemsSubmit = async (req, res) => {
     ).catch(err => console.error('Judge error:', err));
 
     res.redirect(`/submissions/${result.submission_id}`);
-};
+});
 
-const problemsSubmissionView = async (req, res) => {
+const problemsSubmissionView = fnWrap(async (req, res) => {
     const submission = await fnGetSubmission(req.params.id);
     res.render('pages/submission', {
         title: `Submission #${submission.submission_id}`,
         submission
     });
-};
+});
 
 module.exports = {
     problemsHome,

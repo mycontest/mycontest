@@ -1,22 +1,23 @@
+const fnWrap = require('../../utils/fnWrap');
 const { fnCreateProblem, fnAddProblemLanguage, fnAddLanguage, fnGetAllLanguages, fnToggleLanguage, fnGetAllUsers, fnGetDashboardStats } = require('./admin.service');
 const { fnGetAllProblems } = require('../problems/problems.service');
 
-const adminDashboard = async (req, res) => {
+const adminDashboard = fnWrap(async (req, res) => {
     const stats = await fnGetDashboardStats();
     res.render('admin/dashboard', { title: 'Admin Dashboard', stats });
-};
+});
 
-const adminProblems = async (req, res) => {
+const adminProblems = fnWrap(async (req, res) => {
     const problems = await fnGetAllProblems();
     res.render('admin/problems', { title: 'Manage Problems', problems });
-};
+});
 
-const adminProblemCreateForm = async (req, res) => {
+const adminProblemCreateForm = fnWrap(async (req, res) => {
     const languages = await fnGetAllLanguages();
     res.render('admin/problem-create', { title: 'Create Problem', languages, error: null });
-};
+});
 
-const adminProblemCreate = async (req, res) => {
+const adminProblemCreate = fnWrap(async (req, res) => {
     if (!req.files || !req.files.test_zip) throw new Error('No test ZIP uploaded');
     const { title, difficulty, description, input_format, output_format, constraints, time_limit, memory_limit, lang_ids, templates } = req.body;
     const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
@@ -29,26 +30,26 @@ const adminProblemCreate = async (req, res) => {
         }
     }
     res.redirect('/admin/problems');
-};
+});
 
-const adminLanguages = async (req, res) => {
+const adminLanguages = fnWrap(async (req, res) => {
     const languages = await fnGetAllLanguages();
     res.render('admin/languages', { title: 'Manage Languages', languages });
-};
+});
 
-const adminLanguageAdd = async (req, res) => {
+const adminLanguageAdd = fnWrap(async (req, res) => {
     await fnAddLanguage(req.body);
     res.redirect('/admin/languages');
-};
+});
 
-const adminLanguageToggle = async (req, res) => {
+const adminLanguageToggle = fnWrap(async (req, res) => {
     await fnToggleLanguage(req.params.id);
     res.redirect('/admin/languages');
-};
+});
 
-const adminUsers = async (req, res) => {
+const adminUsers = fnWrap(async (req, res) => {
     const users = await fnGetAllUsers();
     res.render('admin/users', { title: 'Manage Users', users });
-};
+});
 
 module.exports = { adminDashboard, adminProblems, adminProblemCreateForm, adminProblemCreate, adminLanguages, adminLanguageAdd, adminLanguageToggle, adminUsers };

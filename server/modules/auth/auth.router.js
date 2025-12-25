@@ -5,8 +5,8 @@
 
 const express = require('express');
 const router = express.Router();
-const { fnWrap } = require('../../utils');
-const { authRequired } = require('./auth.service');
+const { validate, authRequired } = require('../../middleware');
+const { schemaLogin, schemaRegister } = require('./auth.schema');
 
 const {
     authLogin,
@@ -18,20 +18,12 @@ const {
 } = require('./auth.controller');
 
 router.get('/login', authLoginPage);
-
-router.post('/login', fnWrap(authLogin, {
-    errorView: 'pages/login',
-    getErrorData: () => ({ title: 'Login' })
-}));
+router.post('/login', validate(schemaLogin), authLogin);
 
 router.get('/register', authRegisterPage);
-
-router.post('/register', fnWrap(authRegister, {
-    errorView: 'pages/register',
-    getErrorData: () => ({ title: 'Register' })
-}));
+router.post('/register', validate(schemaRegister), authRegister);
 
 router.get('/logout', authLogout);
-router.get('/profile', authRequired, fnWrap(authProfile));
+router.get('/profile', authRequired, authProfile);
 
 module.exports = router;

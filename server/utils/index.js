@@ -1,13 +1,11 @@
 /**
  * Utils Index
- * Universal exports for all utility functions
+ * Universal exports for database and common utilities
  */
 
-const fnWrap = require('./fnWrap');
 const { dbQueryOne, dbQueryMany, dbTransaction } = require('./db');
 
 module.exports = {
-    fnWrap,
     dbQueryOne,
     dbQueryMany,
     dbTransaction

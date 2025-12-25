@@ -1,41 +1,29 @@
 /**
  * Function Wrapper for Controllers
- * Handles async errors and renders error pages or passes to Express error handler
+ * Handles async errors - renders universal error page
  */
 
 const createError = require('http-errors');
 
 /**
  * Wrap async controller functions with error handling
+ * Automatically renders error page on failures
  * @param {Function} fn - Async controller function
- * @param {Object} options - Error handling options
- * @param {string} options.errorView - View to render on error (optional)
- * @param {Function} options.getErrorData - Function to get additional data for error view (optional)
- * @returns {Function} Express middleware
+ * @returns {Promise} Controller result or error
  */
-const fnWrap = (fn, options = {}) => {
-    return async (req, res, next) => {
+const fnWrap = (fn) => {
+    return async (req, res) => {
         try {
-            await fn(req, res, next);
+            return await fn(req, res);
         } catch (error) {
-            // If errorView is specified, render error on that page
-            if (options.errorView && !res.headersSent) {
-                try {
-                    const errorData = options.getErrorData
-                        ? await options.getErrorData(req, res)
-                        : {};
+            console.error('Controller Error:', error);
 
-                    res.render(options.errorView, {
-                        ...errorData,
-                        error: error.message || 'An error occurred'
-                    });
-                } catch (renderError) {
-                    // If error rendering fails, pass to Express error handler
-                    next(createError(error.status || 500, error.message));
-                }
-            } else {
-                // Pass to Express error handler
-                next(createError(error.status || 500, error.message));
+            if (!res.headersSent) {
+                res.status(error.status || 500).render('error', {
+                    title: 'Error',
+                    message: error.message || 'An error occurred',
+                    error: error
+                });
             }
         }
     };

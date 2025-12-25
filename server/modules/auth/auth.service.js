@@ -66,36 +66,9 @@ const fnGetUserStats = async (user_id) => {
     return stats;
 };
 
-const authCheck = (req, res, next) => {
-    res.locals.user = req.session.user || null;
-    res.locals.title = '';
-    next();
-};
-
-const authRequired = (req, res, next) => {
-    if (!req.session.user) {
-        return res.redirect('/login');
-    }
-    next();
-};
-
-const authAdmin = (req, res, next) => {
-    if (!req.session.user || req.session.user.role !== 'admin') {
-        return res.status(403).render('error', {
-            title: 'Access Denied',
-            message: 'Access denied',
-            error: { status: 403 }
-        });
-    }
-    next();
-};
-
 module.exports = {
     fnRegister,
     fnLogin,
     fnGetUserById,
-    fnGetUserStats,
-    authCheck,
-    authRequired,
-    authAdmin
+    fnGetUserStats
 };
