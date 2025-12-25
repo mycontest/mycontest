@@ -91,4 +91,12 @@ const fnGetDashboardStats = async () => {
     };
 };
 
-module.exports = { fnCreateProblem, fnAddProblemLanguage, fnAddLanguage, fnGetAllLanguages, fnToggleLanguage, fnGetAllUsers, fnGetDashboardStats };
+module.exports = {
+    fnCreateProblem,
+    fnAddProblemLanguage,
+    fnAddLanguage,
+    fnGetAllLanguages,
+    fnToggleLanguage,
+    fnGetAllUsers,
+    fnGetDashboardStats
+};

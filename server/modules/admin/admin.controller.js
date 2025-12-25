@@ -52,4 +52,13 @@ const adminUsers = fnWrap(async (req, res) => {
     res.render('admin/users', { title: 'Manage Users', users });
 });
 
-module.exports = { adminDashboard, adminProblems, adminProblemCreateForm, adminProblemCreate, adminLanguages, adminLanguageAdd, adminLanguageToggle, adminUsers };
+module.exports = {
+    adminDashboard,
+    adminProblems,
+    adminProblemCreateForm,
+    adminProblemCreate,
+    adminLanguages,
+    adminLanguageAdd,
+    adminLanguageToggle,
+    adminUsers
+};

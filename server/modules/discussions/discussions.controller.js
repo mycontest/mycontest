@@ -8,4 +8,6 @@ const discussionsGet = fnWrap(async (req, res) => {
     });
 });
 
-module.exports = { discussionsGet };
+module.exports = {
+    discussionsGet
+};

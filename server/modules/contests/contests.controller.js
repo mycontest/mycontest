@@ -12,4 +12,7 @@ const contestsView = fnWrap(async (req, res) => {
     res.render('pages/contest', { title: contest.title, contest, leaderboard });
 });
 
-module.exports = { contestsList, contestsView };
+module.exports = {
+    contestsList,
+    contestsView
+};
