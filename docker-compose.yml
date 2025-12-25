@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: mycontest_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-my_contest}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./data/database_schema.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - mycontest_network
+
+  # Web Application
+  web:
+    build: .
+    container_name: mycontest_web
+    restart: always
+    ports:
+      - "${PORT:-7001}:7001"
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-my_contest}
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-rootpassword}
+      PORT: 7001
+      SECRET: ${SECRET:-change_this_secret_key}
+      DOMAIN: ${DOMAIN:-http://localhost:7001}
+      LIMIT: 52428800
+    depends_on:
+      - mysql
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    networks:
+      - mycontest_network
+
+volumes:
+  mysql_data:
+
+networks:
+  mycontest_network:
+    driver: bridge

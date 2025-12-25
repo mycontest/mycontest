@@ -1,14 +1,10 @@
 /**
- * Auth Module
- * Services and Controllers
+ * Auth Service
+ * Database operations for authentication
  */
 
 const { dbQueryOne, dbQueryMany } = require('../../utils/db');
 const md5 = require('md5');
-
-// ================================================================
-// SERVICES
-// ================================================================
 
 const fnRegister = async (username, email, password, full_name) => {
     const existing = await dbQueryOne(
@@ -70,41 +66,6 @@ const fnGetUserStats = async (user_id) => {
     return stats;
 };
 
-// ================================================================
-// CONTROLLERS
-// ================================================================
-
-const authLogin = async (req, res) => {
-    const { username, password } = req.body;
-    const user = await fnLogin(username, password);
-    req.session.user = user;
-    res.redirect('/');
-};
-
-const authRegister = async (req, res) => {
-    const { username, email, password, full_name } = req.body;
-    const user = await fnRegister(username, email, password, full_name);
-    req.session.user = user;
-    res.redirect('/');
-};
-
-const authLogout = (req, res) => {
-    req.session.destroy();
-    res.redirect('/');
-};
-
-const authProfile = async (req, res) => {
-    const stats = await fnGetUserStats(req.session.user.user_id);
-    res.render('pages/profile', {
-        title: 'Profile',
-        stats
-    });
-};
-
-// ================================================================
-// MIDDLEWARE
-// ================================================================
-
 const authCheck = (req, res, next) => {
     res.locals.user = req.session.user || null;
     res.locals.title = '';
@@ -130,19 +91,10 @@ const authAdmin = (req, res, next) => {
 };
 
 module.exports = {
-    // Services
     fnRegister,
     fnLogin,
     fnGetUserById,
     fnGetUserStats,
-
-    // Controllers
-    authLogin,
-    authRegister,
-    authLogout,
-    authProfile,
-
-    // Middleware
     authCheck,
     authRequired,
     authAdmin
