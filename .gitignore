@@ -3,6 +3,9 @@
 /server/node_modules/
 /checker/node_modules/
 /session/
+/server/session/
+temp/
+/server/temp/
 
 # Miscellaneous
 .DS_Store

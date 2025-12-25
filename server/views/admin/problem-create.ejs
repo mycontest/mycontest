@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Problem - Admin - MyContest</title>
+    <title><%= title %> - MyContest</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-screen bg-gray-900 text-gray-100">
@@ -11,7 +11,7 @@
 
     <main class="container mx-auto px-4 py-8">
         <div class="max-w-4xl mx-auto">
-            <h1 class="text-4xl font-bold mb-8">Create Problem</h1>
+            <h1 class="text-4xl font-bold mb-8"><%= title %></h1>
 
             <div class="bg-gray-800 rounded-lg p-8">
                 <% if (error) { %>
@@ -20,35 +20,124 @@
                 </div>
                 <% } %>
 
-                <div class="bg-blue-900 border border-blue-700 text-blue-200 px-4 py-3 rounded mb-6">
-                    <h3 class="font-bold mb-2">ZIP Structure Required:</h3>
-                    <pre class="text-sm">
-problem.zip
-├── config.json (title, difficulty, description, etc.)
-├── templates/
-│   ├── python.py
-│   ├── javascript.js
-│   └── cpp.cpp
-└── tests/
-    ├── input/
-    │   ├── 1.txt
-    │   ├── 2.txt
-    │   └── ...
-    └── output/
-        ├── 1.txt
-        ├── 2.txt
-        └── ...</pre>
-                </div>
+                <form action="/admin/problems/create" method="POST" enctype="multipart/form-data" class="space-y-6">
+                    <!-- Problem Info -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Title *</label>
+                            <input type="text" name="title" required
+                                   class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2">
+                        </div>
 
-                <form action="/admin/problems/create" method="POST" enctype="multipart/form-data">
-                    <div class="mb-6">
-                        <label class="block text-sm font-medium mb-2">Upload Problem ZIP</label>
-                        <input type="file" name="zip_file" accept=".zip" required
-                               class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2">
-                        <p class="text-sm text-gray-400 mt-2">Max size: 50MB</p>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Difficulty *</label>
+                            <select name="difficulty" required
+                                    class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2">
+                                <option value="easy">Easy</option>
+                                <option value="medium">Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div class="flex gap-4">
+                    <!-- Description -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Description *</label>
+                        <textarea name="description" rows="6" required
+                                  class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2"></textarea>
+                    </div>
+
+                    <!-- Input/Output Format -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Input Format</label>
+                            <textarea name="input_format" rows="3"
+                                      class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Output Format</label>
+                            <textarea name="output_format" rows="3"
+                                      class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Constraints -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Constraints</label>
+                        <textarea name="constraints" rows="3"
+                                  class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2"></textarea>
+                    </div>
+
+                    <!-- Time/Memory Limits -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Time Limit (ms)</label>
+                            <input type="number" name="time_limit" value="1000"
+                                   class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Memory Limit (MB)</label>
+                            <input type="number" name="memory_limit" value="256"
+                                   class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2">
+                        </div>
+                    </div>
+
+                    <!-- Language Templates -->
+                    <div>
+                        <h3 class="text-xl font-bold mb-4">Language Templates</h3>
+                        <div id="templates-container" class="space-y-4">
+                            <div class="bg-gray-700 rounded p-4 template-item">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                                    <div>
+                                        <label class="block text-sm mb-2">Language</label>
+                                        <select name="lang_ids" class="w-full bg-gray-600 border border-gray-500 rounded px-4 py-2">
+                                            <option value="">Select Language</option>
+                                            <% languages.filter(l => l.is_active).forEach(lang => { %>
+                                            <option value="<%= lang.lang_id %>"><%= lang.lang_name %></option>
+                                            <% }) %>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm mb-2">Template Code</label>
+                                    <textarea name="templates" rows="6"
+                                              class="w-full bg-gray-600 border border-gray-500 rounded px-4 py-2 font-mono text-sm"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" onclick="addTemplate()" class="mt-4 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">
+                            + Add Another Language
+                        </button>
+                    </div>
+
+                    <!-- Test Cases ZIP -->
+                    <div class="border-t border-gray-700 pt-6">
+                        <h3 class="text-xl font-bold mb-4">Test Cases</h3>
+                        <div class="bg-blue-900 border border-blue-700 text-blue-200 px-4 py-3 rounded mb-4">
+                            <p class="font-bold mb-2">ZIP Structure Required:</p>
+                            <pre class="text-sm">
+test_cases.zip
+├── input/
+│   ├── 1.txt
+│   ├── 2.txt
+│   └── ...
+└── output/
+    ├── 1.txt
+    ├── 2.txt
+    └── ...</pre>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Upload Test Cases ZIP *</label>
+                            <input type="file" name="test_zip" accept=".zip" required
+                                   class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2">
+                            <p class="text-sm text-gray-400 mt-2">Max size: 50MB</p>
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="flex gap-4 pt-6">
                         <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg font-semibold">
                             Create Problem
                         </button>
@@ -57,23 +146,17 @@ problem.zip
                         </a>
                     </div>
                 </form>
-
-                <div class="mt-8 p-4 bg-gray-700 rounded">
-                    <h3 class="font-bold mb-2">config.json Example:</h3>
-                    <pre class="text-sm overflow-x-auto">{
-  "title": "Two Sum",
-  "difficulty": "easy",
-  "description": "Find two numbers that add up to target...",
-  "input_format": "First line: array of integers...",
-  "output_format": "Indices of the two numbers...",
-  "constraints": "1 ≤ n ≤ 10^4",
-  "time_limit": 1000,
-  "memory_limit": 256,
-  "points_per_case": 10
-}</pre>
-                </div>
             </div>
         </div>
     </main>
+
+    <script>
+        function addTemplate() {
+            const container = document.getElementById('templates-container');
+            const template = container.querySelector('.template-item').cloneNode(true);
+            template.querySelectorAll('select, textarea').forEach(el => el.value = '');
+            container.appendChild(template);
+        }
+    </script>
 </body>
 </html>

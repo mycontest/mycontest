@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - MyContest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-900 text-gray-100">
+    <%- include('../partials/navbar') %>
+
+    <main class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold mb-8"><%= title %></h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <% contests.forEach(contest => { %>
+            <a href="/contests/<%= contest.contest_id %>" class="bg-gray-800 rounded-lg p-6 hover:bg-gray-750 transition">
+                <div class="flex items-start justify-between mb-3">
+                    <h3 class="text-xl font-semibold"><%= contest.title %></h3>
+                    <span class="px-2 py-1 rounded text-sm <%= contest.status === 'active' ? 'bg-green-900 text-green-200' : contest.status === 'upcoming' ? 'bg-blue-900 text-blue-200' : 'bg-gray-700 text-gray-300' %>">
+                        <%= contest.status %>
+                    </span>
+                </div>
+                <div class="text-gray-400 text-sm space-y-1">
+                    <div>📝 <%= contest.problem_count %> Problems</div>
+                    <div>👤 <%= contest.creator_name %></div>
+                    <div>📅 <%= new Date(contest.start_time).toLocaleDateString() %></div>
+                </div>
+            </a>
+            <% }) %>
+        </div>
+
+        <% if (contests.length === 0) { %>
+        <div class="text-center text-gray-400 mt-12">
+            <p>No contests available</p>
+        </div>
+        <% } %>
+    </main>
+
+    <%- include('../partials/footer') %>
+</body>
+</html>

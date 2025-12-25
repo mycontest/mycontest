@@ -1,6 +1,6 @@
 // ================================================================
 // MYCONTEST PLATFORM - Main Application
-// EJS-based MVC Platform
+// Clean EJS MVC with fnWrap Error Handling
 // ================================================================
 
 require('dotenv').config({ path: '../.env' });
@@ -11,11 +11,12 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const fileUpload = require('express-fileupload');
 const FileStore = require('session-file-store')(session);
+const fnWrap = require('./utils/fnWrap');
 
 const app = express();
 
 // ================================================================
-// MIDDLEWARE SETUP
+// MIDDLEWARE
 // ================================================================
 
 app.use(cookieParser(process.env.SECRET));
@@ -35,69 +36,57 @@ app.use(express.urlencoded({ extended: false, limit: process.env.LIMIT }));
 app.use(express.json({ limit: process.env.LIMIT }));
 app.use(express.static('public'));
 
-// Set EJS as template engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 // ================================================================
-// SERVICES
+// MODULES
 // ================================================================
 
 const {
-    fnRegisterService,
-    fnLoginService,
-    fnGetUserByIdService,
-    fnUpdateProfileService,
-    fnGetUserStatsService
-} = require('./modules/auth/auth.service');
+    authLogin,
+    authRegister,
+    authLogout,
+    authProfile,
+    authCheck,
+    authRequired,
+    authAdmin
+} = require('./modules/auth/auth');
 
 const {
-    fnGetAllProblemsService,
-    fnGetProblemByIdService,
-    fnGetTestCasesService,
-    fnSubmitSolutionService,
-    fnGetSubmissionService,
-    fnGetUserSubmissionsService,
-    fnUpdateSubmissionService,
-    fnGetProblemsByDifficultyService
-} = require('./modules/problems/problems.service');
+    problemsHome,
+    problemsList,
+    problemsView,
+    problemsSubmit,
+    problemsSubmissionView
+} = require('./modules/problems/problems');
 
 const {
-    fnCreateProblemService,
-    fnAddLanguageService,
-    fnGetAllLanguagesService,
-    fnToggleLanguageService,
-    fnGetAllUsersService,
-    fnUpdateUserRoleService,
-    fnDeleteProblemService,
-    fnGetDashboardStatsService
-} = require('./modules/admin/admin.service');
+    adminDashboard,
+    adminProblems,
+    adminProblemCreateForm,
+    adminProblemCreate,
+    adminLanguages,
+    adminLanguageAdd,
+    adminLanguageToggle,
+    adminUsers
+} = require('./modules/admin/admin');
+
+const {
+    contestsList,
+    contestsView,
+    contestsCreate
+} = require('./modules/contests/contests');
+
+const {
+    discussionsGet,
+    discussionsCreate,
+    discussionsDelete
+} = require('./modules/discussions/discussions');
 
 // ================================================================
-// MIDDLEWARE - Auth Check
+// GLOBAL MIDDLEWARE
 // ================================================================
-
-const authCheck = (req, res, next) => {
-    res.locals.user = req.session.user || null;
-    next();
-};
-
-const authRequired = (req, res, next) => {
-    if (!req.session.user) {
-        return res.redirect('/login');
-    }
-    next();
-};
-
-const authAdmin = (req, res, next) => {
-    if (!req.session.user || req.session.user.role !== 'admin') {
-        return res.status(403).render('error', {
-            message: 'Access denied',
-            error: { status: 403 }
-        });
-    }
-    next();
-};
 
 app.use(authCheck);
 
@@ -105,228 +94,106 @@ app.use(authCheck);
 // PUBLIC ROUTES
 // ================================================================
 
-// Home page
-app.get('/', async (req, res) => {
-    try {
-        const problems = await fnGetAllProblemsService();
-        res.render('pages/home', { problems });
-    } catch (error) {
-        res.status(500).render('error', { message: error.message, error });
-    }
-});
+app.get('/', fnWrap(problemsHome));
+app.get('/problems', fnWrap(problemsList));
+app.get('/problems/:id', fnWrap(problemsView));
 
-// Problems list
-app.get('/problems', async (req, res) => {
-    try {
-        const problems = await fnGetAllProblemsService();
-        res.render('pages/problems', { problems });
-    } catch (error) {
-        res.status(500).render('error', { message: error.message, error });
-    }
-});
-
-// Single problem view
-app.get('/problems/:id', async (req, res) => {
-    try {
-        const problem = await fnGetProblemByIdService(req.params.id);
-        res.render('pages/problem', { problem });
-    } catch (error) {
-        res.status(500).render('error', { message: error.message, error });
-    }
-});
-
-// ================================================================
-// AUTH ROUTES
-// ================================================================
-
-// Login page
+// Auth routes
 app.get('/login', (req, res) => {
-    if (req.session.user) {
-        return res.redirect('/');
-    }
-    res.render('pages/login', { error: null });
+    if (req.session.user) return res.redirect('/');
+    res.render('pages/login', { title: 'Login', error: null });
 });
 
-// Login POST
-app.post('/login', async (req, res) => {
+app.post('/login', fnWrap(async (req, res) => {
     try {
-        const { username, password } = req.body;
-        const user = await fnLoginService(username, password);
-        req.session.user = user;
-        res.redirect('/');
+        await authLogin(req, res);
     } catch (error) {
-        res.render('pages/login', { error: error.message });
+        res.render('pages/login', { title: 'Login', error: error.message });
     }
-});
+}));
 
-// Register page
 app.get('/register', (req, res) => {
-    if (req.session.user) {
-        return res.redirect('/');
-    }
-    res.render('pages/register', { error: null });
+    if (req.session.user) return res.redirect('/');
+    res.render('pages/register', { title: 'Register', error: null });
 });
 
-// Register POST
-app.post('/register', async (req, res) => {
+app.post('/register', fnWrap(async (req, res) => {
     try {
-        const { username, email, password, full_name } = req.body;
-        const user = await fnRegisterService(username, email, password, full_name);
-        req.session.user = user;
-        res.redirect('/');
+        await authRegister(req, res);
     } catch (error) {
-        res.render('pages/register', { error: error.message });
+        res.render('pages/register', { title: 'Register', error: error.message });
     }
-});
+}));
 
-// Logout
-app.get('/logout', (req, res) => {
-    req.session.destroy();
-    res.redirect('/');
-});
+app.get('/logout', authLogout);
 
 // ================================================================
-// USER ROUTES (Authenticated)
+// AUTHENTICATED ROUTES
 // ================================================================
 
-// Profile
-app.get('/profile', authRequired, async (req, res) => {
-    try {
-        const stats = await fnGetUserStatsService(req.session.user.user_id);
-        res.render('pages/profile', { stats });
-    } catch (error) {
-        res.status(500).render('error', { message: error.message, error });
-    }
-});
+app.get('/profile', authRequired, fnWrap(authProfile));
+app.post('/problems/:id/submit', authRequired, fnWrap(problemsSubmit));
+app.get('/submissions/:id', fnWrap(problemsSubmissionView));
 
-// Submit solution
-app.post('/problems/:id/submit', authRequired, async (req, res) => {
-    try {
-        const { lang_id, code_body } = req.body;
-        const result = await fnSubmitSolutionService(
-            req.session.user.user_id,
-            req.params.id,
-            lang_id,
-            code_body
-        );
-        res.redirect(`/submissions/${result.submission_id}`);
-    } catch (error) {
-        res.status(500).render('error', { message: error.message, error });
-    }
-});
+// ================================================================
+// CONTESTS ROUTES
+// ================================================================
 
-// View submission
-app.get('/submissions/:id', async (req, res) => {
-    try {
-        const submission = await fnGetSubmissionService(req.params.id);
-        res.render('pages/submission', { submission });
-    } catch (error) {
-        res.status(500).render('error', { message: error.message, error });
-    }
-});
+app.get('/contests', fnWrap(contestsList));
+app.get('/contests/:id', fnWrap(contestsView));
+app.post('/contests/create', authRequired, fnWrap(contestsCreate));
+
+// ================================================================
+// DISCUSSIONS ROUTES
+// ================================================================
+
+app.get('/problems/:problem_id/discussions', authRequired, fnWrap(discussionsGet));
+app.post('/discussions/create', authRequired, fnWrap(discussionsCreate));
+app.post('/discussions/:id/delete', authRequired, fnWrap(discussionsDelete));
 
 // ================================================================
 // ADMIN ROUTES
 // ================================================================
 
-app.get('/admin', authAdmin, async (req, res) => {
+app.get('/admin', authAdmin, fnWrap(adminDashboard));
+app.get('/admin/problems', authAdmin, fnWrap(adminProblems));
+app.get('/admin/problems/create', authAdmin, fnWrap(adminProblemCreateForm));
+
+app.post('/admin/problems/create', authAdmin, fnWrap(async (req, res) => {
     try {
-        const stats = await fnGetDashboardStatsService();
-        res.render('admin/dashboard', { stats });
+        await adminProblemCreate(req, res);
     } catch (error) {
-        res.status(500).render('error', { message: error.message, error });
+        const { fnGetAllLanguages } = require('./modules/admin/admin');
+        const languages = await fnGetAllLanguages();
+        res.render('admin/problem-create', {
+            title: 'Create Problem',
+            languages,
+            error: error.message
+        });
     }
-});
+}));
 
-// Problems management
-app.get('/admin/problems', authAdmin, async (req, res) => {
-    try {
-        const problems = await fnGetAllProblemsService();
-        res.render('admin/problems', { problems });
-    } catch (error) {
-        res.status(500).render('error', { message: error.message, error });
-    }
-});
-
-// Create problem page
-app.get('/admin/problems/create', authAdmin, (req, res) => {
-    res.render('admin/problem-create', { error: null });
-});
-
-// Create problem POST
-app.post('/admin/problems/create', authAdmin, async (req, res) => {
-    try {
-        if (!req.files || !req.files.zip_file) {
-            throw new Error('No ZIP file uploaded');
-        }
-
-        const result = await fnCreateProblemService(
-            req.files.zip_file.data,
-            req.session.user.user_id
-        );
-
-        res.redirect('/admin/problems');
-    } catch (error) {
-        res.render('admin/problem-create', { error: error.message });
-    }
-});
-
-// Languages management
-app.get('/admin/languages', authAdmin, async (req, res) => {
-    try {
-        const languages = await fnGetAllLanguagesService();
-        res.render('admin/languages', { languages });
-    } catch (error) {
-        res.status(500).render('error', { message: error.message, error });
-    }
-});
-
-// Add language POST
-app.post('/admin/languages/add', authAdmin, async (req, res) => {
-    try {
-        await fnAddLanguageService(req.body);
-        res.redirect('/admin/languages');
-    } catch (error) {
-        res.status(500).render('error', { message: error.message, error });
-    }
-});
-
-// Toggle language status
-app.post('/admin/languages/:id/toggle', authAdmin, async (req, res) => {
-    try {
-        await fnToggleLanguageService(req.params.id);
-        res.redirect('/admin/languages');
-    } catch (error) {
-        res.status(500).render('error', { message: error.message, error });
-    }
-});
-
-// Users management
-app.get('/admin/users', authAdmin, async (req, res) => {
-    try {
-        const users = await fnGetAllUsersService();
-        res.render('admin/users', { users });
-    } catch (error) {
-        res.status(500).render('error', { message: error.message, error });
-    }
-});
+app.get('/admin/languages', authAdmin, fnWrap(adminLanguages));
+app.post('/admin/languages/add', authAdmin, fnWrap(adminLanguageAdd));
+app.post('/admin/languages/:id/toggle', authAdmin, fnWrap(adminLanguageToggle));
+app.get('/admin/users', authAdmin, fnWrap(adminUsers));
 
 // ================================================================
 // ERROR HANDLING
 // ================================================================
 
-// 404 handler
 app.use((req, res) => {
     res.status(404).render('error', {
+        title: 'Not Found',
         message: 'Page not found',
         error: { status: 404 }
     });
 });
 
-// Error handler
 app.use((err, req, res, next) => {
-    console.error(err);
+    console.error('Error:', err);
     res.status(err.status || 500).render('error', {
+        title: 'Error',
         message: err.message || 'Internal server error',
         error: err
     });
