@@ -1,4 +1,4 @@
-const fnWrap = require('../../utils/fnWrap');
+const { fnWrap } = require('../../utils');
 const { fnGetAllContests, fnGetContestById, fnGetContestLeaderboard } = require('./contests.service');
 
 const contestsList = fnWrap(async (req, res) => {

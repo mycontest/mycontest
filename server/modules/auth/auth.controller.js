@@ -3,7 +3,7 @@
  * Handles authentication requests
  */
 
-const fnWrap = require('../../utils/fnWrap');
+const { fnWrap } = require('../../utils');
 const {
     fnRegister,
     fnLogin,

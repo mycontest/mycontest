@@ -1,4 +1,4 @@
-const fnWrap = require('../../utils/fnWrap');
+const { fnWrap } = require('../../utils');
 const { fnCreateProblem, fnAddProblemLanguage, fnAddLanguage, fnGetAllLanguages, fnToggleLanguage, fnGetAllUsers, fnGetDashboardStats } = require('./admin.service');
 const { fnGetAllProblems } = require('../problems/problems.service');
 

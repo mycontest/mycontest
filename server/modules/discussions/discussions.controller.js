@@ -1,4 +1,4 @@
-const fnWrap = require('../../utils/fnWrap');
+const { fnWrap } = require('../../utils');
 
 const discussionsGet = fnWrap(async (req, res) => {
     res.render('error', {

@@ -2,7 +2,7 @@
  * Problems Controller
  */
 
-const fnWrap = require('../../utils/fnWrap');
+const { fnWrap } = require('../../utils');
 const {
     fnGetAllProblems,
     fnGetProblemById,
