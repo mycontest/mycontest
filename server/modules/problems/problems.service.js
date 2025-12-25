@@ -21,19 +21,21 @@ const fnGetProblemById = async (problem_id) => {
 
     if (!problem) throw new Error('Problem not found');
 
-    const languages = await dbQueryMany(`
-        SELECT pl.*, l.lang_name, l.lang_code, l.file_extension
-        FROM problem_languages pl
-        JOIN languages l ON pl.lang_id = l.lang_id
-        WHERE pl.problem_id = ? AND l.is_active = TRUE
-    `, [problem_id]);
-
-    const samples = await dbQueryMany(`
-        SELECT input_data, expected_output
-        FROM test_cases
-        WHERE problem_id = ? AND is_sample = TRUE
-        ORDER BY test_order
-    `, [problem_id]);
+    // Fetch languages and samples in parallel
+    const [languages, samples] = await Promise.all([
+        dbQueryMany(`
+            SELECT pl.*, l.lang_name, l.lang_code, l.file_extension
+            FROM problem_languages pl
+            JOIN languages l ON pl.lang_id = l.lang_id
+            WHERE pl.problem_id = ? AND l.is_active = TRUE
+        `, [problem_id]),
+        dbQueryMany(`
+            SELECT input_data, expected_output
+            FROM test_cases
+            WHERE problem_id = ? AND is_sample = TRUE
+            ORDER BY test_order
+        `, [problem_id])
+    ]);
 
     return { ...problem, languages, samples };
 };

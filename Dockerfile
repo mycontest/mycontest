@@ -22,4 +22,4 @@ RUN mkdir -p temp
 EXPOSE 7001
 
 # Start application
-CMD ["node", "app.js"]
+CMD ["node", "server.js"]

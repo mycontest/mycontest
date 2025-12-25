@@ -37,10 +37,12 @@ const problemsSubmit = async (req, res) => {
         code_body
     );
 
-    // Get test cases and language info
-    const test_cases = await fnGetTestCases(req.params.id);
-    const lang = await dbQueryOne('SELECT lang_code FROM languages WHERE lang_id = ?', [lang_id]);
-    const problem = await dbQueryOne('SELECT time_limit FROM problems WHERE problem_id = ?', [req.params.id]);
+    // Fetch test cases, language info, and problem info in parallel
+    const [test_cases, lang, problem] = await Promise.all([
+        fnGetTestCases(req.params.id),
+        dbQueryOne('SELECT lang_code FROM languages WHERE lang_id = ?', [lang_id]),
+        dbQueryOne('SELECT time_limit FROM problems WHERE problem_id = ?', [req.params.id])
+    ]);
 
     // Judge asynchronously (don't wait)
     fnJudgeSubmission(

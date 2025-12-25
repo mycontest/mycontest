@@ -75,15 +75,20 @@ const fnGetAllUsers = async () => {
 };
 
 const fnGetDashboardStats = async () => {
-    const stats = {};
-    const users = await dbQueryOne('SELECT COUNT(*) as total FROM users');
-    stats.total_users = users.total;
-    const problems = await dbQueryOne('SELECT COUNT(*) as total FROM problems WHERE is_active = TRUE');
-    stats.total_problems = problems.total;
-    const submissions = await dbQueryOne('SELECT COUNT(*) as total FROM submissions');
-    stats.total_submissions = submissions.total;
-    stats.recent_submissions = await dbQueryMany('SELECT s.submission_id, s.status, s.submitted_at, u.username, p.title as problem_title, l.lang_name FROM submissions s JOIN users u ON s.user_id = u.user_id JOIN problems p ON s.problem_id = p.problem_id LEFT JOIN languages l ON s.lang_id = l.lang_id ORDER BY s.submitted_at DESC LIMIT 10');
-    return stats;
+    // Fetch all counts in parallel for better performance
+    const [users, problems, submissions, recent_submissions] = await Promise.all([
+        dbQueryOne('SELECT COUNT(*) as total FROM users'),
+        dbQueryOne('SELECT COUNT(*) as total FROM problems WHERE is_active = TRUE'),
+        dbQueryOne('SELECT COUNT(*) as total FROM submissions'),
+        dbQueryMany('SELECT s.submission_id, s.status, s.submitted_at, u.username, p.title as problem_title, l.lang_name FROM submissions s JOIN users u ON s.user_id = u.user_id JOIN problems p ON s.problem_id = p.problem_id LEFT JOIN languages l ON s.lang_id = l.lang_id ORDER BY s.submitted_at DESC LIMIT 10')
+    ]);
+
+    return {
+        total_users: users.total,
+        total_problems: problems.total,
+        total_submissions: submissions.total,
+        recent_submissions
+    };
 };
 
 module.exports = { fnCreateProblem, fnAddProblemLanguage, fnAddLanguage, fnGetAllLanguages, fnToggleLanguage, fnGetAllUsers, fnGetDashboardStats };
