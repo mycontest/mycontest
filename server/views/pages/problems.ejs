@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problems - MyContest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-900 text-gray-100">
+    <%- include('../partials/navbar') %>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold mb-4">Problems</h1>
+            <p class="text-gray-400">Solve problems to improve your coding skills</p>
+        </div>
+
+        <!-- Filter -->
+        <div class="mb-6 flex gap-4">
+            <select class="bg-gray-800 border border-gray-700 rounded px-4 py-2">
+                <option value="">All Difficulties</option>
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+            </select>
+        </div>
+
+        <!-- Problems List -->
+        <div class="bg-gray-800 rounded-lg overflow-hidden">
+            <table class="w-full">
+                <thead class="bg-gray-700">
+                    <tr>
+                        <th class="px-6 py-3 text-left">#</th>
+                        <th class="px-6 py-3 text-left">Title</th>
+                        <th class="px-6 py-3 text-left">Difficulty</th>
+                        <th class="px-6 py-3 text-left">Languages</th>
+                        <th class="px-6 py-3 text-left">Solved</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% problems.forEach(problem => { %>
+                    <tr class="border-t border-gray-700 hover:bg-gray-750">
+                        <td class="px-6 py-4"><%= problem.problem_id %></td>
+                        <td class="px-6 py-4">
+                            <a href="/problems/<%= problem.problem_id %>" class="text-blue-400 hover:text-blue-300">
+                                <%= problem.title %>
+                            </a>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="difficulty-<%= problem.difficulty %>">
+                                <%= problem.difficulty %>
+                            </span>
+                        </td>
+                        <td class="px-6 py-4"><%= problem.language_count || 0 %></td>
+                        <td class="px-6 py-4"><%= problem.solved_count || 0 %></td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <style>
+        .difficulty-easy { color: #22c55e; }
+        .difficulty-medium { color: #eab308; }
+        .difficulty-hard { color: #ef4444; }
+    </style>
+</body>
+</html>

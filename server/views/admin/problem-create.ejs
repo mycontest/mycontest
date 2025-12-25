@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Problem - Admin - MyContest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-900 text-gray-100">
+    <%- include('../partials/navbar') %>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-4xl font-bold mb-8">Create Problem</h1>
+
+            <div class="bg-gray-800 rounded-lg p-8">
+                <% if (error) { %>
+                <div class="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded mb-6">
+                    <%= error %>
+                </div>
+                <% } %>
+
+                <div class="bg-blue-900 border border-blue-700 text-blue-200 px-4 py-3 rounded mb-6">
+                    <h3 class="font-bold mb-2">ZIP Structure Required:</h3>
+                    <pre class="text-sm">
+problem.zip
+├── config.json (title, difficulty, description, etc.)
+├── templates/
+│   ├── python.py
+│   ├── javascript.js
+│   └── cpp.cpp
+└── tests/
+    ├── input/
+    │   ├── 1.txt
+    │   ├── 2.txt
+    │   └── ...
+    └── output/
+        ├── 1.txt
+        ├── 2.txt
+        └── ...</pre>
+                </div>
+
+                <form action="/admin/problems/create" method="POST" enctype="multipart/form-data">
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium mb-2">Upload Problem ZIP</label>
+                        <input type="file" name="zip_file" accept=".zip" required
+                               class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2">
+                        <p class="text-sm text-gray-400 mt-2">Max size: 50MB</p>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg font-semibold">
+                            Create Problem
+                        </button>
+                        <a href="/admin/problems" class="bg-gray-700 hover:bg-gray-600 px-8 py-3 rounded-lg inline-block">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+
+                <div class="mt-8 p-4 bg-gray-700 rounded">
+                    <h3 class="font-bold mb-2">config.json Example:</h3>
+                    <pre class="text-sm overflow-x-auto">{
+  "title": "Two Sum",
+  "difficulty": "easy",
+  "description": "Find two numbers that add up to target...",
+  "input_format": "First line: array of integers...",
+  "output_format": "Indices of the two numbers...",
+  "constraints": "1 ≤ n ≤ 10^4",
+  "time_limit": 1000,
+  "memory_limit": 256,
+  "points_per_case": 10
+}</pre>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= problem.title %> - MyContest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/editor/editor.main.css">
+</head>
+<body class="min-h-screen bg-gray-900 text-gray-100">
+    <%- include('../partials/navbar') %>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Problem Description -->
+            <div class="bg-gray-800 rounded-lg p-6 overflow-auto" style="max-height: calc(100vh - 200px);">
+                <div class="mb-4">
+                    <h1 class="text-3xl font-bold mb-2"><%= problem.title %></h1>
+                    <span class="difficulty-<%= problem.difficulty %> font-semibold">
+                        <%= problem.difficulty.toUpperCase() %>
+                    </span>
+                </div>
+
+                <div class="prose prose-invert max-w-none">
+                    <h3>Description</h3>
+                    <p><%= problem.description || 'No description available' %></p>
+
+                    <% if (problem.input_format) { %>
+                    <h3>Input Format</h3>
+                    <p><%= problem.input_format %></p>
+                    <% } %>
+
+                    <% if (problem.output_format) { %>
+                    <h3>Output Format</h3>
+                    <p><%= problem.output_format %></p>
+                    <% } %>
+
+                    <% if (problem.constraints) { %>
+                    <h3>Constraints</h3>
+                    <p><%= problem.constraints %></p>
+                    <% } %>
+
+                    <% if (problem.samples && problem.samples.length > 0) { %>
+                    <h3>Sample Test Cases</h3>
+                    <% problem.samples.forEach((sample, idx) => { %>
+                    <div class="bg-gray-700 rounded p-4 mb-4">
+                        <div class="mb-2 font-semibold">Example <%= idx + 1 %>:</div>
+                        <div class="mb-2">
+                            <div class="text-sm text-gray-400">Input:</div>
+                            <pre class="bg-gray-900 p-2 rounded"><%= sample.input_data %></pre>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-400">Output:</div>
+                            <pre class="bg-gray-900 p-2 rounded"><%= sample.expected_output %></pre>
+                        </div>
+                    </div>
+                    <% }) %>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Code Editor -->
+            <div class="bg-gray-800 rounded-lg p-6">
+                <form action="/problems/<%= problem.problem_id %>/submit" method="POST" id="submitForm">
+                    <!-- Language Selector -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2">Select Language</label>
+                        <select name="lang_id" id="langSelect" class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2">
+                            <% problem.languages.forEach(lang => { %>
+                            <option value="<%= lang.lang_id %>" data-code="<%= lang.lang_code %>" data-template="<%= encodeURIComponent(lang.template_code || '') %>">
+                                <%= lang.lang_name %>
+                            </option>
+                            <% }) %>
+                        </select>
+                    </div>
+
+                    <!-- Code Editor -->
+                    <div class="mb-4">
+                        <div id="codeEditor" style="height: 500px; border: 1px solid #374151; border-radius: 0.375rem;"></div>
+                        <textarea name="code_body" id="codeInput" class="hidden"></textarea>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex gap-4">
+                        <button type="button" onclick="runCode()" class="bg-gray-700 hover:bg-gray-600 px-6 py-2 rounded-lg">
+                            Run Code
+                        </button>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg flex-1">
+                            Submit Solution
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/loader.js"></script>
+    <script>
+        let editor;
+        const langSelect = document.getElementById('langSelect');
+
+        require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs' }});
+        require(['vs/editor/editor.main'], function () {
+            const langMap = {
+                'python': 'python',
+                'javascript': 'javascript',
+                'cpp': 'cpp',
+                'java': 'java',
+                'go': 'go'
+            };
+
+            // Initialize editor
+            const firstLang = langSelect.options[0].dataset.code;
+            const firstTemplate = decodeURIComponent(langSelect.options[0].dataset.template || '');
+
+            editor = monaco.editor.create(document.getElementById('codeEditor'), {
+                value: firstTemplate,
+                language: langMap[firstLang] || 'python',
+                theme: 'vs-dark',
+                minimap: { enabled: false },
+                fontSize: 14,
+                scrollBeyondLastLine: false
+            });
+
+            // Language change
+            langSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const langCode = selectedOption.dataset.code;
+                const template = decodeURIComponent(selectedOption.dataset.template || '');
+
+                editor.setValue(template);
+                monaco.editor.setModelLanguage(editor.getModel(), langMap[langCode] || 'python');
+            });
+
+            // Form submit
+            document.getElementById('submitForm').addEventListener('submit', function(e) {
+                document.getElementById('codeInput').value = editor.getValue();
+            });
+        });
+
+        function runCode() {
+            alert('Run code functionality - connect to judge system');
+        }
+    </script>
+
+    <style>
+        .difficulty-easy { color: #22c55e; }
+        .difficulty-medium { color: #eab308; }
+        .difficulty-hard { color: #ef4444; }
+        .prose h3 { color: #93c5fd; font-size: 1.25rem; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+        .prose p { margin-bottom: 1rem; color: #cbd5e1; }
+        .prose pre { background: #1e293b; padding: 0.5rem; border-radius: 0.375rem; overflow-x: auto; }
+    </style>
+</body>
+</html>

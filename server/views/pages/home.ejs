@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - MyContest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-900 text-gray-100">
+    <%- include('../partials/navbar') %>
+
+    <main class="container mx-auto px-4 py-12">
+        <!-- Hero Section -->
+        <div class="text-center mb-16">
+            <h1 class="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                Welcome to MyContest
+            </h1>
+            <p class="text-xl text-gray-400 mb-8">
+                Practice coding problems, compete in contests, and improve your skills
+            </p>
+            <% if (!user) { %>
+            <div class="space-x-4">
+                <a href="/register" class="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg text-white font-semibold inline-block">
+                    Get Started
+                </a>
+                <a href="/problems" class="bg-gray-700 hover:bg-gray-600 px-8 py-3 rounded-lg text-white font-semibold inline-block">
+                    Browse Problems
+                </a>
+            </div>
+            <% } %>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div class="bg-gray-800 rounded-lg p-6 text-center">
+                <div class="text-4xl font-bold text-blue-400"><%= problems.length %></div>
+                <div class="text-gray-400 mt-2">Problems</div>
+            </div>
+            <div class="bg-gray-800 rounded-lg p-6 text-center">
+                <div class="text-4xl font-bold text-green-400">5</div>
+                <div class="text-gray-400 mt-2">Languages</div>
+            </div>
+            <div class="bg-gray-800 rounded-lg p-6 text-center">
+                <div class="text-4xl font-bold text-purple-400">∞</div>
+                <div class="text-gray-400 mt-2">Possibilities</div>
+            </div>
+        </div>
+
+        <!-- Recent Problems -->
+        <div>
+            <h2 class="text-3xl font-bold mb-6">Recent Problems</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <% problems.slice(0, 6).forEach(problem => { %>
+                <a href="/problems/<%= problem.problem_id %>" class="bg-gray-800 rounded-lg p-6 hover:bg-gray-750 transition">
+                    <div class="flex items-start justify-between mb-3">
+                        <h3 class="text-xl font-semibold"><%= problem.title %></h3>
+                        <span class="difficulty-<%= problem.difficulty %> text-sm font-medium">
+                            <%= problem.difficulty %>
+                        </span>
+                    </div>
+                    <div class="text-gray-400 text-sm space-y-1">
+                        <div>📝 <%= problem.language_count || 0 %> Languages</div>
+                        <div>✅ <%= problem.solved_count || 0 %> Solved</div>
+                        <div>👥 <%= problem.attempt_count || 0 %> Attempts</div>
+                    </div>
+                </a>
+                <% }) %>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+</body>
+</html>

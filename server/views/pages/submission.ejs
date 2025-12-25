@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submission #<%= submission.submission_id %> - MyContest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-900 text-gray-100">
+    <%- include('../partials/navbar') %>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-4xl font-bold mb-8">Submission #<%= submission.submission_id %></h1>
+
+            <!-- Submission Info -->
+            <div class="bg-gray-800 rounded-lg p-6 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="text-gray-400 text-sm">Problem</div>
+                        <div class="text-xl font-semibold">
+                            <a href="/problems/<%= submission.problem_id %>" class="text-blue-400 hover:text-blue-300">
+                                <%= submission.problem_title %>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="text-gray-400 text-sm">Status</div>
+                        <div class="text-2xl font-bold status-<%= submission.status %>">
+                            <%= submission.status.replace(/_/g, ' ').toUpperCase() %>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="text-gray-400 text-sm">Language</div>
+                        <div class="text-lg"><%= submission.lang_name || 'N/A' %></div>
+                    </div>
+
+                    <div>
+                        <div class="text-gray-400 text-sm">Submitted At</div>
+                        <div class="text-lg"><%= new Date(submission.submitted_at).toLocaleString() %></div>
+                    </div>
+
+                    <div>
+                        <div class="text-gray-400 text-sm">Test Cases</div>
+                        <div class="text-lg"><%= submission.test_passed %>/<%= submission.test_total %></div>
+                    </div>
+
+                    <div>
+                        <div class="text-gray-400 text-sm">Score</div>
+                        <div class="text-lg font-bold text-blue-400"><%= submission.score %></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Code -->
+            <div class="bg-gray-800 rounded-lg p-6 mb-6">
+                <h2 class="text-2xl font-bold mb-4">Submitted Code</h2>
+                <pre class="bg-gray-900 p-4 rounded overflow-x-auto"><code><%= submission.code_body %></code></pre>
+            </div>
+
+            <% if (submission.error_message) { %>
+            <!-- Error Message -->
+            <div class="bg-red-900 border border-red-700 rounded-lg p-6">
+                <h2 class="text-2xl font-bold mb-4">Error Message</h2>
+                <pre class="text-red-200"><%= submission.error_message %></pre>
+            </div>
+            <% } %>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <style>
+        .status-accepted { color: #22c55e; }
+        .status-wrong_answer { color: #ef4444; }
+        .status-pending { color: #eab308; }
+        .status-running { color: #3b82f6; }
+        .status-runtime_error { color: #f97316; }
+    </style>
+</body>
+</html>

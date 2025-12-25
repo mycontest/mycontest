@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - MyContest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-900 text-gray-100">
+    <%- include('partials/navbar') %>
+
+    <main class="container mx-auto px-4 py-16">
+        <div class="max-w-2xl mx-auto text-center">
+            <h1 class="text-9xl font-bold text-blue-400 mb-4">
+                <%= error.status || 500 %>
+            </h1>
+
+            <h2 class="text-4xl font-bold mb-4">
+                <%= error.status === 404 ? 'Page Not Found' : 'Something Went Wrong' %>
+            </h2>
+
+            <p class="text-xl text-gray-400 mb-8">
+                <%= message || 'An error occurred while processing your request' %>
+            </p>
+
+            <a href="/" class="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg inline-block">
+                Go Home
+            </a>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+</body>
+</html>
