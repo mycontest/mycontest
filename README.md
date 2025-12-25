@@ -1,120 +1,207 @@
-# mycontest.dev[uz]
+# MyContest Platform
 
-### Open-Source Contest Platform
-
-MyContest.uz is an open-source platform designed for hosting and managing programming contests. It provides essential tools for running competitions, evaluating solutions, and ranking participants.
+Professional Code Judge & Contest Platform with EJS-based MVC architecture and multi-language support.
 
 ## Features
 
-- **Multi-Language Support**: Python, JavaScript, C++, Java, Go
-- **Code Execution Engine**: Secure sandboxed execution with time/memory limits
-- **Admin Panel**: Problem creation, language management, user administration
-- **Real-time Judging**: Automated test case evaluation with detailed feedback
-- **Contest System**: Create and manage programming competitions
-- **User Submissions**: Track progress and view submission history
+- 🏆 **Multi-Language Support**: Python, JavaScript, C++, Java, SQL
+- 📝 **Problem Management**: Create problems with multiple test cases
+- 🎯 **Contest System**: Organize coding competitions with leaderboards
+- 👥 **User Management**: Admin panel, roles, subscriptions
+- ⚡ **Real-time Judging**: Docker-based code execution
+- 📊 **Statistics & Analytics**: Track user progress and submissions
+- 🔒 **Secure**: Flash messages, validation, error handling
 
-## Quick Start with Docker Compose
+## Tech Stack
 
-1. Clone the repository:
+- **Backend**: Node.js + Express.js
+- **Database**: MySQL 8.0
+- **View Engine**: EJS
+- **Validation**: Joi
+- **Session**: express-session + file-store
+- **Execution**: Docker containers
 
-   ```sh
-   git clone https://github.com/mycontest/mycontest
+## Project Structure
+
+```
+mycontest/
+├── server/                  # Main application
+│   ├── app.js              # Express app configuration
+│   ├── server.js           # Server entry point
+│   ├── modules/            # MVC modules (Router/Controller/Service/Schema)
+│   │   ├── auth/           # Authentication
+│   │   ├── problems/       # Problem management
+│   │   ├── admin/          # Admin panel
+│   │   ├── contests/       # Contest system
+│   │   ├── compiler/       # Code execution
+│   │   └── discussions/    # Discussions (future)
+│   ├── middleware/         # Auth & validation middleware
+│   ├── utils/              # Database & helpers
+│   ├── views/              # EJS templates
+│   ├── public/             # Static assets
+│   └── scripts/            # Utility scripts
+├── database/               # Database schema & seeds
+│   ├── init.sql           # Database initialization
+│   └── seed.sql           # Sample data
+├── data/                   # Runtime data
+│   ├── mysql/             # MySQL data directory
+│   ├── storage/           # Uploaded files & test cases
+│   ├── backups/           # Automated backups
+│   └── docs/              # Documentation & nginx config
+├── docker-compose.yml     # Docker configuration
+└── Dockerfile            # Application container
+```
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 18+
+- MySQL 8.0+
+- Docker (optional, for code execution)
+
+### Installation
+
+1. **Clone repository**
+   ```bash
+   git clone https://github.com/mycontest/mycontest.git
    cd mycontest
    ```
 
-2. Set up environment variables:
-
-   ```sh
-   cp .env.example .env
-   ```
-
-   Edit `.env` and configure:
-   - `SECRET` - Session secret key
-   - `MYSQL_PASSWORD` - MySQL root password
-   - `MYSQL_DATABASE` - Database name (default: my_contest)
-   - `PORT` - Application port (default: 7001)
-   - `DOMAIN` - Your domain URL
-
-3. Start with Docker Compose:
-
-   ```sh
-   docker-compose up -d
-   ```
-
-   This will automatically:
-   - Create and configure MySQL database
-   - Initialize database schema with seed data
-   - Start the web application
-
-4. Access the platform:
-
-   - Web Interface: `http://localhost:7001`
-   - Default Admin: `admin` / `admin123`
-
-5. View logs:
-
-   ```sh
-   docker-compose logs -f web
-   ```
-
-## Manual Installation (Without Docker)
-
-### Required Applications
-
-- **Node.js** (v18+) for the backend server
-- **MySQL** (8.0+) as the database system
-- **Python 3** for Python code execution
-
-### Setup Steps
-
-1. Install dependencies:
-
-   ```sh
+2. **Install dependencies**
+   ```bash
    cd server
    npm install
    ```
 
-2. Initialize the MySQL database:
-
-   ```sh
-   mysql -u root -p < data/database_schema.sql
+3. **Configure environment**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your settings
    ```
 
-3. Configure environment variables (`.env`):
-
-   ```sh
-   MYSQL_HOST=localhost
-   MYSQL_DATABASE=my_contest
-   MYSQL_USERNAME=root
-   MYSQL_PASSWORD=your_password
-   PORT=7001
-   SECRET=your_secret_key
-   DOMAIN=http://localhost:7001
+4. **Initialize database**
+   ```bash
+   npm run db:init    # Create database schema
+   npm run db:seed    # Insert sample data
    ```
 
-4. Start the server:
-
-   ```sh
-   cd server
+5. **Start application**
+   ```bash
    npm start
    ```
 
-### Additional Setup
+6. **Access application**
+   - URL: http://localhost:7001
+   - Admin: `admin` / `admin123`
+   - User: `demo_user` / `user123`
 
-- **Architecture Diagram:** The platform architecture is outlined below:
+## Docker Deployment
 
-  ![Architecture Diagram](data/architecture_diagram.jpg)
+```bash
+docker-compose up -d
+```
 
-- **Nginx Configuration:** The `.nginx` directory in `data/` contains configuration files that can help set up a reverse proxy for deployment.
+## Database Scripts
 
-### Demo
+```bash
+npm run db:init      # Initialize database schema
+npm run db:seed      # Seed sample data
+npm run db:reset     # Reset database (init + seed)
+```
 
-Check out the live demo of mycontest.dev: [Demo Link](https://mycontest.dev)
+## Backup & Restore
 
-### Installation Guide (Video)
+```bash
+npm run backup       # Full backup (database + files)
+npm run backup:db    # Database only
+npm run backup:full  # Complete project archive
+```
 
-For a step-by-step installation guide, watch our [YouTube installation video]([https://www.youtube.com/watch?v=your_video_id](http://youtube.com/mensenvau)).
+Backups are stored in `data/backups/` and automatically cleaned (keeps last 10).
 
-### Telegram Channel
+## Architecture
 
-Stay updated by joining our [Telegram channel](https://t.me/mensenvau).
+### MVC Pattern
+
+- **Router**: Route definitions + validation middleware
+- **Controller**: Request handling + error wrapping (fnWrap)
+- **Service**: Business logic + database operations
+- **Schema**: Joi validation schemas
+
+### Error Handling
+
+- Global error handler with flash messages
+- Automatic error propagation via `fnWrap`
+- Smart routing: validation errors → flash + redirect, API → JSON, others → error page
+
+### Performance
+
+- Promise.all for parallel queries (2-4x faster)
+- Pagination for all list endpoints (20-30 items/page)
+- Connection pooling for MySQL
+- Session management with file store
+
+## API Endpoints
+
+### Public Routes
+- `GET /` - Home page (problem list)
+- `GET /login` - Login page
+- `POST /login` - Login handler
+- `GET /register` - Register page
+- `POST /register` - Register handler
+- `GET /problems` - Problems list
+- `GET /problems/:id` - Problem details
+
+### Protected Routes
+- `POST /problems/:id/submit` - Submit solution
+- `GET /submissions/:id` - Submission details
+- `GET /profile` - User profile
+- `GET /contests` - Contests list
+- `GET /contests/:id` - Contest details
+
+### Admin Routes
+- `GET /admin` - Admin dashboard
+- `GET /admin/problems` - Manage problems
+- `POST /admin/problems/create` - Create problem
+- `GET /admin/languages` - Manage languages
+- `POST /admin/languages/add` - Add language
+- `GET /admin/users` - Manage users
+
+## Environment Variables
+
+```env
+# Server
+PORT=7001
+DOMAIN=http://localhost:7001
+NODE_ENV=development
+
+# Database
+MYSQL_HOST=localhost
+MYSQL_PORT=3306
+MYSQL_USERNAME=root
+MYSQL_PASSWORD=yourpassword
+MYSQL_DATABASE=my_contest
+
+# Security
+SECRET=your-secret-key-here
+
+# Limits
+LIMIT=52428800
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+ISC
+
+## Support
+
+For issues and questions: https://github.com/mycontest/mycontest/issues

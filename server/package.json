@@ -5,7 +5,13 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "nodemon --ignore session/ server.js"
+        "start": "nodemon --ignore session/ server.js",
+        "db:init": "mysql -u root -p < ../database/init.sql",
+        "db:seed": "mysql -u root -p < ../database/seed.sql",
+        "db:reset": "npm run db:init && npm run db:seed",
+        "backup": "node scripts/backup.js",
+        "backup:db": "mysqldump -u root -p my_contest > ../data/backup_$(date +%Y%m%d_%H%M%S).sql",
+        "backup:full": "tar -czf ../mycontest_backup_$(date +%Y%m%d_%H%M%S).tar.gz ../ --exclude=node_modules --exclude=.git --exclude=session --exclude=temp"
     },
     "repository": {
         "type": "git",
