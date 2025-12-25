@@ -3,6 +3,6 @@
  * Validation schemas for discussions (Coming Soon)
  */
 
-const Joi = require('joi');
+const Joi = require("joi");
 
 module.exports = {};

@@ -3,28 +3,23 @@
  * Validates request data using Joi schemas
  */
 
-const createError = require('http-errors');
+const createError = require("http-errors");
 
-/**
- * Validate request body against Joi schema
- * @param {Object} schema - Joi validation schema
- * @returns {Function} Express middleware
- */
 const validate = (schema) => {
-    return (req, res, next) => {
-        const { error, value } = schema.validate(req.body, {
-            abortEarly: false,
-            stripUnknown: true
-        });
+  return (req, res, next) => {
+    const { error, value } = schema.validate(req.body, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
 
-        if (error) {
-            const error_messages = error.details.map(detail => detail.message).join(', ');
-            return next(createError(400, error_messages));
-        }
+    if (error) {
+      const error_messages = error.details.map((detail) => detail.message).join(", ");
+      return next(createError(400, error_messages));
+    }
 
-        req.body = value;
-        next();
-    };
+    req.body = value;
+    next();
+  };
 };
 
 module.exports = validate;

@@ -3,12 +3,12 @@
  * Database operations for discussions (Coming Soon)
  */
 
-const { dbQueryMany } = require('../../utils/mysql');
+const { dbQueryMany } = require("../../utils/mysql");
 
 const fnGetDiscussions = async (problem_id) => {
-    return [];
+  return [];
 };
 
 module.exports = {
-    fnGetDiscussions
+  fnGetDiscussions,
 };

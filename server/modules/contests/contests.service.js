@@ -3,13 +3,14 @@
  * Database operations for contests
  */
 
-const { dbQueryOne, dbQueryMany } = require('../../utils/mysql');
+const { dbQueryOne, dbQueryMany } = require("../../utils/mysql");
 
 const fnGetAllContests = async (page = 1, limit = 20) => {
-    const offset = (page - 1) * limit;
+  const offset = (page - 1) * limit;
 
-    const [contests, count] = await Promise.all([
-        dbQueryMany(`
+  const [contests, count] = await Promise.all([
+    dbQueryMany(
+      `
             SELECT
                 c.contest_id,
                 c.title,
@@ -26,36 +27,42 @@ const fnGetAllContests = async (page = 1, limit = 20) => {
             GROUP BY c.contest_id
             ORDER BY c.start_time DESC
             LIMIT ? OFFSET ?
-        `, [limit, offset]),
-        dbQueryOne('SELECT COUNT(*) as total FROM contests')
-    ]);
+        `,
+      [limit, offset]
+    ),
+    dbQueryOne("SELECT COUNT(*) as total FROM contests"),
+  ]);
 
-    return {
-        contests,
-        pagination: {
-            page,
-            limit,
-            total: count.total,
-            total_pages: Math.ceil(count.total / limit)
-        }
-    };
+  return {
+    contests,
+    pagination: {
+      page,
+      limit,
+      total: count.total,
+      total_pages: Math.ceil(count.total / limit),
+    },
+  };
 };
 
 const fnGetContestById = async (contest_id) => {
-    const contest = await dbQueryOne(`
+  const contest = await dbQueryOne(
+    `
         SELECT
             c.*,
             u.username as creator_name
         FROM contests c
         LEFT JOIN users u ON c.created_by = u.user_id
         WHERE c.contest_id = ?
-    `, [contest_id]);
+    `,
+    [contest_id]
+  );
 
-    if (!contest) {
-        throw new Error('Contest not found');
-    }
+  if (!contest) {
+    throw new Error("Contest not found");
+  }
 
-    const problems = await dbQueryMany(`
+  const problems = await dbQueryMany(
+    `
         SELECT
             p.problem_id,
             p.title,
@@ -70,16 +77,19 @@ const fnGetContestById = async (contest_id) => {
         WHERE cp.contest_id = ?
         GROUP BY p.problem_id
         ORDER BY cp.problem_order
-    `, [contest_id]);
+    `,
+    [contest_id]
+  );
 
-    return {
-        ...contest,
-        problems
-    };
+  return {
+    ...contest,
+    problems,
+  };
 };
 
 const fnGetContestLeaderboard = async (contest_id) => {
-    return await dbQueryMany(`
+  return await dbQueryMany(
+    `
         SELECT
             u.user_id,
             u.username,
@@ -93,11 +103,13 @@ const fnGetContestLeaderboard = async (contest_id) => {
         GROUP BY u.user_id
         ORDER BY total_score DESC, last_submission_time ASC
         LIMIT 100
-    `, [contest_id]);
+    `,
+    [contest_id]
+  );
 };
 
 module.exports = {
-    fnGetAllContests,
-    fnGetContestById,
-    fnGetContestLeaderboard
+  fnGetAllContests,
+  fnGetContestById,
+  fnGetContestLeaderboard,
 };
