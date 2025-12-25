@@ -1,0 +1,65 @@
+<% if (pagination && pagination.total_pages > 1) { %>
+<div class="flex justify-center items-center space-x-2 mt-8">
+    <!-- Previous Button -->
+    <% if (pagination.page > 1) { %>
+    <a href="?page=<%= pagination.page - 1 %>" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+        ← Prev
+    </a>
+    <% } else { %>
+    <span class="px-4 py-2 bg-gray-800 text-gray-500 rounded-lg cursor-not-allowed">
+        ← Prev
+    </span>
+    <% } %>
+
+    <!-- Page Numbers -->
+    <%
+    const maxPages = 5;
+    let startPage = Math.max(1, pagination.page - Math.floor(maxPages / 2));
+    let endPage = Math.min(pagination.total_pages, startPage + maxPages - 1);
+
+    if (endPage - startPage + 1 < maxPages) {
+        startPage = Math.max(1, endPage - maxPages + 1);
+    }
+    %>
+
+    <% if (startPage > 1) { %>
+    <a href="?page=1" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition">1</a>
+    <% if (startPage > 2) { %>
+    <span class="px-2 text-gray-500">...</span>
+    <% } %>
+    <% } %>
+
+    <% for (let i = startPage; i <= endPage; i++) { %>
+    <% if (i === pagination.page) { %>
+    <span class="px-4 py-2 bg-blue-600 text-white rounded-lg font-bold"><%= i %></span>
+    <% } else { %>
+    <a href="?page=<%= i %>" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition"><%= i %></a>
+    <% } %>
+    <% } %>
+
+    <% if (endPage < pagination.total_pages) { %>
+    <% if (endPage < pagination.total_pages - 1) { %>
+    <span class="px-2 text-gray-500">...</span>
+    <% } %>
+    <a href="?page=<%= pagination.total_pages %>" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition"><%= pagination.total_pages %></a>
+    <% } %>
+
+    <!-- Next Button -->
+    <% if (pagination.page < pagination.total_pages) { %>
+    <a href="?page=<%= pagination.page + 1 %>" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+        Next →
+    </a>
+    <% } else { %>
+    <span class="px-4 py-2 bg-gray-800 text-gray-500 rounded-lg cursor-not-allowed">
+        Next →
+    </span>
+    <% } %>
+</div>
+
+<!-- Pagination Info -->
+<div class="text-center text-gray-400 text-sm mt-4">
+    Showing <%= ((pagination.page - 1) * pagination.limit) + 1 %>
+    to <%= Math.min(pagination.page * pagination.limit, pagination.total) %>
+    of <%= pagination.total %> results
+</div>
+<% } %>
