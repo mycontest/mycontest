@@ -58,8 +58,8 @@ const createApp = () => {
   // GLOBAL MIDDLEWARE
   // ================================================================
 
-  const { authCheck } = require("./middleware");
-  app.use(authCheck);
+  const middlewareAuth = require("./middleware/auth");
+  app.use(middlewareAuth.authCheck);
 
   // ================================================================
   // ROUTES

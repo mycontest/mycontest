@@ -4,7 +4,8 @@
 
 const express = require("express");
 const router = express.Router();
-const { validate, authRequired } = require("../../middleware");
+const middlewareAuth = require("../../middleware/auth");
+const middlewareValidate = require("../../middleware/validate");
 const { schemaSubmit } = require("./problems.schema");
 
 const { problemsHome, problemsList, problemsView, problemsSubmit, problemsSubmissionView } = require("./problems.controller");
@@ -12,7 +13,7 @@ const { problemsHome, problemsList, problemsView, problemsSubmit, problemsSubmis
 router.get("/", problemsHome);
 router.get("/problems", problemsList);
 router.get("/problems/:id", problemsView);
-router.post("/problems/:id/submit", authRequired, validate(schemaSubmit), problemsSubmit);
+router.post("/problems/:id/submit", middlewareAuth.authRequired, middlewareValidate(schemaSubmit), problemsSubmit);
 router.get("/submissions/:id", problemsSubmissionView);
 
 module.exports = router;

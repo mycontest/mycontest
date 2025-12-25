@@ -5,18 +5,19 @@
 
 const express = require("express");
 const router = express.Router();
-const { validate, authRequired } = require("../../middleware");
+const middlewareAuth = require("../../middleware/auth");
+const middlewareValidate = require("../../middleware/validate");
 const { schemaLogin, schemaRegister } = require("./auth.schema");
 
 const { authLogin, authRegister, authLogout, authProfile, authLoginPage, authRegisterPage } = require("./auth.controller");
 
 router.get("/login", authLoginPage);
-router.post("/login", validate(schemaLogin), authLogin);
+router.post("/login", middlewareValidate(schemaLogin), authLogin);
 
 router.get("/register", authRegisterPage);
-router.post("/register", validate(schemaRegister), authRegister);
+router.post("/register", middlewareValidate(schemaRegister), authRegister);
 
 router.get("/logout", authLogout);
-router.get("/profile", authRequired, authProfile);
+router.get("/profile", middlewareAuth.authRequired, authProfile);
 
 module.exports = router;
