@@ -4,7 +4,7 @@
 
 const express = require('express');
 const router = express.Router();
-const fnWrap = require('../../utils/fnWrap');
+const { fnWrap } = require('../../utils');
 const { authRequired } = require('../auth/auth.service');
 
 const {

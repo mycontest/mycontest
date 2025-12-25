@@ -11,7 +11,7 @@ const {
 } = require('./problems.service');
 
 const { fnJudgeSubmission } = require('../compiler/compiler.service');
-const { dbQueryOne } = require('../../utils/db');
+const { dbQueryOne } = require('../../utils');
 
 const problemsHome = async (req, res) => {
     const problems = await fnGetAllProblems();

@@ -3,7 +3,7 @@
  * Database operations for authentication
  */
 
-const { dbQueryOne, dbQueryMany } = require('../../utils/db');
+const { dbQueryOne, dbQueryMany } = require('../../utils');
 const md5 = require('md5');
 
 const fnRegister = async (username, email, password, full_name) => {

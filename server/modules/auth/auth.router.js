@@ -5,7 +5,7 @@
 
 const express = require('express');
 const router = express.Router();
-const fnWrap = require('../../utils/fnWrap');
+const { fnWrap } = require('../../utils');
 const { authRequired } = require('./auth.service');
 
 const {
@@ -19,22 +19,16 @@ const {
 
 router.get('/login', authLoginPage);
 
-router.post('/login', fnWrap(async (req, res) => {
-    try {
-        await authLogin(req, res);
-    } catch (error) {
-        res.render('pages/login', { title: 'Login', error: error.message });
-    }
+router.post('/login', fnWrap(authLogin, {
+    errorView: 'pages/login',
+    getErrorData: () => ({ title: 'Login' })
 }));
 
 router.get('/register', authRegisterPage);
 
-router.post('/register', fnWrap(async (req, res) => {
-    try {
-        await authRegister(req, res);
-    } catch (error) {
-        res.render('pages/register', { title: 'Register', error: error.message });
-    }
+router.post('/register', fnWrap(authRegister, {
+    errorView: 'pages/register',
+    getErrorData: () => ({ title: 'Register' })
 }));
 
 router.get('/logout', authLogout);
