@@ -1,4 +1,4 @@
-const { dbQueryOne, dbQueryMany, dbTransaction } = require('../../utils');
+const { dbQueryOne, dbQueryMany, dbTransaction } = require('../../utils/mysql');
 const AdmZip = require('adm-zip');
 const fs = require('fs');
 const path = require('path');

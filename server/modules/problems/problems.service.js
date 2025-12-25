@@ -2,7 +2,7 @@
  * Problems Service
  */
 
-const { dbQueryOne, dbQueryMany } = require('../../utils');
+const { dbQueryOne, dbQueryMany } = require('../../utils/mysql');
 
 const fnGetAllProblems = async () => {
     return await dbQueryMany(`

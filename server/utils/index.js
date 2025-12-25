@@ -1,10 +1,7 @@
 /**
  * Utils Index
- * Universal exports for database and common utilities
+ * Universal exports for common utilities
  */
-
-const createError = require('http-errors');
-const { dbQueryOne, dbQueryMany, dbTransaction } = require('./mysql');
 
 /**
  * Wrap async controller functions with error handling
@@ -15,8 +12,5 @@ const fnWrap = (fn) => (req, res, next) => {
 };
 
 module.exports = {
-    fnWrap,
-    dbQueryOne,
-    dbQueryMany,
-    dbTransaction
+    fnWrap
 };

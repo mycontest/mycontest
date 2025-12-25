@@ -12,7 +12,7 @@ const {
 } = require('./problems.service');
 
 const { fnJudgeSubmission } = require('../compiler/compiler.service');
-const { dbQueryOne } = require('../../utils');
+const { dbQueryOne } = require('../../utils/mysql');
 
 const problemsHome = fnWrap(async (req, res) => {
     const problems = await fnGetAllProblems();

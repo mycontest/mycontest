@@ -6,7 +6,7 @@
 const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const { dbQueryMany } = require('../../utils');
+const { dbQueryMany } = require('../../utils/mysql');
 
 /**
  * Execute Python code
