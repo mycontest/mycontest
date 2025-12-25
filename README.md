@@ -4,7 +4,16 @@
 
 MyContest.uz is an open-source platform designed for hosting and managing programming contests. It provides essential tools for running competitions, evaluating solutions, and ranking participants.
 
-### Installation
+## Features
+
+- **Multi-Language Support**: Python, JavaScript, C++, Java, Go
+- **Code Execution Engine**: Secure sandboxed execution with time/memory limits
+- **Admin Panel**: Problem creation, language management, user administration
+- **Real-time Judging**: Automated test case evaluation with detailed feedback
+- **Contest System**: Create and manage programming competitions
+- **User Submissions**: Track progress and view submission history
+
+## Quick Start with Docker Compose
 
 1. Clone the repository:
 
@@ -13,49 +22,82 @@ MyContest.uz is an open-source platform designed for hosting and managing progra
    cd mycontest
    ```
 
-2. Build the Docker image:
+2. Set up environment variables:
 
    ```sh
-   cd checker/docker && docker build --build-arg SCRIPT_NAME=run_test_1.sh -t run_test_1 .
+   cp .env.example .env
    ```
 
-3. Install dependencies:
+   Edit `.env` and configure:
+   - `SECRET` - Session secret key
+   - `MYSQL_PASSWORD` - MySQL root password
+   - `MYSQL_DATABASE` - Database name (default: my_contest)
+   - `PORT` - Application port (default: 7001)
+   - `DOMAIN` - Your domain URL
+
+3. Start with Docker Compose:
 
    ```sh
-   npm install
+   docker-compose up -d
    ```
 
-4. Set up environment variables:
+   This will automatically:
+   - Create and configure MySQL database
+   - Initialize database schema with seed data
+   - Start the web application
 
-   - Copy the `.env.example` file to `.env` and update the environment variables as needed:
+4. Access the platform:
 
-     ```sh
-     cp .env.example .env
-     ```
+   - Web Interface: `http://localhost:7001`
+   - Default Admin: `admin` / `admin123`
 
-5. Initialize the MySQL database:
-
-   - Run the database initialization script:
-
-     ```sh
-     mysql -u your_user -p your_database < data/db_init.sql
-     ```
-
-6. Start the server:
+5. View logs:
 
    ```sh
-   npm start
+   docker-compose logs -f web
    ```
+
+## Manual Installation (Without Docker)
 
 ### Required Applications
 
-The platform requires the following dependencies to function properly:
+- **Node.js** (v18+) for the backend server
+- **MySQL** (8.0+) as the database system
+- **Python 3** for Python code execution
 
-- **Docker** for containerized execution of submissions.
-- **Node.js** for the backend server.
-- **MySQL** as the database system.
-- **Nginx** for handling web traffic.
-- **Redis** for caching and session management.
+### Setup Steps
+
+1. Install dependencies:
+
+   ```sh
+   cd server
+   npm install
+   ```
+
+2. Initialize the MySQL database:
+
+   ```sh
+   mysql -u root -p < data/database_schema.sql
+   ```
+
+3. Configure environment variables (`.env`):
+
+   ```sh
+   MYSQL_HOST=localhost
+   MYSQL_DATABASE=my_contest
+   MYSQL_USERNAME=root
+   MYSQL_PASSWORD=your_password
+   PORT=7001
+   SECRET=your_secret_key
+   DOMAIN=http://localhost:7001
+   ```
+
+4. Start the server:
+
+   ```sh
+   cd server
+   npm start
+   ```
 
 ### Additional Setup
 
