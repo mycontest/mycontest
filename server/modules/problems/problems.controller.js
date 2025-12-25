@@ -15,13 +15,23 @@ const { fnJudgeSubmission } = require('../compiler/compiler.service');
 const { dbQueryOne } = require('../../utils/mysql');
 
 const problemsHome = fnWrap(async (req, res) => {
-    const problems = await fnGetAllProblems();
-    res.render('pages/home', { title: 'Home', problems });
+    const page = parseInt(req.query.page) || 1;
+    const result = await fnGetAllProblems(page, 20);
+    res.render('pages/home', {
+        title: 'Home',
+        problems: result.problems,
+        pagination: result.pagination
+    });
 });
 
 const problemsList = fnWrap(async (req, res) => {
-    const problems = await fnGetAllProblems();
-    res.render('pages/problems', { title: 'Problems', problems });
+    const page = parseInt(req.query.page) || 1;
+    const result = await fnGetAllProblems(page, 20);
+    res.render('pages/problems', {
+        title: 'Problems',
+        problems: result.problems,
+        pagination: result.pagination
+    });
 });
 
 const problemsView = fnWrap(async (req, res) => {

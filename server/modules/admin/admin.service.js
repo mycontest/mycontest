@@ -61,8 +61,23 @@ const fnAddLanguage = async (lang_data) => {
     return { lang_id: result.insertId };
 };
 
-const fnGetAllLanguages = async () => {
-    return await dbQueryMany('SELECT * FROM languages ORDER BY lang_name');
+const fnGetAllLanguages = async (page = 1, limit = 30) => {
+    const offset = (page - 1) * limit;
+
+    const [languages, count] = await Promise.all([
+        dbQueryMany('SELECT * FROM languages ORDER BY lang_name LIMIT ? OFFSET ?', [limit, offset]),
+        dbQueryOne('SELECT COUNT(*) as total FROM languages')
+    ]);
+
+    return {
+        languages,
+        pagination: {
+            page,
+            limit,
+            total: count.total,
+            total_pages: Math.ceil(count.total / limit)
+        }
+    };
 };
 
 const fnToggleLanguage = async (lang_id) => {
@@ -70,8 +85,23 @@ const fnToggleLanguage = async (lang_id) => {
     return true;
 };
 
-const fnGetAllUsers = async () => {
-    return await dbQueryMany('SELECT user_id, username, email, full_name, role, subscription, total_score, created_at FROM users ORDER BY created_at DESC');
+const fnGetAllUsers = async (page = 1, limit = 30) => {
+    const offset = (page - 1) * limit;
+
+    const [users, count] = await Promise.all([
+        dbQueryMany('SELECT user_id, username, email, full_name, role, subscription, total_score, created_at FROM users ORDER BY created_at DESC LIMIT ? OFFSET ?', [limit, offset]),
+        dbQueryOne('SELECT COUNT(*) as total FROM users')
+    ]);
+
+    return {
+        users,
+        pagination: {
+            page,
+            limit,
+            total: count.total,
+            total_pages: Math.ceil(count.total / limit)
+        }
+    };
 };
 
 const fnGetDashboardStats = async () => {

@@ -4,11 +4,27 @@
 
 const { dbQueryOne, dbQueryMany } = require('../../utils/mysql');
 
-const fnGetAllProblems = async () => {
-    return await dbQueryMany(`
-        SELECT * FROM vw_problem_stats
-        ORDER BY problem_id DESC
-    `);
+const fnGetAllProblems = async (page = 1, limit = 20) => {
+    const offset = (page - 1) * limit;
+
+    const [problems, count] = await Promise.all([
+        dbQueryMany(`
+            SELECT * FROM vw_problem_stats
+            ORDER BY problem_id DESC
+            LIMIT ? OFFSET ?
+        `, [limit, offset]),
+        dbQueryOne('SELECT COUNT(*) as total FROM problems WHERE is_active = TRUE')
+    ]);
+
+    return {
+        problems,
+        pagination: {
+            page,
+            limit,
+            total: count.total,
+            total_pages: Math.ceil(count.total / limit)
+        }
+    };
 };
 
 const fnGetProblemById = async (problem_id) => {

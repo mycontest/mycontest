@@ -8,13 +8,22 @@ const adminDashboard = fnWrap(async (req, res) => {
 });
 
 const adminProblems = fnWrap(async (req, res) => {
-    const problems = await fnGetAllProblems();
-    res.render('admin/problems', { title: 'Manage Problems', problems });
+    const page = parseInt(req.query.page) || 1;
+    const result = await fnGetAllProblems(page, 30);
+    res.render('admin/problems', {
+        title: 'Manage Problems',
+        problems: result.problems,
+        pagination: result.pagination
+    });
 });
 
 const adminProblemCreateForm = fnWrap(async (req, res) => {
-    const languages = await fnGetAllLanguages();
-    res.render('admin/problem-create', { title: 'Create Problem', languages, error: null });
+    const result = await fnGetAllLanguages(1, 100);
+    res.render('admin/problem-create', {
+        title: 'Create Problem',
+        languages: result.languages,
+        error: null
+    });
 });
 
 const adminProblemCreate = fnWrap(async (req, res) => {
@@ -33,8 +42,13 @@ const adminProblemCreate = fnWrap(async (req, res) => {
 });
 
 const adminLanguages = fnWrap(async (req, res) => {
-    const languages = await fnGetAllLanguages();
-    res.render('admin/languages', { title: 'Manage Languages', languages });
+    const page = parseInt(req.query.page) || 1;
+    const result = await fnGetAllLanguages(page, 30);
+    res.render('admin/languages', {
+        title: 'Manage Languages',
+        languages: result.languages,
+        pagination: result.pagination
+    });
 });
 
 const adminLanguageAdd = fnWrap(async (req, res) => {
@@ -48,8 +62,13 @@ const adminLanguageToggle = fnWrap(async (req, res) => {
 });
 
 const adminUsers = fnWrap(async (req, res) => {
-    const users = await fnGetAllUsers();
-    res.render('admin/users', { title: 'Manage Users', users });
+    const page = parseInt(req.query.page) || 1;
+    const result = await fnGetAllUsers(page, 30);
+    res.render('admin/users', {
+        title: 'Manage Users',
+        users: result.users,
+        pagination: result.pagination
+    });
 });
 
 module.exports = {

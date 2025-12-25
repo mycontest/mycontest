@@ -5,24 +5,40 @@
 
 const { dbQueryOne, dbQueryMany } = require('../../utils/mysql');
 
-const fnGetAllContests = async () => {
-    return await dbQueryMany(`
-        SELECT
-            c.contest_id,
-            c.title,
-            c.description,
-            c.start_time,
-            c.end_time,
-            c.status,
-            c.created_by,
-            COUNT(DISTINCT cp.problem_id) as problem_count,
-            COUNT(DISTINCT cs.user_id) as participant_count
-        FROM contests c
-        LEFT JOIN contest_problems cp ON c.contest_id = cp.contest_id
-        LEFT JOIN contest_submissions cs ON c.contest_id = cs.contest_id
-        GROUP BY c.contest_id
-        ORDER BY c.start_time DESC
-    `);
+const fnGetAllContests = async (page = 1, limit = 20) => {
+    const offset = (page - 1) * limit;
+
+    const [contests, count] = await Promise.all([
+        dbQueryMany(`
+            SELECT
+                c.contest_id,
+                c.title,
+                c.description,
+                c.start_time,
+                c.end_time,
+                c.status,
+                c.created_by,
+                COUNT(DISTINCT cp.problem_id) as problem_count,
+                COUNT(DISTINCT cs.user_id) as participant_count
+            FROM contests c
+            LEFT JOIN contest_problems cp ON c.contest_id = cp.contest_id
+            LEFT JOIN contest_submissions cs ON c.contest_id = cs.contest_id
+            GROUP BY c.contest_id
+            ORDER BY c.start_time DESC
+            LIMIT ? OFFSET ?
+        `, [limit, offset]),
+        dbQueryOne('SELECT COUNT(*) as total FROM contests')
+    ]);
+
+    return {
+        contests,
+        pagination: {
+            page,
+            limit,
+            total: count.total,
+            total_pages: Math.ceil(count.total / limit)
+        }
+    };
 };
 
 const fnGetContestById = async (contest_id) => {
