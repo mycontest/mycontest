@@ -68,6 +68,8 @@ const createApp = () => {
   app.use("/", require("./modules/auth/auth.router"));
   app.use("/", require("./modules/problems/problems.router"));
   app.use("/admin", require("./modules/admin/admin.router"));
+  app.use("/", require("./modules/organizations/organizations.router"));
+  app.use("/", require("./modules/discussions/discussions.router"));
 
   // ================================================================
   // ERROR HANDLING

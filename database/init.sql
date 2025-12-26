@@ -19,8 +19,8 @@ CREATE TABLE users (
     password VARCHAR(200),
     github_id VARCHAR(100),
     google_id VARCHAR(100),
-    role ENUM('admin', 'user') DEFAULT 'user',
-    subscription ENUM('basic', 'pro', 'premium') DEFAULT 'basic',
+    role ENUM('super_admin', 'admin', 'moderator', 'user') DEFAULT 'user',
+    subscription ENUM('basic') DEFAULT 'basic',
     total_score INT DEFAULT 0,
     avatar_url VARCHAR(500),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -65,12 +65,16 @@ CREATE TABLE problems (
     memory_limit INT DEFAULT 256 COMMENT 'MB',
     created_by INT,
     is_active BOOLEAN DEFAULT TRUE,
+    is_global BOOLEAN DEFAULT FALSE COMMENT 'Shows on main problem list',
+    organization_id INT DEFAULT NULL COMMENT 'Belongs to organization',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (created_by) REFERENCES users(user_id) ON DELETE SET NULL,
     INDEX idx_slug (slug),
     INDEX idx_difficulty (difficulty),
-    INDEX idx_is_active (is_active)
+    INDEX idx_is_active (is_active),
+    INDEX idx_is_global (is_global),
+    INDEX idx_organization_id (organization_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ================================================================
@@ -149,12 +153,16 @@ CREATE TABLE contests (
     description TEXT,
     creator_id INT NOT NULL,
     is_public BOOLEAN DEFAULT TRUE,
+    is_global BOOLEAN DEFAULT FALSE COMMENT 'Shows on main contest list',
+    organization_id INT DEFAULT NULL COMMENT 'Belongs to organization',
     unique_code VARCHAR(50) UNIQUE COMMENT 'For private contests',
     start_time DATETIME NOT NULL,
     end_time DATETIME NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (creator_id) REFERENCES users(user_id) ON DELETE CASCADE,
     INDEX idx_is_public (is_public),
+    INDEX idx_is_global (is_global),
+    INDEX idx_organization_id (organization_id),
     INDEX idx_unique_code (unique_code),
     INDEX idx_start_time (start_time)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -176,7 +184,30 @@ CREATE TABLE contest_problems (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ================================================================
--- 9. DISCUSSIONS TABLE
+-- 9. ORGANIZATIONS TABLE
+-- ================================================================
+DROP TABLE IF EXISTS organizations;
+CREATE TABLE organizations (
+    org_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL UNIQUE COMMENT 'Organization owner',
+    org_name VARCHAR(200) NOT NULL,
+    org_slug VARCHAR(200) UNIQUE NOT NULL COMMENT 'URL slug: /org_slug',
+    org_type ENUM('school', 'university', 'company', 'community') DEFAULT 'community',
+    description TEXT,
+    website_url VARCHAR(500),
+    logo_url VARCHAR(500),
+    subscription ENUM('basic') DEFAULT 'basic',
+    is_verified BOOLEAN DEFAULT FALSE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    INDEX idx_org_slug (org_slug),
+    INDEX idx_user_id (user_id),
+    INDEX idx_is_verified (is_verified)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ================================================================
+-- 10. DISCUSSIONS TABLE
 -- ================================================================
 DROP TABLE IF EXISTS discussions;
 CREATE TABLE discussions (
@@ -184,15 +215,48 @@ CREATE TABLE discussions (
     user_id INT NOT NULL,
     problem_id INT NOT NULL,
     parent_id INT DEFAULT NULL,
-    content TEXT NOT NULL,
+    content TEXT NOT NULL COMMENT 'Max 2000 chars enforced by app',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (problem_id) REFERENCES problems(problem_id) ON DELETE CASCADE,
     FOREIGN KEY (parent_id) REFERENCES discussions(discussion_id) ON DELETE CASCADE,
     INDEX idx_problem_id (problem_id),
-    INDEX idx_parent_id (parent_id)
+    INDEX idx_parent_id (parent_id),
+    INDEX idx_user_id (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ================================================================
+-- 11. MONTHLY LIMITS TABLE
+-- ================================================================
+DROP TABLE IF EXISTS monthly_limits;
+CREATE TABLE monthly_limits (
+    limit_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT DEFAULT NULL COMMENT 'For user comment limits',
+    organization_id INT DEFAULT NULL COMMENT 'For organization contest limits',
+    limit_type ENUM('comments', 'contests') NOT NULL,
+    usage_count INT DEFAULT 0,
+    month_year VARCHAR(7) NOT NULL COMMENT 'Format: YYYY-MM',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (organization_id) REFERENCES organizations(org_id) ON DELETE CASCADE,
+    UNIQUE KEY unique_user_month (user_id, limit_type, month_year),
+    UNIQUE KEY unique_org_month (organization_id, limit_type, month_year),
+    INDEX idx_month_year (month_year),
+    INDEX idx_limit_type (limit_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ================================================================
+-- 12. ADD FOREIGN KEYS for organization_id
+-- ================================================================
+ALTER TABLE problems
+ADD CONSTRAINT fk_problem_organization
+FOREIGN KEY (organization_id) REFERENCES organizations(org_id) ON DELETE SET NULL;
+
+ALTER TABLE contests
+ADD CONSTRAINT fk_contest_organization
+FOREIGN KEY (organization_id) REFERENCES organizations(org_id) ON DELETE SET NULL;
 
 -- ================================================================
 -- SEED DATA
@@ -200,7 +264,7 @@ CREATE TABLE discussions (
 
 -- Insert default admin user (password: admin123)
 INSERT INTO users (username, email, full_name, password, role, subscription)
-VALUES ('admin', 'admin@mycontest.dev', 'Admin User', MD5('admin123'), 'admin', 'premium');
+VALUES ('admin', 'admin@mycontest.dev', 'Admin User', MD5('admin123'), 'super_admin', 'basic');
 
 -- Insert default languages
 INSERT INTO languages (lang_name, lang_code, file_extension, compile_command, run_command, docker_image)
@@ -239,6 +303,7 @@ SELECT
     p.title,
     p.slug,
     p.difficulty,
+    p.is_global,
     COUNT(DISTINCT pl.lang_id) as language_count,
     COUNT(DISTINCT s.user_id) as attempt_count,
     COUNT(DISTINCT CASE WHEN s.status = 'accepted' THEN s.user_id END) as solved_count
@@ -246,6 +311,67 @@ FROM problems p
 LEFT JOIN problem_languages pl ON p.problem_id = pl.problem_id
 LEFT JOIN submissions s ON p.problem_id = s.problem_id
 WHERE p.is_active = TRUE
-GROUP BY p.problem_id, p.title, p.slug, p.difficulty;
+GROUP BY p.problem_id, p.title, p.slug, p.difficulty, p.is_global;
+
+-- Global problems view (for main problem list)
+DROP VIEW IF EXISTS vw_global_problems;
+CREATE VIEW vw_global_problems AS
+SELECT
+    p.problem_id,
+    p.title,
+    p.slug,
+    p.difficulty,
+    p.is_global,
+    COUNT(DISTINCT pl.lang_id) as language_count,
+    COUNT(DISTINCT s.user_id) as attempt_count,
+    COUNT(DISTINCT CASE WHEN s.status = 'accepted' THEN s.user_id END) as solved_count
+FROM problems p
+LEFT JOIN problem_languages pl ON p.problem_id = pl.problem_id
+LEFT JOIN submissions s ON p.problem_id = s.problem_id
+WHERE p.is_active = TRUE AND p.is_global = TRUE
+GROUP BY p.problem_id, p.title, p.slug, p.difficulty, p.is_global;
+
+-- Global contests view (for main contest list)
+DROP VIEW IF EXISTS vw_global_contests;
+CREATE VIEW vw_global_contests AS
+SELECT
+    c.contest_id,
+    c.title,
+    c.description,
+    c.is_global,
+    c.start_time,
+    c.end_time,
+    u.username as creator_name,
+    COUNT(DISTINCT cp.problem_id) as problem_count,
+    CASE
+        WHEN NOW() < c.start_time THEN 'upcoming'
+        WHEN NOW() BETWEEN c.start_time AND c.end_time THEN 'active'
+        ELSE 'ended'
+    END as status
+FROM contests c
+JOIN users u ON c.creator_id = u.user_id
+LEFT JOIN contest_problems cp ON c.contest_id = cp.contest_id
+WHERE c.is_public = TRUE AND c.is_global = TRUE
+GROUP BY c.contest_id, c.title, c.description, c.is_global, c.start_time, c.end_time, u.username;
+
+-- Organization statistics view
+DROP VIEW IF EXISTS vw_organization_stats;
+CREATE VIEW vw_organization_stats AS
+SELECT
+    o.org_id,
+    o.org_name,
+    o.org_slug,
+    o.org_type,
+    u.username as owner_username,
+    o.subscription,
+    o.is_verified,
+    COUNT(DISTINCT p.problem_id) as problem_count,
+    COUNT(DISTINCT c.contest_id) as contest_count,
+    o.created_at
+FROM organizations o
+JOIN users u ON o.user_id = u.user_id
+LEFT JOIN problems p ON o.org_id = p.organization_id
+LEFT JOIN contests c ON o.org_id = c.organization_id
+GROUP BY o.org_id, o.org_name, o.org_slug, o.org_type, u.username, o.subscription, o.is_verified, o.created_at;
 
 SELECT 'Database schema created successfully!' as status;
