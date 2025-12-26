@@ -62,6 +62,9 @@ mycontest_new/
 │   │   ├── controllers/   # Request handlers
 │   │   └── routes/        # API routes
 │   ├── config/            # Configuration
+│   ├── database/          # Database scripts & migrations
+│   │   ├── migrations/    # SQL migrations
+│   │   └── scripts/       # Helper scripts
 │   ├── middleware/        # Express middleware
 │   ├── services/          # Business logic
 │   ├── models/            # Joi schemas
@@ -88,7 +91,6 @@ mycontest_new/
 │   └── package.json
 │
 ├── admin/                 # Admin Dashboard (TBD)
-├── database/              # Database scripts
 └── README.md
 ```
 
@@ -105,10 +107,10 @@ mycontest_new/
 # Create database
 mysql -u root -p -e "CREATE DATABASE mycontest_db;"
 
-# Run migrations
-cd database/scripts
-node run-sql.js ../migrations/init.sql
-node run-sql.js ../migrations/seed.sql
+# Run migrations (from server directory)
+cd server
+npm run db:init
+npm run db:seed
 ```
 
 ### 2. Server Setup
@@ -265,8 +267,10 @@ npm run dev  # Starts Next.js dev server
 
 ### Database Migrations
 ```bash
-cd database/scripts
-node run-sql.js ../migrations/init.sql
+cd server
+npm run db:init  # Initialize database schema
+npm run db:seed  # Seed sample data
+npm run db:reset # Reset database (init + seed)
 ```
 
 ## 📝 Environment Variables
