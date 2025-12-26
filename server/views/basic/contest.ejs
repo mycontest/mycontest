@@ -1,0 +1,29 @@
+<div class="col col-lg-2">
+    <div class="card">
+        <div class="card-header">
+            <b>Menyu</b>
+        </div>
+        <ul class="list-group list-group-flush">
+            <a href="/contest/<%= data.contest_id %>" class="list-group-item list-group-item-action <% if (pageInfo == 'main') { %> active <% } %>">🏆 Musobaqa</a>
+            <a href="/contest/<%= data.contest_id %>/tasks" class="list-group-item list-group-item-action <% if (pageInfo == 'tasks') { %> active <% } %>">📘 Masalalar</a>
+            <a href="/contest/<%= data.contest_id %>/attempts" class="list-group-item list-group-item-action <% if (pageInfo == 'attempts') { %> active <% } %>">🔄 Urinishlar</a>
+            <a href="/contest/<%= data.contest_id %>/retings" class="list-group-item list-group-item-action <% if (pageInfo == 'retings') { %> active <% } %>">⭐ Natijalar</a>
+        </ul>
+    </div>
+    <div class="card mt-2">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item list-group-item-action">
+                <b>Boshlash:</b>
+                <span><%= contest.start_date %></span>
+            </li>
+            <li class="list-group-item list-group-item-action">
+                <b>Tugash:</b>
+                <span><%= contest.end_date %></span>
+            </li>
+            <li class="list-group-item list-group-item-action">
+                <b>Holat:</b>
+                <span class="badge text-<% if (contest.event_num == '1') { %>success<% } else if (contest.event_num == '0') { %>primary<% } else { %>danger<% } %>"><%= contest.event %></span>
+            </li>
+        </ul>
+    </div>
+</div>

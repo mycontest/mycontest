@@ -1,207 +1,359 @@
-# MyContest Platform
+# MyContest v2.0 - Coding Competition Platform
 
-Professional Code Judge & Contest Platform with EJS-based MVC architecture and multi-language support.
+A modern, full-stack coding competition platform built with clean architecture and best practices.
 
-## Features
+## 🏗️ Architecture
 
-- 🏆 **Multi-Language Support**: Python, JavaScript, C++, Java, SQL
-- 📝 **Problem Management**: Create problems with multiple test cases
-- 🎯 **Contest System**: Organize coding competitions with leaderboards
-- 👥 **User Management**: Admin panel, roles, subscriptions
-- ⚡ **Real-time Judging**: Docker-based code execution
-- 📊 **Statistics & Analytics**: Track user progress and submissions
-- 🔒 **Secure**: Flash messages, validation, error handling
+The project is structured into three main folders:
 
-## Tech Stack
+### 📁 **server/** - API Service
+Universal REST API built with Express.js, featuring:
+- **Clean Architecture**: Separated layers (Routes → Controllers → Services → Database)
+- **Centralized API responses**: Standardized response format across all endpoints
+- **Security**: bcrypt password hashing, helmet, CORS, rate limiting
+- **Validation**: Joi schemas for all inputs
+- **Session-based auth**: Secure session management with httpOnly cookies
+- **Error handling**: Global error handler with proper HTTP status codes
 
-- **Backend**: Node.js + Express.js
-- **Database**: MySQL 8.0
-- **View Engine**: EJS
-- **Validation**: Joi
-- **Session**: express-session + file-store
-- **Execution**: Docker containers
+### 📁 **web/** - User Application
+Modern Next.js 14 app with shadcn/ui, featuring:
+- **App Router**: Latest Next.js architecture
+- **TypeScript**: Full type safety
+- **shadcn/ui**: Beautiful, accessible components
+- **Centralized API client**: All API calls go through `/lib/api.ts`
+- **Optimized Sidebar**: Only essential navigation items
+  - Problems
+  - Contests
+  - Discuss (General + Problem-specific chat)
+  - Notifications
+  - Settings (Profile, Security, Appearance)
 
-## Project Structure
+### 📁 **admin/** - Admin Dashboard
+Admin panel for managing the platform (to be implemented)
+
+## 📦 Technology Stack
+
+### Backend
+- **Express.js** - Web framework
+- **MySQL2** - Database driver with connection pooling
+- **bcryptjs** - Password hashing
+- **Joi** - Schema validation
+- **express-session** - Session management
+- **helmet** - Security headers
+- **cors** - Cross-origin resource sharing
+- **morgan** - HTTP request logger
+- **compression** - Response compression
+
+### Frontend
+- **Next.js 14** - React framework with App Router
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Utility-first CSS
+- **shadcn/ui** - Component library
+- **Radix UI** - Headless UI primitives
+- **Axios** - HTTP client
+- **Lucide React** - Icon library
+
+## 🗂️ Project Structure
 
 ```
-mycontest/
-├─ src/                  # Main application (Express + EJS)
-│  ├─ app.js
-│  ├─ server.js
-│  ├─ modules/           # Routers/Controllers/Services/Schemas
-│  ├─ middleware/
-│  ├─ utils/
-│  ├─ views/
-│  └─ public/
-├─ database/
-│  ├─ migrations/        # init.sql + seed.sql
-│  └─ scripts/           # docker-aware helpers (backup, run-sql)
-├─ data/                 # Runtime data
-│  ├─ mysql/             # MySQL data directory
-│  ├─ storage/           # Uploaded files & test cases
-│  └─ backups/           # Automated backups
-├─ docs/
-├─ docker-compose.yml    # Docker configuration
-└─ Dockerfile            # Application container
+mycontest_new/
+├── server/                 # API Server
+│   ├── api/
+│   │   ├── controllers/   # Request handlers
+│   │   └── routes/        # API routes
+│   ├── config/            # Configuration
+│   ├── middleware/        # Express middleware
+│   ├── services/          # Business logic
+│   ├── models/            # Joi schemas
+│   ├── utils/             # Utilities
+│   ├── constants/         # Constants
+│   └── server.js          # Entry point
+│
+├── web/                   # User Web App
+│   ├── app/
+│   │   ├── (dashboard)/   # Dashboard routes
+│   │   │   ├── problems/
+│   │   │   ├── contests/
+│   │   │   ├── discuss/
+│   │   │   ├── notifications/
+│   │   │   └── settings/
+│   │   ├── globals.css
+│   │   └── layout.tsx
+│   ├── components/
+│   │   ├── ui/            # shadcn/ui components
+│   │   └── sidebar.tsx    # Optimized sidebar
+│   ├── lib/
+│   │   ├── api.ts         # Centralized API client
+│   │   └── utils.ts       # Utilities
+│   └── package.json
+│
+├── admin/                 # Admin Dashboard (TBD)
+├── database/              # Database scripts
+└── README.md
 ```
 
-## Quick Start (Docker-first)
+## 🚀 Quick Start
 
 ### Prerequisites
-
 - Node.js 18+
-- Docker + Docker Compose v2 (no local MySQL needed)
+- MySQL 8.0+
+- npm or yarn
 
-### Installation
-
-1. **Clone repository**
-
-   ```bash
-   git clone https://github.com/mycontest/mycontest.git
-   cd mycontest
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-3. **Configure environment**
-
-   ```bash
-   cp .env.example .env
-   # Edit .env with your settings (defaults point at docker services)
-   ```
-
-4. **Start containers (web + MySQL)**
-
-   ```bash
-   docker compose up -d
-   ```
-
-5. **Initialize and seed the database (runs inside the mysql container)**
-
-   ```bash
-   npm run db:init    # Create database schema
-   npm run db:seed    # Insert sample data
-   ```
-
-6. **Access application**
-   - URL: http://localhost:7001
-   - Admin: `admin` / `admin123`
-   - User: `demo_user` / `user123`
-
-## Docker Deployment
+### 1. Database Setup
 
 ```bash
-docker compose up -d              # start containers
-docker compose up -d --build web  # rebuild web after git pull
+# Create database
+mysql -u root -p -e "CREATE DATABASE mycontest_db;"
+
+# Run migrations
+cd database/scripts
+node run-sql.js ../migrations/init.sql
+node run-sql.js ../migrations/seed.sql
 ```
 
-## Database Scripts
+### 2. Server Setup
 
 ```bash
-npm run db:init      # Initialize database schema (inside mysql container)
-npm run db:seed      # Seed sample data (inside mysql container)
-npm run db:reset     # Reset database (init + seed)
+cd server
+
+# Install dependencies
+npm install
+
+# Configure environment
+cp .env.example .env
+# Edit .env with your database credentials
+
+# Start development server
+npm run dev
 ```
 
-## Backup & Restore
+Server will run on `http://localhost:5000`
+
+### 3. Web App Setup
 
 ```bash
-npm run backup       # Full backup (database + storage + code) -> data/backups/*.zip
-npm run backup:db    # Database only (zip with .sql)
-npm run backup:full  # Alias for npm run backup
+cd web
+
+# Install dependencies
+npm install
+
+# Configure environment
+echo "NEXT_PUBLIC_API_URL=http://localhost:5000/api/v1" > .env.local
+
+# Start development server
+npm run dev
 ```
 
-Backups are stored in `data/backups/` and automatically cleaned (keeps last 10). All backup commands run via Docker, so no local MySQL install is required.
+Web app will run on `http://localhost:3000`
 
-## Architecture
+## 🔑 Key Features
 
-### MVC Pattern
+### Centralized API Architecture
+All API calls are centralized in `/web/lib/api.ts`:
 
-- **Router**: Route definitions + validation middleware
-- **Controller**: Request handling + error wrapping (fnWrap)
-- **Service**: Business logic + database operations
-- **Schema**: Joi validation schemas
+```typescript
+import { problemsApi } from '@/lib/api'
 
-### Error Handling
+// Get all problems
+const response = await problemsApi.getAll({
+  page: 1,
+  difficulty: 'easy'
+})
 
-- Global error handler with flash messages
-- Automatic error propagation via `fnWrap`
-- Smart routing: validation errors → flash + redirect, API → JSON, others → error page
+// Get problem by ID
+const problem = await problemsApi.getById(123)
+```
 
-### Performance
+### Standardized API Responses
+All API responses follow a consistent format:
 
-- Promise.all for parallel queries (2-4x faster)
-- Pagination for all list endpoints (20-30 items/page)
-- Connection pooling for MySQL
-- Session management with file store
+```json
+{
+  "success": true,
+  "message": "Success",
+  "data": { ... },
+  "timestamp": "2025-01-01T00:00:00.000Z"
+}
+```
 
-## API Endpoints
+Paginated responses include pagination metadata:
 
-### Public Routes
+```json
+{
+  "success": true,
+  "message": "Success",
+  "data": [...],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 100,
+    "totalPages": 5
+  },
+  "timestamp": "2025-01-01T00:00:00.000Z"
+}
+```
 
-- `GET /` - Home page (problem list)
-- `GET /login` - Login page
-- `POST /login` - Login handler
-- `GET /register` - Register page
-- `POST /register` - Register handler
-- `GET /problems` - Problems list
-- `GET /problems/:id` - Problem details
+### Optimized Sidebar
+Clean, modern sidebar with only essential items:
+- **Problems** - Browse and solve coding problems
+- **Contests** - Participate in coding contests
+- **Discuss** - General chat and problem discussions
+- **Notifications** - Stay updated
+- **Settings** - Profile, security, appearance
 
-### Protected Routes
+### Security Features
+- **bcrypt** password hashing (10 rounds)
+- **httpOnly** session cookies
+- **helmet** security headers
+- **CORS** configuration
+- **Rate limiting** on all endpoints
+- **Input validation** with Joi schemas
+- **SQL injection** prevention with parameterized queries
 
-- `POST /problems/:id/submit` - Submit solution
-- `GET /submissions/:id` - Submission details
-- `GET /profile` - User profile
-- `GET /contests` - Contests list
-- `GET /contests/:id` - Contest details
+## 📡 API Endpoints
 
-### Admin Routes
+```
+Auth
+POST   /api/v1/auth/register
+POST   /api/v1/auth/login
+POST   /api/v1/auth/logout
+GET    /api/v1/auth/me
+PUT    /api/v1/auth/profile
+POST   /api/v1/auth/change-password
 
-- `GET /admin` - Admin dashboard
-- `GET /admin/problems` - Manage problems
-- `POST /admin/problems/create` - Create problem
-- `GET /admin/languages` - Manage languages
-- `POST /admin/languages/add` - Add language
-- `GET /admin/users` - Manage users
+Problems
+GET    /api/v1/problems
+GET    /api/v1/problems/:id
+POST   /api/v1/problems
+PUT    /api/v1/problems/:id
+DELETE /api/v1/problems/:id
 
-## Environment Variables
+Contests
+GET    /api/v1/contests
+GET    /api/v1/contests/:id
+POST   /api/v1/contests
+POST   /api/v1/contests/:id/join
+GET    /api/v1/contests/:id/leaderboard
 
+Discussions
+GET    /api/v1/discussions
+GET    /api/v1/discussions/:id
+POST   /api/v1/discussions
+PUT    /api/v1/discussions/:id
+DELETE /api/v1/discussions/:id
+
+Notifications
+GET    /api/v1/notifications
+GET    /api/v1/notifications/unread-count
+PUT    /api/v1/notifications/:id/read
+PUT    /api/v1/notifications/read-all
+```
+
+## 🔧 Development
+
+### Server Development
+```bash
+cd server
+npm run dev  # Starts with nodemon
+```
+
+### Web Development
+```bash
+cd web
+npm run dev  # Starts Next.js dev server
+```
+
+### Database Migrations
+```bash
+cd database/scripts
+node run-sql.js ../migrations/init.sql
+```
+
+## 📝 Environment Variables
+
+### Server (.env)
 ```env
-# Server
-PORT=7001
-DOMAIN=http://localhost:7001
 NODE_ENV=development
+PORT=5000
+API_PREFIX=/api/v1
 
-# Database
-MYSQL_HOST=localhost
-MYSQL_PORT=3306
-MYSQL_USERNAME=root
-MYSQL_PASSWORD=yourpassword
-MYSQL_DATABASE=mycontest
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=rootpassword
+DB_NAME=mycontest_db
 
-# Security
-SECRET=your-secret-key-here
-
-# Limits
-LIMIT=52428800
+SESSION_SECRET=your-secret-key
+CORS_ORIGIN=http://localhost:3000
 ```
 
-## Contributing
+### Web (.env.local)
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5000/api/v1
+```
+
+## 🚢 Production Deployment
+
+### Server
+```bash
+cd server
+npm run start
+```
+
+### Web
+```bash
+cd web
+npm run build
+npm run start
+```
+
+## 📊 Database Schema
+
+Key tables:
+- `users` - User accounts
+- `problems` - Coding problems
+- `submissions` - Problem submissions
+- `contests` - Coding contests
+- `contest_participants` - Contest registrations
+- `discussions` - Forum discussions
+- `notifications` - User notifications
+
+## 🤝 Contributing
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
-## License
+## 📄 License
 
 ISC
 
-## Support
+## 🎯 Roadmap
 
-For issues and questions: https://github.com/mycontest/mycontest/issues
+- [x] Centralized API architecture
+- [x] Optimized sidebar
+- [x] Problems page
+- [x] Contests page
+- [x] Discussions page
+- [x] Notifications page
+- [x] Settings page
+- [ ] Problem submission & judging
+- [ ] Contest leaderboard
+- [ ] Admin dashboard
+- [ ] User profiles
+- [ ] Code editor integration
+
+## 💡 Notes
+
+- All API calls are centralized in `/web/lib/api.ts`
+- Use proper naming conventions and prefixes
+- Follow the existing architectural patterns
+- Keep business logic in services layer
+- Use TypeScript for type safety
+- Follow shadcn/ui component patterns
+
+---
+
+Built with ❤️ for competitive programming

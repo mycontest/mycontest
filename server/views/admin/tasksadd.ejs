@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include("../basic/head.ejs") %>
+
+        <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+        <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+        <script>
+            quill = {};
+        </script>
+    </head>
+
+    <body>
+        <%- include("../basic/navbar.ejs") %>
+
+        <div class="container">
+            <div class="row">
+                <%- include("./sidebar.ejs") %>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-header"><b>Task Add</b></div>
+                        <div class="card-body">
+                            <a href="https://katex.org/" target="_blank">Formual KaTeX</a>
+                            <form method="post">
+                                <input type="hidden" name="task_id" value="<%= task.task_id %>" />
+                                <div class="mb-3">
+                                    <label class="form-label">Name</label>
+                                    <input type="text" name="name" class="form-control" placeholder="A+B" value="<%= task.name %>" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Sub text</label>
+                                    <%- include("./textarea.ejs", { id: "sub_text", value: task.sub_text }) %>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Inp text</label>
+                                    <%- include("./textarea.ejs", { id: "inp_text", value: task.inp_text }) %>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Out text</label>
+                                    <%- include("./textarea.ejs", { id: "out_text", value: task.out_text }) %>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Comment text</label>
+                                    <%- include("./textarea.ejs", { id: "comment_text", value: task.comment_text }) %>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Time</label>
+                                    <input type="int" name="time" class="form-control" placeholder="5000" value="<%= task.time %>" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Memory</label>
+                                    <input type="int" name="memory" class="form-control" placeholder="60" value="<%= task.memory %>" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Example</label>
+                                    <input type="int" name="test_count" class="form-control" placeholder="2" value="<%= task.test_count %>" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">All test</label>
+                                    <input type="int" name="all_test" class="form-control" placeholder="5000" value="<%= task.all_test %>" />
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <% if( task.task_id>0) { %>
+                    <div class="card my-2">
+                        <div class="card-header"><b>Test Case</b></div>
+                        <div class="card-body">
+                            <form method="post" action="/admin/taskszip" method="POST" enctype="multipart/form-data">
+                                <input type="hidden" name="task_id" value="<%= task.task_id %>" />
+                                <div class="mb-3">
+                                    <label class="form-label">All test</label>
+                                    <input type="file" name="zip_file" class="form-control" accept=".zip" required />
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </form>
+
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th>Size</th>
+                                        <th>Last Modified</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% for(var i=0;i< files.length;i++) { %>
+                                    <tr>
+                                        <td><%= i + 1 %></td>
+                                        <td><%= files[i].name %></td>
+                                        <td><%= files[i].type %></td>
+                                        <td><%= files[i].size %>Kb</td>
+                                        <td><%= files[i].last_modified %></td>
+                                    </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <%- include("../basic/footer.ejs") %>
+    </body>
+</html>
