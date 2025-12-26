@@ -6,6 +6,8 @@ services:
     image: mysql:8.0
     container_name: mycontest_mysql
     restart: always
+    env_file:
+      - .env
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:-rootpassword}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-my_contest}
@@ -24,6 +26,8 @@ services:
     restart: always
     ports:
       - "${PORT:-7001}:7001"
+    env_file:
+      - .env
     environment:
       MYSQL_HOST: mysql
       MYSQL_DATABASE: ${MYSQL_DATABASE:-my_contest}
