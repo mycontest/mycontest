@@ -1,0 +1,50 @@
+/**
+ * Auth Service
+ * Database operations for authentication
+ */
+
+const { dbQueryOne, dbQueryMany } = require("../../utils/mysql");
+const password_secret = process.env.PASSWORD_SECRET || process.env.SECRET || "";
+
+const fnRegister = async (username, email, password, full_name) => {
+  const existing = await dbQueryOne("SELECT user_id FROM users WHERE username = ? OR email = ?", [username, email]);
+
+  if (existing) {
+    throw new Error("Username or email already exists");
+  }
+
+  await dbQueryMany("INSERT INTO users (username, email, password, full_name) VALUES (?, ?, MD5(CONCAT(?, ?)), ?)", [username, email, password_secret, password, full_name]);
+
+  const user = await dbQueryOne("SELECT user_id, username, email, full_name, role FROM users WHERE username = ?", [username]);
+  return user;
+};
+
+const fnLogin = async (username, password) => {
+  const user = await dbQueryOne(
+    `SELECT user_id, username, email, full_name, role, subscription, total_score FROM users
+     WHERE username = ? AND password = MD5(CONCAT(?, ?))`,
+    [username, password_secret, password]
+  );
+
+  if (!user) {
+    throw new Error("Invalid username or password");
+  }
+  return user;
+};
+
+const fnGetUserById = async (user_id) => {
+  const user = await dbQueryOne(`SELECT user_id, username, email, full_name, role, subscription, total_score, avatar_url FROM users WHERE user_id = ?`, [user_id]);
+  return user;
+};
+
+const fnGetUserStats = async (user_id) => {
+  const stats = await dbQueryOne("SELECT * FROM vw_user_stats WHERE user_id = ?", [user_id]);
+  return stats;
+};
+
+module.exports = {
+  fnRegister,
+  fnLogin,
+  fnGetUserById,
+  fnGetUserStats,
+};

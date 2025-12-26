@@ -1,0 +1,29 @@
+<header class="p-3 mb-3 border-bottom bg-white">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <a href="/" class="d-flex align-items-center justify-content-center text-dark text-decoration-none me-lg-auto">
+                <img src="/logo/logo_main.png" alt="mycontest" class="me-2" style="width: 24px" />
+                <h5 class="m-0 text-lowercase">mycontest</h5>
+            </a>
+
+            <% if(data.user_id) { %>
+            <div class="h-10 dropdown dropdown-sm text-end">
+                <p class="mb-0 dropdown-toggle" type="button" id="triggerId" data-bs-toggle="dropdown"><%= data.full_name %></p>
+                <div class="dropdown-menu" aria-labelledby="triggerId">
+                    <a class="dropdown-item disabled" href="#">Settings</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="/logout">
+                        <i class="fa fa-sign-out" aria-hidden="true"></i>
+                        Logout
+                    </a>
+                </div>
+            </div>
+            <% } else { %>
+            <div class="h-10 text-end">
+                <a href="/login" type="button" class="btn btn-outline-primary btn-sm">Tizimga kirish</a>
+                <a href="/register" type="button" class="btn btn-primary btn-sm">Ro'yhatdan o'tish</a>
+            </div>
+            <% } %>
+        </div>
+    </div>
+</header>
