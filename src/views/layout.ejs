@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= typeof title !== 'undefined' ? title + ' - ' : '' %>MyContest</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Monaco Editor (for code editor) -->
+    <% if (typeof useMonaco !== 'undefined' && useMonaco) { %>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/editor/editor.main.css">
+    <% } %>
+
+    <style>
+        body {
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+        .card {
+            background: #1e293b;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+        .difficulty-easy { color: #22c55e; }
+        .difficulty-medium { color: #eab308; }
+        .difficulty-hard { color: #ef4444; }
+
+        .status-accepted { color: #22c55e; }
+        .status-wrong_answer { color: #ef4444; }
+        .status-pending { color: #eab308; }
+        .status-running { color: #3b82f6; }
+        .status-runtime_error { color: #f97316; }
+    </style>
+</head>
+<body class="min-h-screen">
+    <%- include('partials/navbar') %>
+
+    <main class="container mx-auto px-4 py-8">
+        <%- body %>
+    </main>
+
+    <%- include('partials/footer') %>
+
+    <% if (typeof useMonaco !== 'undefined' && useMonaco) { %>
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/loader.js"></script>
+    <script>
+        require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs' }});
+    </script>
+    <% } %>
+</body>
+</html>
