@@ -10,13 +10,13 @@ const fnGetAllProblems = async (page = 1, limit = 20) => {
   const [problems, count] = await Promise.all([
     dbQueryMany(
       `
-            SELECT * FROM vw_problem_stats
+            SELECT * FROM vw_global_problems
             ORDER BY problem_id DESC
             LIMIT ? OFFSET ?
         `,
       [limit, offset]
     ),
-    dbQueryOne("SELECT COUNT(*) as total FROM problems WHERE is_active = TRUE"),
+    dbQueryOne("SELECT COUNT(*) as total FROM problems WHERE is_active = TRUE AND is_global = TRUE"),
   ]);
 
   return {

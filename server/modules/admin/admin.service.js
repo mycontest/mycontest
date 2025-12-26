@@ -129,6 +129,35 @@ const fnGetDashboardStats = async () => {
   };
 };
 
+const fnToggleProblemGlobal = async (problem_id) => {
+  await dbQueryMany("UPDATE problems SET is_global = NOT is_global WHERE problem_id = ?", [problem_id]);
+  return true;
+};
+
+const fnToggleContestGlobal = async (contest_id) => {
+  await dbQueryMany("UPDATE contests SET is_global = NOT is_global WHERE contest_id = ?", [contest_id]);
+  return true;
+};
+
+const fnGetAllProblems = async (page = 1, limit = 30) => {
+  const offset = (page - 1) * limit;
+
+  const [problems, count] = await Promise.all([
+    dbQueryMany("SELECT problem_id, title, slug, difficulty, is_global, is_active, created_at FROM problems ORDER BY created_at DESC LIMIT ? OFFSET ?", [limit, offset]),
+    dbQueryOne("SELECT COUNT(*) as total FROM problems"),
+  ]);
+
+  return {
+    problems,
+    pagination: {
+      page,
+      limit,
+      total: count.total,
+      total_pages: Math.ceil(count.total / limit),
+    },
+  };
+};
+
 module.exports = {
   fnCreateProblem,
   fnAddProblemLanguage,
@@ -137,4 +166,7 @@ module.exports = {
   fnToggleLanguage,
   fnGetAllUsers,
   fnGetDashboardStats,
+  fnToggleProblemGlobal,
+  fnToggleContestGlobal,
+  fnGetAllProblems,
 };

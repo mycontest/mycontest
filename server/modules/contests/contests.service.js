@@ -11,26 +11,13 @@ const fnGetAllContests = async (page = 1, limit = 20) => {
   const [contests, count] = await Promise.all([
     dbQueryMany(
       `
-            SELECT
-                c.contest_id,
-                c.title,
-                c.description,
-                c.start_time,
-                c.end_time,
-                c.status,
-                c.created_by,
-                COUNT(DISTINCT cp.problem_id) as problem_count,
-                COUNT(DISTINCT cs.user_id) as participant_count
-            FROM contests c
-            LEFT JOIN contest_problems cp ON c.contest_id = cp.contest_id
-            LEFT JOIN contest_submissions cs ON c.contest_id = cs.contest_id
-            GROUP BY c.contest_id
-            ORDER BY c.start_time DESC
+            SELECT * FROM vw_global_contests
+            ORDER BY start_time DESC
             LIMIT ? OFFSET ?
         `,
       [limit, offset]
     ),
-    dbQueryOne("SELECT COUNT(*) as total FROM contests"),
+    dbQueryOne("SELECT COUNT(*) as total FROM contests WHERE is_public = TRUE AND is_global = TRUE"),
   ]);
 
   return {
@@ -94,12 +81,12 @@ const fnGetContestLeaderboard = async (contest_id) => {
             u.user_id,
             u.username,
             u.full_name,
-            SUM(cs.score) as total_score,
-            COUNT(DISTINCT cs.problem_id) as problems_solved,
-            MAX(cs.submitted_at) as last_submission_time
-        FROM contest_submissions cs
-        JOIN users u ON cs.user_id = u.user_id
-        WHERE cs.contest_id = ?
+            SUM(s.score) as total_score,
+            COUNT(DISTINCT s.problem_id) as problems_solved,
+            MAX(s.submitted_at) as last_submission_time
+        FROM submissions s
+        JOIN users u ON s.user_id = u.user_id
+        WHERE s.contest_id = ?
         GROUP BY u.user_id
         ORDER BY total_score DESC, last_submission_time ASC
         LIMIT 100
