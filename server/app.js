@@ -1,114 +1,45 @@
-// ================================================================
-// MYCONTEST PLATFORM
-// Clean Modular MVC with Router/Controller/Service/Schema
-// ================================================================
-
+require("dotenv").config();
 const express = require("express");
-const path = require("path");
 const cookieParser = require("cookie-parser");
-const session = require("express-session");
-const fileUpload = require("express-fileupload");
-const FileStore = require("session-file-store")(session);
-const flash = require("connect-flash");
-const createError = require("http-errors");
+const compression = require("compression");
+const helmet = require("helmet");
+const morgan = require("morgan");
+const cors = require("cors");
+const authRoutes = require("./modules/auth/auth.routes");
+// const problemRoutes = require("./modules/problem/problem.routes");
+// const contestRoutes = require("./modules/contest/contest.routes");
+// const discussionRoutes = require("./modules/discussion/discussion.routes");
+const { errorHandler, notFoundHandler } = require("./middleware/error");
+const { generalLimiter } = require("./middleware/rate");
 
-/**
- * Create Express Application
- * @returns {Express} Configured Express app
- */
 const createApp = () => {
   const app = express();
 
-  // ================================================================
-  // MIDDLEWARE
-  // ================================================================
+  app.set("trust proxy", 1);
+  app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 
-  app.use(cookieParser(process.env.SECRET));
-  app.use(
-    session({
-      secret: process.env.SECRET,
-      resave: false,
-      saveUninitialized: false,
-      store: new FileStore({
-        path: path.join(__dirname, "session"),
-        logFn: function () {},
-      }),
-      cookie: { maxAge: 12 * 3600000, secure: false, httpOnly: false },
-    })
-  );
+  app.use(cors({ origin: process.env.CORS_ORIGIN || "http://localhost:3000" }));
+  app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+  app.use(express.json({ limit: "10mb" }));
+  app.use(compression());
 
-  app.use(fileUpload({ limits: { fileSize: process.env.LIMIT || 52428800 } }));
-  app.use(express.urlencoded({ extended: false, limit: process.env.LIMIT }));
-  app.use(express.json({ limit: process.env.LIMIT }));
-  app.use(express.static(path.join(__dirname, "public")));
-  app.use(flash());
+  const node_env = process.env.NODE_ENV || "development";
+  if (node_env === "development") {
+    app.use(morgan("dev"));
+  } else {
+    app.use(morgan("combined"));
+  }
 
-  app.set("view engine", "ejs");
-  app.set("views", path.join(__dirname, "views"));
+  app.use(generalLimiter);
 
-  // Flash messages middleware
-  app.use((req, res, next) => {
-    res.locals.success_msg = req.flash("success_msg");
-    res.locals.error_msg = req.flash("error_msg");
-    res.locals.error = req.flash("error");
-    next();
-  });
+  // Mount routes
+  app.use("/api/auth", authRoutes);
+  // app.use("/api/problems", problemRoutes);
+  // app.use("/api/contests", contestRoutes);
+  // app.use("/api/discussions", discussionRoutes);
 
-  // ================================================================
-  // GLOBAL MIDDLEWARE
-  // ================================================================
-
-  const middlewareAuth = require("./middleware/auth");
-  app.use(middlewareAuth.authCheck);
-
-  // ================================================================
-  // ROUTES
-  // ================================================================
-  app.use("/admin", require("./modules/admin/admin.router"));
-  app.use("/", require("./modules/auth/auth.router"));
-  app.use("/", require("./modules/problems/problems.router"));
-  app.use("/", require("./modules/organizations/organizations.router"));
-  app.use("/", require("./modules/discussions/discussions.router"));
-
-  // ================================================================
-  // ERROR HANDLING
-  // ================================================================
-
-  // 404 Handler
-  app.use((req, res, next) => {
-    next(createError(404, "Page not found"));
-  });
-
-  // Global Error Handler
-  app.use((err, req, res, next) => {
-    const status_code = err.status || 500;
-    const message = err.message || "Internal Server Error";
-
-    console.error("Error:", err);
-
-    // JSON response for API/AJAX requests
-    if (req.xhr || (req.headers.accept && req.headers.accept.indexOf("json") > -1)) {
-      return res.status(status_code).json({
-        success: false,
-        message: message,
-        error: process.env.NODE_ENV === "development" ? err.stack : undefined,
-      });
-    }
-
-    // Validation errors (400) - redirect back with flash message
-    if (status_code === 400) {
-      req.flash("error_msg", message);
-      const back_url = req.header("Referer") || "/";
-      return res.redirect(back_url);
-    }
-
-    // Other errors - render error page
-    res.status(status_code).render("error", {
-      title: status_code === 404 ? "Not Found" : "Error",
-      message: message,
-      error: process.env.NODE_ENV === "development" ? err : { status: status_code },
-    });
-  });
+  app.use(notFoundHandler);
+  app.use(errorHandler);
 
   return app;
 };

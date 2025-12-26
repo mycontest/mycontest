@@ -1,62 +1,51 @@
-const ApiResponse = require('../utils/response');
-const { HTTP_STATUS, MESSAGES, USER_ROLES } = require('../constants');
+const jwt = require("jsonwebtoken");
+const response = require("../utils/response");
+const { MESSAGES, USER_ROLES } = require("../utils/constants");
 
-/**
- * Check if user is authenticated (optional)
- */
 const authCheck = (req, res, next) => {
-  req.isAuthenticated = !!req.session?.user;
-  req.user = req.session?.user || null;
+  const payload = decodeToken(req);
+  req.isAuthenticated = !!payload;
+  req.user = payload || null;
   next();
 };
 
-/**
- * Require authentication
- */
 const authRequired = (req, res, next) => {
-  if (!req.session?.user) {
-    return ApiResponse.unauthorized(res, MESSAGES.UNAUTHORIZED);
+  const payload = decodeToken(req);
+  if (!payload) {
+    return response.unauthorized(res, MESSAGES.UNAUTHORIZED);
   }
-  req.user = req.session.user;
+  req.user = payload;
   next();
 };
 
-/**
- * Require admin role
- */
 const authAdmin = (req, res, next) => {
-  if (!req.session?.user) {
-    return ApiResponse.unauthorized(res, MESSAGES.UNAUTHORIZED);
+  const payload = decodeToken(req);
+  if (!payload) {
+    return response.unauthorized(res, MESSAGES.UNAUTHORIZED);
   }
-
-  if (req.session.user.role !== USER_ROLES.ADMIN) {
-    return ApiResponse.forbidden(res, MESSAGES.FORBIDDEN);
+  if (payload.role !== USER_ROLES.ADMIN) {
+    return response.forbidden(res, MESSAGES.FORBIDDEN);
   }
-
-  req.user = req.session.user;
+  req.user = payload;
   next();
 };
 
-/**
- * Require moderator or admin role
- */
 const authModerator = (req, res, next) => {
-  if (!req.session?.user) {
-    return ApiResponse.unauthorized(res, MESSAGES.UNAUTHORIZED);
+  const payload = decodeToken(req);
+  if (!payload) {
+    return response.unauthorized(res, MESSAGES.UNAUTHORIZED);
   }
-
   const allowedRoles = [USER_ROLES.ADMIN, USER_ROLES.MODERATOR];
-  if (!allowedRoles.includes(req.session.user.role)) {
-    return ApiResponse.forbidden(res, MESSAGES.FORBIDDEN);
+  if (!allowedRoles.includes(payload.role)) {
+    return response.forbidden(res, MESSAGES.FORBIDDEN);
   }
-
-  req.user = req.session.user;
+  req.user = payload;
   next();
 };
 
 module.exports = {
   authCheck,
-  authRequired,
   authAdmin,
-  authModerator
+  authRequired,
+  authModerator,
 };

@@ -1,48 +1,28 @@
-const { HTTP_STATUS, MESSAGES } = require('../constants');
+const { HTTP_STATUS, MESSAGES } = require("./constants");
 
-/**
- * Standard API Response Format
- */
-class ApiResponse {
-  static success(res, data = null, message = MESSAGES.SUCCESS, statusCode = HTTP_STATUS.OK) {
-    return res.status(statusCode).json({
-      success: true,
-      message,
-      data,
-      timestamp: new Date().toISOString()
-    });
-  }
-
-  static error(res, message = MESSAGES.INTERNAL_ERROR, statusCode = HTTP_STATUS.INTERNAL_SERVER_ERROR, errors = null) {
-    return res.status(statusCode).json({
-      success: false,
-      message,
-      errors,
-      timestamp: new Date().toISOString()
-    });
-  }
-
-  static created(res, data = null, message = MESSAGES.CREATED) {
+const response = {
+  success(res, data = null, message = MESSAGES.SUCCESS, statusCode = HTTP_STATUS.OK) {
+    return res.status(statusCode).json({ success: true, message, data, timestamp: new Date().toISOString() });
+  },
+  error(res, message = MESSAGES.INTERNAL_ERROR, statusCode = HTTP_STATUS.INTERNAL_SERVER_ERROR, errors = null) {
+    return res.status(statusCode).json({ success: false, message, errors, timestamp: new Date().toISOString() });
+  },
+  created(res, data = null, message = MESSAGES.CREATED) {
     return this.success(res, data, message, HTTP_STATUS.CREATED);
-  }
-
-  static notFound(res, message = MESSAGES.NOT_FOUND) {
+  },
+  notFound(res, message = MESSAGES.NOT_FOUND) {
     return this.error(res, message, HTTP_STATUS.NOT_FOUND);
-  }
-
-  static unauthorized(res, message = MESSAGES.UNAUTHORIZED) {
+  },
+  unauthorized(res, message = MESSAGES.UNAUTHORIZED) {
     return this.error(res, message, HTTP_STATUS.UNAUTHORIZED);
-  }
-
-  static forbidden(res, message = MESSAGES.FORBIDDEN) {
+  },
+  forbidden(res, message = MESSAGES.FORBIDDEN) {
     return this.error(res, message, HTTP_STATUS.FORBIDDEN);
-  }
-
-  static badRequest(res, message = MESSAGES.VALIDATION_ERROR, errors = null) {
+  },
+  badRequest(res, message = MESSAGES.VALIDATION_ERROR, errors = null) {
     return this.error(res, message, HTTP_STATUS.BAD_REQUEST, errors);
-  }
-
-  static paginated(res, data, pagination, message = MESSAGES.SUCCESS) {
+  },
+  paginated(res, data, pagination, message = MESSAGES.SUCCESS) {
     return res.status(HTTP_STATUS.OK).json({
       success: true,
       message,
@@ -51,11 +31,11 @@ class ApiResponse {
         page: pagination.page,
         limit: pagination.limit,
         total: pagination.total,
-        totalPages: Math.ceil(pagination.total / pagination.limit)
+        total_pages: Math.ceil(pagination.total / pagination.limit),
       },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-  }
-}
+  },
+};
 
-module.exports = ApiResponse;
+module.exports = response;

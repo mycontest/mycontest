@@ -1,75 +1,50 @@
-/**
- * Auth Controller
- * Handles authentication requests
- */
-
-const { fnWrap } = require("../../utils");
-const { fnRegister, fnLogin, fnGetUserStats } = require("./auth.service");
-
-const authLogin = fnWrap(async (req, res) => {
-  const { username, password } = req.body;
-  try {
-    const user = await fnLogin(username, password);
-    req.session.user = user;
-    if (req.xhr) {
-      return res.json({ success: true, redirect: "/" });
-    }
-    return res.redirect("/");
-  } catch (error) {
-    if (req.xhr) {
-      return res.status(400).json({ success: false, message: error.message });
-    }
-    req.flash("error_msg", error.message);
-    return res.redirect("/login");
-  }
-});
+const { fnRegister, fnLogin, fnGetUserProfile, fnUpdateProfile, fnChangePassword } = require("./auth.service");
+const response = require("../../utils/response");
+const { fnWrap, issueToken } = require("../../utils/utils");
 
 const authRegister = fnWrap(async (req, res) => {
-  const { username, email, password, full_name } = req.body;
-  try {
-    const user = await fnRegister(username, email, password, full_name);
-    req.session.user = user;
-    if (req.xhr) {
-      return res.json({ success: true, redirect: "/" });
-    }
-    return res.redirect("/");
-  } catch (error) {
-    if (req.xhr) {
-      return res.status(400).json({ success: false, message: error.message });
-    }
-    req.flash("error_msg", error.message);
-    return res.redirect("/register");
-  }
+  const user = await fnRegister(req.body);
+  const token = issueToken(user);
+  return response.created(res, { user, token }, "User registered successfully");
 });
 
-const authLogout = (req, res) => {
-  req.session.destroy();
-  res.redirect("/");
-};
-
-const authProfile = fnWrap(async (req, res) => {
-  const stats = await fnGetUserStats(req.session.user.user_id);
-  res.render("pages/profile", {
-    title: "Profile",
-    stats,
-  });
+const authLogin = fnWrap(async (req, res) => {
+  const user = await fnLogin(req.body);
+  const token = issueToken(user);
+  return response.success(res, { user, token }, "Login successful");
 });
 
-const authLoginPage = (req, res) => {
-  if (req.session.user) return res.redirect("/");
-  res.render("pages/login", { title: "Login", error: null });
-};
+const authLogout = fnWrap(async (req, res) => {
+  return response.success(res, null, "Logout successful");
+});
 
-const authRegisterPage = (req, res) => {
-  if (req.session.user) return res.redirect("/");
-  res.render("pages/register", { title: "Register", error: null });
-};
+const authMe = fnWrap(async (req, res) => {
+  const user = await fnGetUserProfile(req.user.id);
+  return response.success(res, user);
+});
+
+const authGetUser = fnWrap(async (req, res) => {
+  const user = await fnGetUserProfile(req.params.id);
+  return response.success(res, user);
+});
+
+const authUpdateProfile = fnWrap(async (req, res) => {
+  const user = await fnUpdateProfile(req.user.id, req.body);
+  return response.success(res, user, "Profile updated successfully");
+});
+
+const authChangePassword = fnWrap(async (req, res) => {
+  const { old_password, new_password } = req.body;
+  const result = await fnChangePassword(req.user.id, old_password, new_password);
+  return response.success(res, null, result.message);
+});
 
 module.exports = {
-  authLogin,
   authRegister,
+  authLogin,
   authLogout,
-  authProfile,
-  authLoginPage,
-  authRegisterPage,
+  authMe,
+  authGetUser,
+  authUpdateProfile,
+  authChangePassword,
 };

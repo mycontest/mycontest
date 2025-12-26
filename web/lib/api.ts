@@ -10,30 +10,32 @@ const apiClient: AxiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // Important for sessions
 });
 
 // Request interceptor
 apiClient.interceptors.request.use(
   (config) => {
-    // You can add auth tokens here if needed
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('mc_token');
+      if (token) {
+        config.headers = {
+          ...(config.headers || {}),
+          Authorization: `Bearer ${token}`,
+        };
+      }
+    }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 // Response interceptor
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Handle errors globally
-    if (error.response?.status === 401) {
-      // Redirect to login if unauthorized
-      if (typeof window !== 'undefined') {
-        window.location.href = '/auth/login';
-      }
+    if (error.response?.status === 401 && typeof window !== 'undefined') {
+      localStorage.removeItem('mc_token');
+      window.location.href = '/auth/login';
     }
     return Promise.reject(error);
   }
@@ -52,7 +54,7 @@ export interface PaginatedResponse<T = any> extends ApiResponse<T> {
     page: number;
     limit: number;
     total: number;
-    totalPages: number;
+    total_pages: number;
   };
 }
 
@@ -88,9 +90,21 @@ export const authApi = {
   }) => request({ method: 'POST', url: '/auth/register', data }),
 
   login: (data: { username: string; password: string }) =>
-    request({ method: 'POST', url: '/auth/login', data }),
+    request({ method: 'POST', url: '/auth/login', data }).then((res) => {
+      const token = (res as any)?.data?.token;
+      if (token && typeof window !== 'undefined') {
+        localStorage.setItem('mc_token', token);
+      }
+      return res;
+    }),
 
-  logout: () => request({ method: 'POST', url: '/auth/logout' }),
+  logout: () =>
+    request({ method: 'POST', url: '/auth/logout' }).then((res) => {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('mc_token');
+      }
+      return res;
+    }),
 
   getCurrentUser: () => request({ method: 'GET', url: '/auth/me' }),
 
