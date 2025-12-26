@@ -18,7 +18,8 @@ const authRequired = (req, res, next) => {
 };
 
 const authAdmin = (req, res, next) => {
-  if (!req.session.user || req.session.user.role !== "admin") {
+  const role = req.session.user && req.session.user.role;
+  if (role !== "admin" && role !== "organization") {
     return next(createError(403, "Access denied - Admin only"));
   }
   next();

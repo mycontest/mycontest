@@ -1,34 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error - MyContest</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="min-h-screen bg-gray-900 text-gray-100">
-    <%- include('partials/navbar') %>
+  <head>
+    <title>Error - mycontest</title>
+    <%- include("basic/head.ejs") %>
+  </head>
+  <body>
+    <%- include("basic/navbar.ejs", { data: { user_id: user ? user.user_id : null, full_name: user ? (user.full_name || user.username) : null } }) %>
 
-    <main class="container mx-auto px-4 py-16">
-        <div class="max-w-2xl mx-auto text-center">
-            <h1 class="text-9xl font-bold text-blue-400 mb-4">
-                <%= error.status || 500 %>
-            </h1>
-
-            <h2 class="text-4xl font-bold mb-4">
-                <%= error.status === 404 ? 'Page Not Found' : 'Something Went Wrong' %>
-            </h2>
-
-            <p class="text-xl text-gray-400 mb-8">
-                <%= message || 'An error occurred while processing your request' %>
-            </p>
-
-            <a href="/" class="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg inline-block">
-                Go Home
-            </a>
-        </div>
+    <main class="container py-5">
+      <div class="problem-shell p-4 text-center">
+        <h1 class="display-3 fw-bold mb-2"><%= error.status || 500 %></h1>
+        <h4 class="fw-semibold mb-2"><%= error.status === 404 ? "Page Not Found" : "Something went wrong" %></h4>
+        <p class="text-muted mb-3"><%= message || "An error occurred while processing your request." %></p>
+        <a href="/" class="btn btn-primary px-4">Go Home</a>
+      </div>
     </main>
 
-    <%- include('partials/footer') %>
-</body>
+    <%- include("basic/footer.ejs") %>
+  </body>
 </html>

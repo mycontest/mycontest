@@ -8,16 +8,38 @@ const { fnRegister, fnLogin, fnGetUserStats } = require("./auth.service");
 
 const authLogin = fnWrap(async (req, res) => {
   const { username, password } = req.body;
-  const user = await fnLogin(username, password);
-  req.session.user = user;
-  res.redirect("/");
+  try {
+    const user = await fnLogin(username, password);
+    req.session.user = user;
+    if (req.xhr) {
+      return res.json({ success: true, redirect: "/" });
+    }
+    return res.redirect("/");
+  } catch (error) {
+    if (req.xhr) {
+      return res.status(400).json({ success: false, message: error.message });
+    }
+    req.flash("error_msg", error.message);
+    return res.redirect("/login");
+  }
 });
 
 const authRegister = fnWrap(async (req, res) => {
   const { username, email, password, full_name } = req.body;
-  const user = await fnRegister(username, email, password, full_name);
-  req.session.user = user;
-  res.redirect("/");
+  try {
+    const user = await fnRegister(username, email, password, full_name);
+    req.session.user = user;
+    if (req.xhr) {
+      return res.json({ success: true, redirect: "/" });
+    }
+    return res.redirect("/");
+  } catch (error) {
+    if (req.xhr) {
+      return res.status(400).json({ success: false, message: error.message });
+    }
+    req.flash("error_msg", error.message);
+    return res.redirect("/register");
+  }
 });
 
 const authLogout = (req, res) => {

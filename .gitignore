@@ -16,6 +16,9 @@ temp/
 data/mysql/*
 data/storage/uploads/*
 data/storage/test_cases/*
+!data/storage/test_cases/1/**
+!data/storage/test_cases/2/**
+!data/storage/test_cases/.gitkeep
 data/backups/*
 
 # Logs

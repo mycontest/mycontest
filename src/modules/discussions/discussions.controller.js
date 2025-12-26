@@ -59,7 +59,7 @@ const discussionReplies = fnWrap(async (req, res) => {
  */
 const discussionDelete = fnWrap(async (req, res) => {
   const { discussion_id } = req.params;
-  const is_admin = req.session.user && (req.session.user.role === 'admin' || req.session.user.role === 'super_admin');
+  const is_admin = req.session.user && (req.session.user.role === 'admin' || req.session.user.role === 'organization');
 
   await fnDeleteDiscussion(discussion_id, req.session.user_id, is_admin);
 

@@ -3,6 +3,8 @@ const AdmZip = require("adm-zip");
 const fs = require("fs");
 const path = require("path");
 
+const TEST_CASE_ROOT = path.join(__dirname, "../../../data/storage/test_cases");
+
 const fnCreateProblem = async (problem_data, test_zip_buffer) => {
   const temp_path = path.join(__dirname, "../../../temp", "upload_" + Date.now());
   const { title, slug, difficulty, description, input_format, output_format, constraints, time_limit, memory_limit, created_by } = problem_data;
@@ -43,15 +45,32 @@ const fnCreateProblem = async (problem_data, test_zip_buffer) => {
 
     const problem_id = problem_result.insertId;
 
+    // Persist test cases to data/storage/test_cases/<problem_id>/...
+    const problem_test_root = path.join(TEST_CASE_ROOT, String(problem_id));
+    const input_dest_dir = path.join(problem_test_root, "input");
+    const output_dest_dir = path.join(problem_test_root, "output");
+    fs.mkdirSync(input_dest_dir, { recursive: true });
+    fs.mkdirSync(output_dest_dir, { recursive: true });
+
     for (let i = 0; i < input_files.length; i++) {
-      const input_data = fs.readFileSync(path.join(input_dir, input_files[i]), "utf-8").trim();
-      const expected_output = fs.readFileSync(path.join(output_dir, output_files[i]), "utf-8").trim();
+      const input_src = path.join(input_dir, input_files[i]);
+      const output_src = path.join(output_dir, output_files[i]);
+
+      const input_dest = path.join(input_dest_dir, input_files[i]);
+      const output_dest = path.join(output_dest_dir, output_files[i]);
+
+      fs.copyFileSync(input_src, input_dest);
+      fs.copyFileSync(output_src, output_dest);
+
+      const input_path = path.relative(path.join(__dirname, "../../../"), input_dest);
+      const output_path = path.relative(path.join(__dirname, "../../../"), output_dest);
+
       await conn.execute(
         `
                 INSERT INTO test_cases (problem_id, input_data, expected_output, is_sample, points, test_order)
                 VALUES (?, ?, ?, ?, ?, ?)
             `,
-        [problem_id, input_data, expected_output, i < 2, 10, i + 1]
+        [problem_id, input_path, output_path, i < 2, 10, i + 1]
       );
     }
 

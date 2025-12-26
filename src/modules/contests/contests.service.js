@@ -38,7 +38,7 @@ const fnGetContestById = async (contest_id) => {
             c.*,
             u.username as creator_name
         FROM contests c
-        LEFT JOIN users u ON c.created_by = u.user_id
+        LEFT JOIN users u ON c.creator_id = u.user_id
         WHERE c.contest_id = ?
     `,
     [contest_id]
@@ -55,14 +55,14 @@ const fnGetContestById = async (contest_id) => {
             p.title,
             p.slug,
             p.difficulty,
-            cp.points,
+            cp.problem_order,
             COUNT(DISTINCT s.submission_id) as total_submissions,
             COUNT(DISTINCT CASE WHEN s.status = 'accepted' THEN s.user_id END) as solved_count
         FROM contest_problems cp
         JOIN problems p ON cp.problem_id = p.problem_id
         LEFT JOIN submissions s ON p.problem_id = s.problem_id
         WHERE cp.contest_id = ?
-        GROUP BY p.problem_id
+        GROUP BY p.problem_id, p.title, p.slug, p.difficulty, cp.problem_order
         ORDER BY cp.problem_order
     `,
     [contest_id]

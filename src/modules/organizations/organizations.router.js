@@ -19,15 +19,15 @@ const {
 } = require("./organizations.controller");
 
 // List all organizations
-router.get("/organizations", organizationsList);
+router.get("/org", organizationsList);
 
 // Create organization (requires login)
-router.get("/organizations/create", middlewareAuth.authRequired, organizationCreateForm);
-router.post("/organizations/create", middlewareAuth.authRequired, middlewareValidate(schemaCreateOrganization), organizationCreate);
+router.get("/org/create", middlewareAuth.authRequired, organizationCreateForm);
+router.post("/org/create", middlewareAuth.authRequired, middlewareValidate(schemaCreateOrganization), organizationCreate);
 
-// Organization profile pages (/:org_slug must be last)
-router.get("/:org_slug/edit", middlewareAuth.authRequired, organizationEditForm);
-router.post("/:org_slug/edit", middlewareAuth.authRequired, middlewareValidate(schemaUpdateOrganization), organizationUpdate);
-router.get("/:org_slug", organizationProfile);
+// Organization profile pages
+router.get("/org/:org_slug/edit", middlewareAuth.authRequired, organizationEditForm);
+router.post("/org/:org_slug/edit", middlewareAuth.authRequired, middlewareValidate(schemaUpdateOrganization), organizationUpdate);
+router.get("/org/:org_slug", organizationProfile);
 
 module.exports = router;

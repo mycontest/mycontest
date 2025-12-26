@@ -2,21 +2,58 @@
  * Problems Service
  */
 
+const fs = require("fs");
+const path = require("path");
 const { dbQueryOne, dbQueryMany } = require("../../utils/mysql");
 
-const fnGetAllProblems = async (page = 1, limit = 20) => {
+const resolveTestCaseValue = (value) => {
+  if (!value) return "";
+  const candidate_path = path.resolve(__dirname, "../../..", value);
+  if (fs.existsSync(candidate_path)) {
+    return {
+      path: value,
+      content: fs.readFileSync(candidate_path, "utf-8").trim(),
+    };
+  }
+  return { path: String(value).trim(), content: String(value).trim() };
+};
+
+const fnGetAllProblems = async (page = 1, limit = 20, filters = {}) => {
   const offset = (page - 1) * limit;
+  const params = [];
+  const where = ["is_global = TRUE"];
+
+  if (filters.search) {
+    where.push("title LIKE ?");
+    params.push(`%${filters.search}%`);
+  }
+
+  if (filters.difficulty) {
+    where.push("difficulty = ?");
+    params.push(filters.difficulty);
+  }
+
+  const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
 
   const [problems, count] = await Promise.all([
     dbQueryMany(
       `
-            SELECT * FROM vw_global_problems
-            ORDER BY problem_id DESC
-            LIMIT ? OFFSET ?
-        `,
-      [limit, offset]
+        SELECT problem_id, title, slug, difficulty, is_global, language_count, attempt_count, solved_count
+        FROM vw_global_problems
+        ${whereSql}
+        ORDER BY problem_id DESC
+        LIMIT ? OFFSET ?
+      `,
+      [...params, limit, offset]
     ),
-    dbQueryOne("SELECT COUNT(*) as total FROM problems WHERE is_active = TRUE AND is_global = TRUE"),
+    dbQueryOne(
+      `
+        SELECT COUNT(*) as total
+        FROM vw_global_problems
+        ${whereSql}
+      `,
+      params
+    ),
   ]);
 
   return {
@@ -44,7 +81,7 @@ const fnGetProblemById = async (problem_id) => {
   if (!problem) throw new Error("Problem not found");
 
   // Fetch languages and samples in parallel
-  const [languages, samples] = await Promise.all([
+  const [languages, samples_raw] = await Promise.all([
     dbQueryMany(
       `
             SELECT pl.*, l.lang_name, l.lang_code, l.file_extension
@@ -65,17 +102,40 @@ const fnGetProblemById = async (problem_id) => {
     ),
   ]);
 
+  const samples = samples_raw.map((sample) => {
+    const input = resolveTestCaseValue(sample.input_data);
+    const output = resolveTestCaseValue(sample.expected_output);
+    return {
+      ...sample,
+      input_path: input.path,
+      output_path: output.path,
+      input_data: input.content,
+      expected_output: output.content,
+    };
+  });
+
   return { ...problem, languages, samples };
 };
 
 const fnGetTestCases = async (problem_id) => {
-  return await dbQueryMany(
+  const rows = await dbQueryMany(
     `
         SELECT test_id, input_data, expected_output, points
         FROM test_cases WHERE problem_id = ? ORDER BY test_order
     `,
     [problem_id]
   );
+  return rows.map((row) => {
+    const input = resolveTestCaseValue(row.input_data);
+    const output = resolveTestCaseValue(row.expected_output);
+    return {
+      ...row,
+      input_path: input.path,
+      output_path: output.path,
+      input_data: input.content,
+      expected_output: output.content,
+    };
+  });
 };
 
 const fnSubmitSolution = async (user_id, problem_id, lang_id, code_body, contest_id = null) => {

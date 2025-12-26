@@ -25,70 +25,66 @@ Professional Code Judge & Contest Platform with EJS-based MVC architecture and m
 
 ```
 mycontest/
-├── server/                  # Main application
-│   ├── app.js              # Express app configuration
-│   ├── server.js           # Server entry point
-│   ├── modules/            # MVC modules (Router/Controller/Service/Schema)
-│   │   ├── auth/           # Authentication
-│   │   ├── problems/       # Problem management
-│   │   ├── admin/          # Admin panel
-│   │   ├── contests/       # Contest system
-│   │   ├── compiler/       # Code execution
-│   │   └── discussions/    # Discussions (future)
-│   ├── middleware/         # Auth & validation middleware
-│   ├── utils/              # Database & helpers
-│   ├── views/              # EJS templates
-│   ├── public/             # Static assets
-│   └── scripts/            # Utility scripts
-├── database/               # Database schema & seeds
-│   ├── init.sql           # Database initialization
-│   └── seed.sql           # Sample data
-├── data/                   # Runtime data
-│   ├── mysql/             # MySQL data directory
-│   ├── storage/           # Uploaded files & test cases
-│   ├── backups/           # Automated backups
-│   └── docs/              # Documentation & nginx config
-├── docker-compose.yml     # Docker configuration
-└── Dockerfile            # Application container
+├─ src/                  # Main application (Express + EJS)
+│  ├─ app.js
+│  ├─ server.js
+│  ├─ modules/           # Routers/Controllers/Services/Schemas
+│  ├─ middleware/
+│  ├─ utils/
+│  ├─ views/
+│  └─ public/
+├─ database/
+│  ├─ migrations/        # init.sql + seed.sql
+│  └─ scripts/           # docker-aware helpers (backup, run-sql)
+├─ data/                 # Runtime data
+│  ├─ mysql/             # MySQL data directory
+│  ├─ storage/           # Uploaded files & test cases
+│  └─ backups/           # Automated backups
+├─ docs/
+├─ docker-compose.yml    # Docker configuration
+└─ Dockerfile            # Application container
 ```
 
-## Quick Start
+## Quick Start (Docker-first)
 
 ### Prerequisites
 
 - Node.js 18+
-- MySQL 8.0+
-- Docker (optional, for code execution)
+- Docker + Docker Compose v2 (no local MySQL needed)
 
 ### Installation
 
 1. **Clone repository**
+
    ```bash
    git clone https://github.com/mycontest/mycontest.git
    cd mycontest
    ```
 
 2. **Install dependencies**
+
    ```bash
-   cd server
    npm install
    ```
 
 3. **Configure environment**
+
    ```bash
    cp .env.example .env
-   # Edit .env with your settings
+   # Edit .env with your settings (defaults point at docker services)
    ```
 
-4. **Initialize database**
+4. **Start containers (web + MySQL)**
+
+   ```bash
+   docker compose up -d
+   ```
+
+5. **Initialize and seed the database (runs inside the mysql container)**
+
    ```bash
    npm run db:init    # Create database schema
    npm run db:seed    # Insert sample data
-   ```
-
-5. **Start application**
-   ```bash
-   npm start
    ```
 
 6. **Access application**
@@ -99,26 +95,27 @@ mycontest/
 ## Docker Deployment
 
 ```bash
-docker-compose up -d
+docker compose up -d              # start containers
+docker compose up -d --build web  # rebuild web after git pull
 ```
 
 ## Database Scripts
 
 ```bash
-npm run db:init      # Initialize database schema
-npm run db:seed      # Seed sample data
+npm run db:init      # Initialize database schema (inside mysql container)
+npm run db:seed      # Seed sample data (inside mysql container)
 npm run db:reset     # Reset database (init + seed)
 ```
 
 ## Backup & Restore
 
 ```bash
-npm run backup       # Full backup (database + files)
-npm run backup:db    # Database only
-npm run backup:full  # Complete project archive
+npm run backup       # Full backup (database + storage + code) -> data/backups/*.zip
+npm run backup:db    # Database only (zip with .sql)
+npm run backup:full  # Alias for npm run backup
 ```
 
-Backups are stored in `data/backups/` and automatically cleaned (keeps last 10).
+Backups are stored in `data/backups/` and automatically cleaned (keeps last 10). All backup commands run via Docker, so no local MySQL install is required.
 
 ## Architecture
 
@@ -145,6 +142,7 @@ Backups are stored in `data/backups/` and automatically cleaned (keeps last 10).
 ## API Endpoints
 
 ### Public Routes
+
 - `GET /` - Home page (problem list)
 - `GET /login` - Login page
 - `POST /login` - Login handler
@@ -154,6 +152,7 @@ Backups are stored in `data/backups/` and automatically cleaned (keeps last 10).
 - `GET /problems/:id` - Problem details
 
 ### Protected Routes
+
 - `POST /problems/:id/submit` - Submit solution
 - `GET /submissions/:id` - Submission details
 - `GET /profile` - User profile
@@ -161,6 +160,7 @@ Backups are stored in `data/backups/` and automatically cleaned (keeps last 10).
 - `GET /contests/:id` - Contest details
 
 ### Admin Routes
+
 - `GET /admin` - Admin dashboard
 - `GET /admin/problems` - Manage problems
 - `POST /admin/problems/create` - Create problem
@@ -181,7 +181,7 @@ MYSQL_HOST=localhost
 MYSQL_PORT=3306
 MYSQL_USERNAME=root
 MYSQL_PASSWORD=yourpassword
-MYSQL_DATABASE=my_contest
+MYSQL_DATABASE=mycontest
 
 # Security
 SECRET=your-secret-key-here

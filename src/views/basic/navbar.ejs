@@ -1,9 +1,9 @@
 <header class="p-3 mb-3 border-bottom bg-white">
     <div class="container">
         <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-            <a href="/about" class="d-flex align-items-center justify-content-center text-dark text-decoration-none me-lg-auto">
-                <img src="/logo/favicon.ico" alt="MYCONTEST" class="me-2" style="width: 20px" />
-                <h5 class="m-0">mycontest.dev</h5>
+            <a href="/" class="d-flex align-items-center justify-content-center text-dark text-decoration-none me-lg-auto">
+                <img src="/logo/logo_main.png" alt="mycontest" class="me-2" style="width: 24px" />
+                <h5 class="m-0 text-lowercase">mycontest</h5>
             </a>
 
             <% if(data.user_id) { %>
@@ -20,8 +20,8 @@
             </div>
             <% } else { %>
             <div class="h-10 text-end">
-                <a href="/sign-in" type="button" class="btn btn-primary btn-sm">Tizimga kirish</a>
-                <a href="/sign-up" type="button" class="btn btn-primary btn-sm">Ro'yhatdan o'tish</a>
+                <a href="/login" type="button" class="btn btn-outline-primary btn-sm">Tizimga kirish</a>
+                <a href="/register" type="button" class="btn btn-primary btn-sm">Ro'yhatdan o'tish</a>
             </div>
             <% } %>
         </div>

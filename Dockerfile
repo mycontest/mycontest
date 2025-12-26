@@ -1,25 +1,18 @@
 FROM node:18-alpine
 
-# Install Python and dependencies for code execution
+# Install Python (used by the judge) and dependencies for code execution
 RUN apk add --no-cache python3 py3-pip
 
-# Create app directory
 WORKDIR /app
 
-# Copy package files
-COPY server/package*.json ./
+# Install dependencies first to leverage Docker cache
+COPY package*.json ./
+RUN npm install
 
-# Install dependencies
-RUN npm install --production
+# Copy application source
+COPY . .
 
-# Copy application files
-COPY server/ .
-
-# Create temp directory for code execution
-RUN mkdir -p temp
-
-# Expose port
 EXPOSE 7001
 
-# Start application
-CMD ["node", "server.js"]
+# Default command (overridden by docker-compose for dev)
+CMD ["node", "src/server.js"]

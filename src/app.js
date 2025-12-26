@@ -40,7 +40,7 @@ const createApp = () => {
   app.use(fileUpload({ limits: { fileSize: process.env.LIMIT || 52428800 } }));
   app.use(express.urlencoded({ extended: false, limit: process.env.LIMIT }));
   app.use(express.json({ limit: process.env.LIMIT }));
-  app.use(express.static("public"));
+  app.use(express.static(path.join(__dirname, "public")));
   app.use(flash());
 
   app.set("view engine", "ejs");
@@ -64,10 +64,9 @@ const createApp = () => {
   // ================================================================
   // ROUTES
   // ================================================================
-
+  app.use("/admin", require("./modules/admin/admin.router"));
   app.use("/", require("./modules/auth/auth.router"));
   app.use("/", require("./modules/problems/problems.router"));
-  app.use("/admin", require("./modules/admin/admin.router"));
   app.use("/", require("./modules/organizations/organizations.router"));
   app.use("/", require("./modules/discussions/discussions.router"));
 

@@ -1,93 +1,144 @@
 /**
  * Backup Script
- * Creates full backup of database and uploaded files
+ * Creates a full backup (database + files/code) using the dockerized MySQL instance.
+ *
+ * Options:
+ *   --database-only / --db-only : only dump the database (skip files/code)
+ *   --keep-sql                  : keep the raw .sql file alongside the zip
  */
 
-const { spawn } = require("child_process");
+const { spawn, spawnSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 const AdmZip = require("adm-zip");
+const dotenv = require("dotenv");
 
-const timestamp = new Date().toISOString().replace(/[:.]/g, "-").split("T")[0] + "_" + new Date().toTimeString().split(" ")[0].replace(/:/g, "");
-const backupDir = path.join(__dirname, "../../data/backups");
-const backupName = `mycontest_backup_${timestamp}`;
+const project_root = path.resolve(__dirname, "../..");
+dotenv.config({ path: path.join(project_root, ".env") });
 
-// Create backup directory if not exists
-if (!fs.existsSync(backupDir)) {
-  fs.mkdirSync(backupDir, { recursive: true });
-}
+const now = new Date();
+const timestamp = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, "0"), String(now.getDate()).padStart(2, "0")].join("") + "_" + [now.getHours(), now.getMinutes(), now.getSeconds()].map((v) => String(v).padStart(2, "0")).join("");
 
-console.log("Starting backup process...");
+const backup_dir = path.join(project_root, "data", "backups");
+const backup_name = `mycontest_backup_${timestamp}`;
+const db_backup_path = path.join(backup_dir, `${backup_name}_db.sql`);
+const db_only = process.argv.includes("--database-only") || process.argv.includes("--db-only");
+const keep_sql = process.argv.includes("--keep-sql");
 
-// 1. Backup MySQL Database
-console.log("1. Backing up MySQL database...");
-const dbBackup = spawn("mysqldump", ["-u", process.env.MYSQL_USERNAME || "root", `-p${process.env.MYSQL_PASSWORD || ""}`, process.env.MYSQL_DATABASE || "my_contest"]);
+const mysql_user = process.env.MYSQL_USERNAME || "root";
+const mysql_password = process.env.MYSQL_PASSWORD || "";
+const mysql_database = process.env.MYSQL_DATABASE || "mycontest";
 
-const dbBackupPath = path.join(backupDir, `${backupName}_db.sql`);
-const dbStream = fs.createWriteStream(dbBackupPath);
-
-dbBackup.stdout.pipe(dbStream);
-
-dbBackup.on("error", (err) => {
-  console.error("Database backup failed:", err.message);
-  console.log("Tip: Make sure mysqldump is installed and accessible");
-});
-
-dbBackup.on("close", (code) => {
-  if (code === 0) {
-    console.log(`✓ Database backed up: ${dbBackupPath}`);
-
-    // 2. Backup uploaded files
-    console.log("2. Backing up uploaded files...");
-    const zip = new AdmZip();
-
-    const storagePath = path.join(__dirname, "../../data/storage");
-    if (fs.existsSync(storagePath)) {
-      zip.addLocalFolder(storagePath, "storage");
-    }
-
-    const sessionPath = path.join(__dirname, "../session");
-    if (fs.existsSync(sessionPath)) {
-      zip.addLocalFolder(sessionPath, "session");
-    }
-
-    // Add database backup to zip
-    zip.addLocalFile(dbBackupPath, "database");
-
-    const zipPath = path.join(backupDir, `${backupName}.zip`);
-    zip.writeZip(zipPath);
-
-    console.log(`✓ Files backed up: ${zipPath}`);
-
-    // 3. Cleanup standalone SQL file (already in ZIP)
-    fs.unlinkSync(dbBackupPath);
-
-    // 4. Summary
-    console.log("\n======================");
-    console.log("Backup completed successfully!");
-    console.log(`Backup file: ${zipPath}`);
-    console.log(`Size: ${(fs.statSync(zipPath).size / 1024 / 1024).toFixed(2)} MB`);
-    console.log("======================\n");
-
-    // 5. Cleanup old backups (keep last 10)
-    const backups = fs
-      .readdirSync(backupDir)
-      .filter((f) => f.endsWith(".zip"))
-      .map((f) => ({
-        name: f,
-        path: path.join(backupDir, f),
-        time: fs.statSync(path.join(backupDir, f)).mtime.getTime(),
-      }))
-      .sort((a, b) => b.time - a.time);
-
-    if (backups.length > 10) {
-      console.log("Cleaning up old backups (keeping last 10)...");
-      backups.slice(10).forEach((backup) => {
-        fs.unlinkSync(backup.path);
-        console.log(`Deleted: ${backup.name}`);
-      });
-    }
-  } else {
-    console.error("Database backup failed with code:", code);
+const ensureBackupDir = () => {
+  if (!fs.existsSync(backup_dir)) {
+    fs.mkdirSync(backup_dir, { recursive: true });
   }
-});
+};
+
+const ensureMysqlContainer = () => {
+  const docker_ps = spawnSync("docker", ["compose", "ps", "-q", "mysql"], { encoding: "utf-8" });
+  if (docker_ps.status !== 0 || !docker_ps.stdout.trim()) {
+    throw new Error("MySQL container is not running. Start it with: docker compose up -d mysql");
+  }
+};
+
+const backupDatabase = () =>
+  new Promise((resolve, reject) => {
+    console.log("1) Dumping MySQL database from the mysql container...");
+    const mysqldump_cmd = `MYSQL_PWD="${mysql_password}" mysqldump -u"${mysql_user}" -h"127.0.0.1" ${mysql_database}`;
+    const dump = spawn("docker", ["compose", "exec", "-T", "mysql", "sh", "-c", mysqldump_cmd], {
+      stdio: ["ignore", "pipe", "inherit"],
+    });
+
+    const out_stream = fs.createWriteStream(db_backup_path);
+    dump.stdout.pipe(out_stream);
+
+    dump.on("error", (err) => reject(new Error(`Database backup failed: ${err.message}`)));
+    dump.on("exit", (code) => {
+      out_stream.end();
+      if (code === 0) {
+        console.log(`   Database dump saved: ${db_backup_path}`);
+        resolve();
+      } else {
+        reject(new Error(`mysqldump exited with code ${code}`));
+      }
+    });
+  });
+
+const buildZip = () => {
+  const zip = new AdmZip();
+
+  // Always include the database dump
+  zip.addLocalFile(db_backup_path, "database");
+
+  if (!db_only) {
+    const maybeAddFolder = (folder_path, zip_path) => {
+      if (fs.existsSync(folder_path)) {
+        zip.addLocalFolder(folder_path, zip_path);
+      }
+    };
+
+    maybeAddFolder(path.join(project_root, "data", "storage"), "data/storage");
+    maybeAddFolder(path.join(project_root, "session"), "session");
+    maybeAddFolder(path.join(project_root, "src"), "src");
+    maybeAddFolder(path.join(project_root, "database", "migrations"), "database/migrations");
+    maybeAddFolder(path.join(project_root, "docs"), "docs");
+
+    ["docker-compose.yml", "Dockerfile", "package.json", "package-lock.json", ".env.example", "README.md"].forEach((file) => {
+      const file_path = path.join(project_root, file);
+      if (fs.existsSync(file_path)) {
+        zip.addLocalFile(file_path, "project");
+      }
+    });
+  }
+
+  const zip_path = path.join(backup_dir, `${backup_name}.zip`);
+  zip.writeZip(zip_path);
+  console.log(`2) Files zipped to: ${zip_path}`);
+  return zip_path;
+};
+
+const cleanupOldBackups = () => {
+  const backup_list = fs
+    .readdirSync(backup_dir)
+    .filter((file) => file.endsWith(".zip"))
+    .map((file) => ({
+      name: file,
+      path: path.join(backup_dir, file),
+      time: fs.statSync(path.join(backup_dir, file)).mtime.getTime(),
+    }))
+    .sort((a, b) => b.time - a.time);
+
+  if (backup_list.length > 10) {
+    console.log("Cleaning up old backups (keeping last 10)...");
+    backup_list.slice(10).forEach((backup) => {
+      fs.unlinkSync(backup.path);
+      console.log(`   Deleted: ${backup.name}`);
+    });
+  }
+};
+
+(async () => {
+  try {
+    ensureBackupDir();
+    ensureMysqlContainer();
+    await backupDatabase();
+    const zip_path = buildZip();
+
+    if (!keep_sql && fs.existsSync(db_backup_path)) {
+      fs.unlinkSync(db_backup_path);
+    }
+
+    cleanupOldBackups();
+
+    const size_mb = (fs.statSync(zip_path).size / 1024 / 1024).toFixed(2);
+    console.log("\nBackup completed successfully.");
+    console.log(`Saved: ${zip_path} (${size_mb} MB)`);
+    if (db_only) {
+      console.log("Mode: database only");
+    }
+  } catch (error) {
+    console.error("Backup failed:", error.message);
+    process.exit(1);
+  }
+})();

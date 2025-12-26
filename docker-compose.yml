@@ -10,38 +10,44 @@ services:
       - .env
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:-rootpassword}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-my_contest}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-mycontest}
+      MYSQL_USER: ${MYSQL_USERNAME:-root}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-rootpassword}
     ports:
       - "3306:3306"
     volumes:
       - ./data/mysql:/var/lib/mysql
-      - ./data/schema.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./database/migrations/init.sql:/docker-entrypoint-initdb.d/00-init.sql:ro
+      - ./database/migrations/seed.sql:/docker-entrypoint-initdb.d/10-seed.sql:ro
     networks:
       - mycontest_network
 
   # Web Application
   web:
-    build: .
+    build:
+      context: .
     container_name: mycontest_web
     restart: always
-    ports:
-      - "${PORT:-7001}:7001"
     env_file:
       - .env
     environment:
       MYSQL_HOST: mysql
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-my_contest}
-      MYSQL_USERNAME: root
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-mycontest}
+      MYSQL_USERNAME: ${MYSQL_USERNAME:-root}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-rootpassword}
-      PORT: 7001
+      PORT: ${PORT:-7001}
       SECRET: ${SECRET:-change_this_secret_key}
       DOMAIN: ${DOMAIN:-http://localhost:7001}
-      LIMIT: 52428800
+      LIMIT: ${LIMIT:-52428800}
     depends_on:
       - mysql
+    ports:
+      - "${PORT:-7001}:7001"
     volumes:
-      - ./server:/app
+      - ./:/app
       - /app/node_modules
+    working_dir: /app
+    command: ["npm", "run", "start"]
     networks:
       - mycontest_network
 
