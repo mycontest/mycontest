@@ -1,13 +1,10 @@
 # Dependencies
 node_modules/
 /server/node_modules/
-/web/node_modules/
 /checker/node_modules/
 
 # Environment
 .env
-/server/.env
-/web/.env*
 
 # Session & Temp
 session/
@@ -15,16 +12,24 @@ session/
 temp/
 /server/temp/
 
-# Runtime data & storage
-/data
+# Data directories (runtime)
+data/mysql/*
+data/storage/uploads/*
+data/storage/test_cases/*
+!data/storage/test_cases/1/**
+!data/storage/test_cases/2/**
+!data/storage/test_cases/.gitkeep
+data/backups/*
 
 # Logs
 *.log
 npm-debug.log*
 
-# SQL dumps (except checked-in migrations)
+# SQL dumps (except database schema)
 *.sql
-!/server/database/migrations/*.sql
+!database/*.sql
+!database/init.sql
+!database/seed.sql
 
 # OS
 .DS_Store
@@ -35,4 +40,3 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
-.next

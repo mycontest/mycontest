@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Ro'yxatdan o'tish - mycontest.dev</title>
+        <%- include("../basic/head") %>
+
+        <link rel="stylesheet" href="/css/auth.css" />
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    </head>
+
+    <body>
+        <%- include("../basic/navbar.ejs") %>
+
+        <main class="form-signin">
+            <div class="container mycontainer">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="post">
+                            <div class="mb-3">
+                                <label for="full_name" class="form-label">To'liq ism</label>
+                                <input type="text" name="full_name" class="form-control" id="full_name" required autofocus />
+                            </div>
+                            <div class="mb-3">
+                                <label for="login" class="form-label">Foydalanuvchi nomi</label>
+                                <input type="text" name="username" class="form-control" id="login" required autofocus />
+                                <p class="form-text text-muted" style="color: rgb(173, 149, 10) !important">Faqat harflardan iborat bo'lishi kerak len(3,30)</p>
+                            </div>
+                            <div class="mb-3">
+                                <label for="parol" class="form-label">Parol</label>
+                                <input type="password" name="password" class="form-control" id="parol" />
+                                <p class="form-text text-muted" style="color: rgb(173, 149, 10) !important">Harflar va belgilar len(3,30)</p>
+                            </div>
+                            <div class="form-group">
+                                <div class="mt-2 mb-2 g-recaptcha" data-sitekey="6LdHIYwqAAAAACCy53SAzSQkU0R500ixeV-7wga5"></div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Ro'yxatdan o'tish</button>
+                            <hr />
+                            <a href="/sign-in">Ro'yxatdan o'tgan bo'lsangiz!</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </body>
+</html>

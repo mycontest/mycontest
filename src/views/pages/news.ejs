@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Yangliklar - mycontest.dev</title>
+        <%- include("../basic/head.ejs") %>
+    </head>
+
+    <body>
+        <%- include("../basic/navbar.ejs") %>
+
+        <div class="container">
+            <div class="row">
+                <%- include("../basic/sidebar.ejs") %>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-header">
+                            <b>Yangliklar</b>
+                        </div>
+                        <% for(var i = 0; i < arr.length; i++) { %>
+                        <div class="card-body">
+                            <b><%= arr[i].title %></b>
+                            <p><%- arr[i].content %></p>
+                            <span>Sana: <%= arr[i].created_dt %></span>
+                        </div>
+                        <hr class="my-0" />
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <%- include("../basic/footer.ejs") %>
+    </body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Natijalar: <%= data.contest.name %> musobaqasi</title>
+        <%- include("../basic/head.ejs") %>
+    </head>
+
+    <body>
+        <%- include("../basic/navbar.ejs") %>
+
+        <div class="container">
+            <div class="row">
+                <%- include("../basic/contest.ejs") %>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-header">
+                            <b>Natijalar</b>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-sm table-bordered">
+                                <thead id="title"></thead>
+                                <tbody id="data"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <%- include("../basic/footer.ejs") %>
+
+        <script>
+            // Function to update table data
+            const getRatingsMe = () => {
+                $.get("./retings/api", (data) => {
+                    const title = document.getElementById("title");
+                    const table_data = document.getElementById("data");
+
+                    let table_headers = "<tr><th>#</th><th>Username</th>";
+                    for (let i = 1; i <= data.count; i++) {
+                        table_headers += `<th>#${i}</th>`;
+                    }
+                    table_headers += "<th >Soni</th><th >Jarima</th></tr>";
+                    title.innerHTML = table_headers;
+
+                    let table_rows = data.ratings
+                        .map((x) => {
+                            let row = `<tr>
+                            <td >${x.num}</td>
+                            <td >
+                                <span class="bg-username">${x.full_name}(${x.username})</span>
+                            </td>`;
+
+                            for (let i = 1; i <= data.count; i++) {
+                                const is_accepted = x["is_accept" + i] === 1;
+                                const count = x["count" + i];
+                                const accept_time = x["accept_time" + i];
+                                const color_style = is_accepted ? "color: #00bc8c!important; background: #e8f5e9;" : count > 0 ? "color: #e3342f!important; background: #ffb8b8;" : "";
+                                row += `<td style="text-align:center; ${color_style}"> ${is_accepted ? `+${accept_time}` : `-${count > 0 ? count : ""}`}</td>`;
+                            }
+
+                            row += `<td>${x.accept}</td><td>${x.penalty}</td></tr>`;
+                            return row;
+                        })
+                        .join("");
+
+                    table_data.innerHTML = table_rows || "<tr><td colspan='100%'></td></tr>";
+                });
+            };
+
+            // Initial call and interval refresh
+            getRatingsMe();
+            setInterval(getRatingsMe, 5000);
+        </script>
+    </body>
+</html>

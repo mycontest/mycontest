@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include("../basic/head.ejs") %>
+        <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+        <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+        <script>
+            quill = {};
+        </script>
+    </head>
+
+    <body>
+        <%- include("../basic/navbar.ejs") %>
+
+        <div class="container">
+            <div class="row">
+                <%- include("./sidebar.ejs") %>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-header"><b>News Add</b></div>
+                        <div class="card-body">
+                            <form method="post">
+                                <input type="hidden" name="news_id" value="<%= news.news_id %>" />
+                                <div class="mb-3">
+                                    <label class="form-label">Name</label>
+                                    <input type="text" name="title" class="form-control" placeholder="New contest start" value="<%= news.title %>" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Content</label>
+                                    <%- include("./textarea.ejs", { id: "content", value: news.content }) %>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <%- include("../basic/footer.ejs") %>
+    </body>
+</html>

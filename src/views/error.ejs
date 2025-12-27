@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Error - mycontest</title>
+    <%- include("basic/head.ejs") %>
+  </head>
+  <body>
+    <%- include("basic/navbar.ejs", { data: { user_id: user ? user.user_id : null, full_name: user ? (user.full_name || user.username) : null } }) %>
+
+    <main class="container py-5">
+      <div class="problem-shell p-4 text-center">
+        <h1 class="display-3 fw-bold mb-2"><%= error.status || 500 %></h1>
+        <h4 class="fw-semibold mb-2"><%= error.status === 404 ? "Page Not Found" : "Something went wrong" %></h4>
+        <p class="text-muted mb-3"><%= message || "An error occurred while processing your request." %></p>
+        <a href="/" class="btn btn-primary px-4">Go Home</a>
+      </div>
+    </main>
+
+    <%- include("basic/footer.ejs") %>
+  </body>
+</html>

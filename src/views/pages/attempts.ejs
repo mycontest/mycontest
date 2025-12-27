@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Urunishlar ro'yxati: <%= data.contest.name %> musobaqasi</title>
+        <%- include("../basic/head.ejs") %>
+    </head>
+
+    <body>
+        <%- include("../basic/navbar.ejs") %>
+
+        <div class="container">
+            <div class="row">
+                <%- include("../basic/contest.ejs") %>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-header">
+                            <b>Urinishlar</b>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Id</th>
+                                        <th scope="col">Ismi</th>
+                                        <th scope="col">Savol</th>
+                                        <th scope="col">Tili</th>
+                                        <th scope="col">Holati</th>
+                                        <th scope="col">Vaqt</th>
+                                        <th scope="col">Xotira</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="data"></tbody>
+                            </table>
+                        </div>
+
+                        <div style="display: flex; justify-content: end; margin-bottom: 10px">
+                            <button class="btn btn-sm me-2" onclick="setPage(-1)">
+                                <span aria-hidden="true">&laquo;</span>
+                                Keyingi
+                            </button>
+                            <button class="btn btn-sm me-2" onclick="setPage(+1)">
+                                Oldingi
+                                <span aria-hidden="true">&raquo;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <%- include("../basic/footer.ejs") %>
+        <script>
+            let contest_id = "<%= contest.contest_id %>";
+        </script>
+        <script src="/javascript/main.api_all.js"></script>
+    </body>
+</html>
