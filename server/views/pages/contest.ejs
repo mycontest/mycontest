@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title><%= data.contest.name %></title>
+        <%- include("../basic/head.ejs") %>
+    </head>
+
+    <body>
+        <%- include("../basic/navbar.ejs") %>
+
+        <div class="container">
+            <div class="row">
+                <%- include("../basic/contest.ejs") %>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-header">
+                            <b><%- contest.name %></b>
+                        </div>
+                        <div class="card-body"><%- contest.content %> <%- include("../basic/alert") %></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <%- include("../basic/footer.ejs") %>
+    </body>
+</html>
