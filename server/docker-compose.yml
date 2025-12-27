@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mycontest-mysql
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${DB_NAME:-mycontest}
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - ../data/mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  compiler:
+    image: node:18-bullseye
+    container_name: mycontest-compiler
+    working_dir: /workspace
+    volumes:
+      - ../storage:/workspace/storage
+    command: ["sh", "-c", "echo 'Compiler runner ready (attach language toolchains as needed).' && tail -f /dev/null"]
+    restart: unless-stopped
