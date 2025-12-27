@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include("../basic/head.ejs") %>
+    </head>
+    <body>
+        <%- include("../basic/navbar.ejs") %>
+
+        <div class="container">
+            <div class="row">
+                <%- include("./sidebar.ejs") %>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-header"><b>Contest List</b></div>
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Edit</th>
+                                        <th>Contest Id</th>
+                                        <th>Name</th>
+                                        <th>Status</th>
+                                        <th>Start</th>
+                                        <th>End</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% for(var i=0;i< arr.length;i++) { %>
+                                    <tr>
+                                        <td><a href="/admin/contestadd?contest_id=<%= arr[i].contest_id %>">Edit</a></td>
+                                        <td><%= arr[i].contest_id %></td>
+                                        <td><%= arr[i].name %></td>
+                                        <td><%= arr[i].event %></td>
+                                        <td><%= arr[i].start %></td>
+                                        <td><%= arr[i].end %></td>
+                                    </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                            <nav style="margin-left: 10px">
+                                <ul class="pagination" style="flex-wrap: wrap">
+                                    <% for(var i=0;i< count; i++ ) { %>
+                                    <li class="page-item <%= i==page?'active':'' %>"><a class="page-link" href="?page=<%= i %>"><%= i+1 %></a></li>
+                                    <% } %>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <%- include("../basic/footer.ejs") %>
+    </body>
+</html>

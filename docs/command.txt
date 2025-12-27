@@ -1,0 +1,22 @@
+# new 
+
+docker build -t mycontest_images .
+docker-compose up -d
+docker exec -it mycontest_container pm2 list
+docker logs mycontest_container
+
+docker build -t test-runner .
+docker run --rm -v $(pwd)/../code:/app/sandbox test-runner bash -c "./run_tests.sh 1 /app/sandbox 'python3 main.py'"
+docker build --build-arg SCRIPT_NAME=run_test_1.sh -t run_test_1
+zsh 
+source .env && /opt/homebrew/opt/mysql-client/bin/mysqldump -h "$MYSQL_HOST" -P 3306 -u "$MYSQL_USERNAME" -p"$MYSQL_PASSWORD" --routines --triggers --events --all-databases > full_backup.sql
+
+# trash
+
+docker build -t my-contest .
+git pull
+docker build -t my-contest .
+docker stop my-contest-container
+docker rm my-contest-container
+docker run -d --cpus="4.0" --memory="5gb" --memory-swap="5gb" -p 7001:7001 --name my-contest-container my-contest
+docker exec -it my-pm2-container pm2 list

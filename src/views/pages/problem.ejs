@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= problem.title %> - MyContest</title>
+    <%- include("../basic/head.ejs") %>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/editor/editor.main.css" />
+  </head>
+
+  <body class="bg-white">
+    <%- include("../basic/navbar.ejs", { data: { user_id: user ? user.user_id : null, full_name: user ? (user.full_name || user.username) : null } }) %>
+
+    <div class="container py-4" style="min-height: 70vh;">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-2">
+              <li class="breadcrumb-item"><a href="/problems">Problems</a></li>
+              <li class="breadcrumb-item active" aria-current="page"><%= problem.title %></li>
+            </ol>
+          </nav>
+          <h2 class="mb-0 fw-semibold"><%= problem.title %></h2>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge-difficulty badge-<%= problem.difficulty %>"><%= problem.difficulty %></span>
+          <span class="meta-pill"><i class="fa fa-clock-o"></i> <%= problem.time_limit || 1000 %> ms</span>
+          <span class="meta-pill"><i class="fa fa-microchip"></i> <%= problem.memory_limit || 256 %> MB</span>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-lg-8">
+          <div class="problem-shell p-4">
+            <div class="mb-3 text-muted small">
+              <i class="fa fa-user-o me-1"></i>
+              <%= problem.creator_username || "Admin" %>
+            </div>
+
+            <div class="section-title d-flex justify-content-between align-items-center">
+              <span>Description</span>
+              <button type="button" id="toggleDesc" class="btn btn-link p-0 text-decoration-none small">Show more</button>
+            </div>
+            <div id="descWrapper" class="mb-3 position-relative" style="max-height: 260px; overflow: hidden;">
+              <p class="mb-3"><%= problem.description || "No description available." %></p>
+              <div id="descOverlay" class="position-absolute bottom-0 start-0 end-0" style="height: 40px; background: linear-gradient(180deg, rgba(255,255,255,0) 0%, #fff 100%);"></div>
+            </div>
+
+            <% if (problem.input_format) { %>
+              <div class="section-title">Input</div>
+              <p class="mb-3"><%= problem.input_format %></p>
+            <% } %>
+
+            <% if (problem.output_format) { %>
+              <div class="section-title">Output</div>
+              <p class="mb-3"><%= problem.output_format %></p>
+            <% } %>
+
+            <% if (problem.constraints) { %>
+              <div class="section-title">Constraints</div>
+              <p class="mb-3"><%= problem.constraints %></p>
+            <% } %>
+
+            <% if (problem.samples && problem.samples.length > 0) { %>
+              <div class="section-title">Samples</div>
+              <% problem.samples.forEach((sample, idx) => { %>
+                <div class="border rounded-3 p-3 mb-3">
+                  <div class="fw-semibold mb-2">Example <%= idx + 1 %></div>
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <div class="text-muted small mb-1">Input file</div>
+                      <pre class="sample-block"><%= sample.input_path %></pre>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="text-muted small mb-1">Output file</div>
+                      <pre class="sample-block"><%= sample.output_path %></pre>
+                    </div>
+                  </div>
+                </div>
+              <% }) %>
+            <% } %>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="sidebar">
+            <div class="problem-shell p-4 mb-4">
+              <div class="section-title mb-3">Submit Solution</div>
+              <% const langs = problem.languages || []; %>
+              <% if (langs.length === 0) { %>
+                <div class="alert alert-light border mb-0">Languages are not configured yet for this problem.</div>
+              <% } else { %>
+                <form action="/problems/<%= problem.problem_id %>/submit" method="POST" id="submitForm" class="d-grid gap-3">
+                  <div>
+                    <label class="form-label mb-1">Language</label>
+                    <select name="lang_id" id="langSelect" class="form-select">
+                      <% langs.forEach(lang => { %>
+                        <option value="<%= lang.lang_id %>" data-code="<%= lang.lang_code %>" data-template="<%= encodeURIComponent(lang.template_code || '') %>">
+                          <%= lang.lang_name %>
+                        </option>
+                      <% }) %>
+                    </select>
+                  </div>
+
+                  <div class="code-wrapper">
+                    <div id="codeEditor" style="height: 320px;"></div>
+                    <textarea name="code_body" id="codeInput" class="d-none"></textarea>
+                  </div>
+
+                  <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-secondary flex-grow-1" onclick="alert('Run code mock. Integrate judge runner.');">Run</button>
+                    <button type="submit" class="btn btn-primary flex-grow-1">Submit</button>
+                  </div>
+                </form>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%- include("../basic/footer.ejs") %>
+
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/loader.js"></script>
+    <script>
+      let editor;
+      const langSelect = document.getElementById("langSelect");
+
+      require.config({ paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs" } });
+      require(["vs/editor/editor.main"], function () {
+        const langMap = {
+          python: "python",
+          javascript: "javascript",
+          cpp: "cpp",
+          java: "java",
+          go: "go",
+        };
+
+        if (!langSelect || !langSelect.options.length) {
+          return;
+        }
+
+        const firstLang = langSelect.options[0].dataset.code;
+        const firstTemplate = decodeURIComponent(langSelect.options[0].dataset.template || "");
+
+        editor = monaco.editor.create(document.getElementById("codeEditor"), {
+          value: firstTemplate,
+          language: langMap[firstLang] || "python",
+          theme: "vs",
+          minimap: { enabled: false },
+          fontSize: 14,
+          scrollBeyondLastLine: false,
+        });
+
+        langSelect.addEventListener("change", function () {
+          const selectedOption = this.options[this.selectedIndex];
+          const langCode = selectedOption.dataset.code;
+          const template = decodeURIComponent(selectedOption.dataset.template || "");
+          editor.setValue(template);
+          monaco.editor.setModelLanguage(editor.getModel(), langMap[langCode] || "python");
+        });
+
+        const form = document.getElementById("submitForm");
+        if (form) {
+          form.addEventListener("submit", function () {
+            document.getElementById("codeInput").value = editor.getValue();
+          });
+        }
+      });
+
+      // Description toggle
+      const toggleBtn = document.getElementById("toggleDesc");
+      const descWrapper = document.getElementById("descWrapper");
+      const descOverlay = document.getElementById("descOverlay");
+      let expanded = false;
+      if (toggleBtn && descWrapper && descOverlay) {
+        toggleBtn.addEventListener("click", () => {
+          expanded = !expanded;
+          if (expanded) {
+            descWrapper.style.maxHeight = "none";
+            descOverlay.style.display = "none";
+            toggleBtn.textContent = "Show less";
+          } else {
+            descWrapper.style.maxHeight = "260px";
+            descOverlay.style.display = "block";
+            toggleBtn.textContent = "Show more";
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

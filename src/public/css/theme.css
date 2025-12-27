@@ -1,0 +1,94 @@
+body {
+  background: #ffffff;
+  color: #1f2933;
+  min-height: 100vh;
+}
+
+.problem-shell,
+.panel-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  box-shadow: none;
+}
+
+.section-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #1f2933;
+}
+
+.sample-block {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 0.75rem;
+  font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  white-space: pre-wrap;
+  margin-bottom: 0;
+}
+
+.meta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: #eef2f7;
+  border: 1px solid #e1e4ea;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.sidebar {
+  position: sticky;
+  top: 24px;
+}
+
+.code-wrapper {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: none;
+}
+
+.badge-difficulty {
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.badge-easy {
+  background: #e6f6ed;
+  color: #1b7b46;
+}
+.badge-medium {
+  background: #fff7e6;
+  color: #b46914;
+}
+.badge-hard {
+  background: #ffe4e6;
+  color: #b42318;
+}
+
+.list-group-item.active {
+  background-color: #1e73f0;
+  border-color: #1e73f0;
+}
+
+pre {
+  margin-bottom: 0;
+}
+
+.navbar {
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+footer {
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb;
+}

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Sign In - mycontest</title>
+    <%- include("../basic/head.ejs") %>
+  </head>
+  <body>
+    <%- include("../basic/navbar.ejs", { data: { user_id: user ? user.user_id : null, full_name: user ? (user.full_name || user.username) : null } }) %>
+
+    <main class="container py-5" style="max-width: 520px;">
+      <div class="problem-shell p-4">
+        <h3 class="fw-bold mb-3">Tizimga kirish</h3>
+        <% if (error_msg && error_msg.length) { %>
+          <div class="alert alert-danger"><%= error_msg[0] %></div>
+        <% } %>
+        <form action="/login" method="POST" class="d-grid gap-3">
+          <div>
+            <label class="form-label">Username</label>
+            <input type="text" name="username" class="form-control" required />
+          </div>
+          <div>
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-control" required />
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Login</button>
+          <div class="text-center text-muted small">
+            Akkauntingiz yo'qmi? <a href="/register">Ro'yhatdan o'tish</a>
+          </div>
+        </form>
+      </div>
+    </main>
+
+    <%- include("../basic/footer.ejs") %>
+  </body>
+</html>

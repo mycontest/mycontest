@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: mycontest_mysql
+    restart: always
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-mycontest}
+      MYSQL_USER: ${MYSQL_USERNAME:-root}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-rootpassword}
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+      - ./database/migrations/init.sql:/docker-entrypoint-initdb.d/00-init.sql:ro
+      - ./database/migrations/seed.sql:/docker-entrypoint-initdb.d/10-seed.sql:ro
+    networks:
+      - mycontest_network
+
+  # Web Application
+  web:
+    build:
+      context: .
+    container_name: mycontest_web
+    restart: always
+    env_file:
+      - .env
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-mycontest}
+      MYSQL_USERNAME: ${MYSQL_USERNAME:-root}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-rootpassword}
+      PORT: ${PORT:-7001}
+      SECRET: ${SECRET:-change_this_secret_key}
+      DOMAIN: ${DOMAIN:-http://localhost:7001}
+      LIMIT: ${LIMIT:-52428800}
+    depends_on:
+      - mysql
+    ports:
+      - "${PORT:-7001}:7001"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    working_dir: /app
+    command: ["npm", "run", "start"]
+    networks:
+      - mycontest_network
+
+networks:
+  mycontest_network:
+    driver: bridge

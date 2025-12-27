@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Tizimga kirish - mycontest.dev</title>
+        <%- include("../basic/head") %>
+
+        <link rel="stylesheet" href="/css/auth.css" />
+    </head>
+
+    <body>
+        <%- include("../basic/navbar.ejs") %>
+
+        <main class="form-signin">
+            <div class="container mycontainer">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="post">
+                            <div class="mb-3">
+                                <label for="login" class="form-label">Foydalanuvchi nomi</label>
+                                <input type="text" name="username" class="form-control" id="login" aria-describedby="login" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="parol" class="form-label">Parol</label>
+                                <input type="password" name="password" class="form-control" id="parol" />
+                            </div>
+
+                            <%- include("../basic/alert") %>
+
+                            <button type="submit" class="btn btn-primary">Tizimga kirish</button>
+                            <hr />
+                            <a href="/sign-up">Men hali ro'yxatdan o'tmaganman!</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </body>
+</html>
