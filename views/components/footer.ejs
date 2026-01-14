@@ -1,0 +1,30 @@
+<%- include("./alert") %>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="footer-text">&copy; <%= new Date().getFullYear() %> mycontest.dev — Bu lahzalardan rohatlaning.</div>
+    <div class="footer-links">
+      <a class="footer-link" target="_blank" href="https://t.me/mycontest_chat" title="Telegram">
+        <i class="bi bi-telegram"></i>
+      </a>
+      <a class="footer-link" target="_blank" href="https://instagram.com/mensenvau" title="Instagram">
+        <i class="bi bi-instagram"></i>
+      </a>
+      <a class="footer-link" target="_blank" href="https://youtube.com/mensenvau" title="YouTube">
+        <i class="bi bi-youtube"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<div id="load" class="loader-overlay">
+  <div class="loader"></div>
+</div>
+
+<script>
+  $(window).on("load", function () {
+    $("#load").fadeOut(200);
+  });
+</script>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>

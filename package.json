@@ -1,0 +1,61 @@
+{
+  "name": "mycontest",
+  "version": "2.0.0",
+  "description": "Online Programming Contest Platform",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "worker": "node checker/worker.js",
+    "worker:dev": "cd checker && npm run dev",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:restart": "docker-compose restart",
+    "checker:build": "cd checker/docker && docker-compose build",
+    "db:backup": "docker exec mycontest_mysql mysqldump -uroot -proot my_contest > backup_$(date +%Y%m%d_%H%M%S).sql",
+    "db:restore": "docker exec -i mycontest_mysql mysql -uroot -proot my_contest",
+    "logs:app": "docker-compose logs -f app",
+    "logs:worker": "docker-compose logs -f checker-worker",
+    "logs:redis": "docker-compose logs -f redis",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mycontest/mycontest"
+  },
+  "keywords": [
+    "contest",
+    "programming",
+    "online-judge",
+    "code-checker"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mycontest/mycontest/issues"
+  },
+  "homepage": "https://github.com/mycontest/mycontest#readme",
+  "dependencies": {
+    "connect-flash": "^0.1.1",
+    "connect-redis": "^9.0.0",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.0.0",
+    "ejs": "^3.1.6",
+    "express": "^4.18.0",
+    "express-fileupload": "^1.4.0",
+    "express-session": "^1.17.3",
+    "joi": "^17.9.0",
+    "md5": "^2.3.0",
+    "mysql2": "^3.6.0",
+    "redis": "^4.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}

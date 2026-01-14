@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="uz">
+  <head>
+    <title>Natijalar: <%= contest.name %> — mycontest.dev</title>
+    <%- include("../components/head.ejs") %>
+  </head>
+  <body>
+    <%- include("../components/navbar.ejs") %>
+
+    <main style="padding: 16px 0 32px">
+      <div class="container">
+        <%- include("topbar.ejs") %>
+
+        <div class="flex justify-between items-end mb-3">
+          <div>
+            <h1 class="mb-1">Natijalar Jadvali</h1>
+            <p class="text-muted">Ishtirokchilarning jami natijalari.</p>
+          </div>
+          <div class="flex items-center gap-2 text-muted text-sm">
+            <i class="bi bi-arrow-repeat"></i>
+            <span>10s yangilanadi</span>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="leaderboard-table">
+            <thead id="title"></thead>
+            <tbody id="data">
+              <tr>
+                <td colspan="100" style="text-align: center; padding: 48px; color: var(--text-muted)">
+                  <div class="loader mx-auto mb-3"></div>
+                  Yuklanmoqda...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <%- include("../components/footer.ejs") %>
+
+    <script>
+      const contest_id = "<%= contest.contest_id %>";
+
+      const getRatings = () => {
+        fetch(`/contest/${contest_id}/rating/all`)
+          .then((r) => r.json())
+          .then((data) => {
+            const titleHead = document.getElementById("title");
+            const dataBody = document.getElementById("data");
+
+            let headers = `<tr>
+              <th style="width: 40px; text-align: center">#</th>
+              <th style="text-align: left">Ishtirokchi</th>`;
+            for (let i = 1; i <= data.count; i++) {
+              headers += `<th class="problem-cell">P${i}</th>`;
+            }
+            headers += `<th style="width: 60px; text-align: center">Ball</th>
+              <th style="width: 70px; text-align: center">Jarima</th>
+            </tr>`;
+            titleHead.innerHTML = headers;
+
+            const rows = data.ratings
+              .map((user) => {
+                let cells = `<tr>
+                  <td class="rank-cell">${user.num}</td>
+                  <td>
+                    <div class="user-cell">
+                      <span class="user-name">${user.full_name}</span>
+                      <span class="user-handle">@${user.username}</span>
+                    </div>
+                  </td>`;
+
+                for (let i = 1; i <= data.count; i++) {
+                  const isAccepted = user["is_accept" + i] === 1;
+                  const tries = user["count" + i];
+                  const acceptTime = user["accept_time" + i];
+
+                  if (isAccepted) {
+                    cells += `<td class="problem-cell accepted">
+                      <div>+${tries > 1 ? tries - 1 : ""}</div>
+                      <div class="problem-time">${acceptTime}</div>
+                    </td>`;
+                  } else if (tries > 0) {
+                    cells += `<td class="problem-cell failed">-${tries}</td>`;
+                  } else {
+                    cells += `<td class="problem-cell empty">—</td>`;
+                  }
+                }
+
+                cells += `<td class="score-cell">${user.accept}</td>
+                  <td class="penalty-cell">${user.penalty}</td>
+                </tr>`;
+                return cells;
+              })
+              .join("");
+
+            dataBody.innerHTML = rows || `<tr><td colspan="100" style="text-align: center; padding: 48px; color: var(--text-muted)">Hali natijalar mavjud emas.</td></tr>`;
+          })
+          .catch(() => {
+            document.getElementById("data").innerHTML = `<tr><td colspan="100" style="text-align: center; padding: 48px; color: var(--text-muted)">Ma'lumotlarni yuklashda xatolik.</td></tr>`;
+          });
+      };
+
+      getRatings();
+      setInterval(getRatings, 10000);
+    </script>
+  </body>
+</html>

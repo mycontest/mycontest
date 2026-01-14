@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="uz">
+  <head>
+    <title>Musobaqalar — mycontest.dev</title>
+    <%- include("../components/head.ejs") %>
+  </head>
+  <body>
+    <%- include("../components/navbar.ejs") %>
+
+    <main style="padding: 16px 0 32px">
+      <div class="container">
+        <!-- Page Header -->
+        <div class="flex justify-between items-end mb-3">
+          <div>
+            <h1 class="mb-1">Dasturlash Musobaqalari</h1>
+            <p class="text-muted">O'zingizni sinab ko'ring va natijalarni yaxshilang.</p>
+          </div>
+        </div>
+
+        <!-- Contest Table -->
+        <% if (!contests || contests.length == 0) { %>
+        <div class="card" style="text-align: center; padding: 80px 40px">
+          <div style="margin-bottom: 16px">
+            <i class="bi bi-trophy" style="font-size: 48px; color: var(--border-light)"></i>
+          </div>
+          <h3 class="mb-2">Musobaqalar yo'q</h3>
+          <p class="text-muted">Hozircha hech qanday musobaqa mavjud emas.</p>
+        </div>
+        <% } else { %>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 60px">#</th>
+                <th>Musobaqa nomi</th>
+                <th style="width: 130px">Boshlanish</th>
+                <th style="width: 130px">Tugash</th>
+                <th style="width: 120px; text-align: center">Holati</th>
+                <th style="width: 80px; text-align: center">Amal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% contests.forEach((contest, index) => { const now = new Date(); const start = new Date(contest.start_date); const end = new Date(contest.end_date); let statusLabel = "O'tkazilmoqda"; let badgeClass = "badge-success badge-dot"; if (now < start) { statusLabel = "Boshlanmagan";
+              badgeClass = "badge-warning"; } else if (now > end) { statusLabel = "Yakunlangan"; badgeClass = "badge-error"; } %>
+              <tr class="clickable" onclick="window.location.href='/contest/<%= contest.contest_id %>'">
+                <td style="font-weight: 600; color: var(--text-muted)"><%= index + 1 %></td>
+                <td>
+                  <div style="font-weight: 600; font-size: 14px; color: var(--text-primary)"><%= contest.name %></div>
+                </td>
+                <td style="font-size: 12px">
+                  <div><%= new Date(contest.start_date).toLocaleDateString('uz-UZ', { day: '2-digit', month: 'short' }) %></div>
+                  <div class="text-muted"><%= new Date(contest.start_date).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' }) %></div>
+                </td>
+                <td style="font-size: 12px">
+                  <div><%= new Date(contest.end_date).toLocaleDateString('uz-UZ', { day: '2-digit', month: 'short' }) %></div>
+                  <div class="text-muted"><%= new Date(contest.end_date).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' }) %></div>
+                </td>
+                <td style="text-align: center">
+                  <span class="badge <%= badgeClass %>"><%= statusLabel %></span>
+                </td>
+                <td style="text-align: center">
+                  <a href="/contest/<%= contest.contest_id %>" class="btn btn-primary btn-md">Kirish</a>
+                </td>
+              </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+        <% } %>
+      </div>
+    </main>
+
+    <%- include("../components/footer.ejs") %>
+  </body>
+</html>

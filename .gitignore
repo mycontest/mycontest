@@ -1,12 +1,25 @@
-# Ignore node_modules
-/node_modules/
-/server/node_modules/
-/checker/node_modules/
-/session/
-
-# Miscellaneous
-.DS_Store
+# Environment & Secrets
 .env
+.env.local
 
-# if you want
-checker/temp
+# Dependencies
+node_modules/
+package-lock.json
+
+# Data & Temp
+data/mysql/
+data/redis/
+data/checker/temp/
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+dist/
+build/

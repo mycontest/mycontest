@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="uz">
+  <head>
+    <title>Masalalar — Admin Panel</title>
+    <%- include("../components/head.ejs") %>
+  </head>
+  <body style="background: var(--bg-secondary)">
+    <%- include("../components/navbar.ejs") %>
+
+    <main style="padding: 16px 0 32px">
+      <div class="container">
+        <div class="row g-4">
+          <%- include("./sidebar.ejs") %>
+
+          <div class="col-lg-9">
+            <div class="flex justify-between items-center mb-5">
+              <div>
+                <h1 class="mb-1">Masalalar</h1>
+                <p class="text-muted">Barcha mavjud masalalar va ularning holati.</p>
+              </div>
+              <a href="/admin/tasksadd" class="btn btn-primary btn-md">
+                <i class="bi bi-plus-lg"></i>
+                Yangi qo'shish
+              </a>
+            </div>
+
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width: 60px">ID</th>
+                    <th>Nomi</th>
+                    <th style="width: 100px; text-align: center">Testlar</th>
+                    <th style="width: 100px; text-align: center">Vaqt</th>
+                    <th style="width: 100px; text-align: center">Xotira</th>
+                    <th style="width: 80px; text-align: right">Amal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if (typeof tasks_list !== 'undefined' && tasks_list.length > 0) { %> <% tasks_list.forEach(task => { %>
+                  <tr>
+                    <td style="font-weight: 600; color: var(--text-muted)">#<%= task.task_id %></td>
+                    <td style="font-weight: 500"><%= task.name %></td>
+                    <td style="text-align: center"><span class="badge badge-info"><%= task.test_all %></span></td>
+                    <td style="text-align: center; font-family: var(--font-mono); font-size: 12px"><%= task.time_ms %>ms</td>
+                    <td style="text-align: center; font-family: var(--font-mono); font-size: 12px"><%= Math.round(task.memory_kb/1024) %>MB</td>
+                    <td style="text-align: right">
+                      <a href="/admin/tasksadd?task_id=<%= task.task_id %>" class="btn btn-ghost btn-md btn-icon">
+                        <i class="bi bi-pencil"></i>
+                      </a>
+                    </td>
+                  </tr>
+                  <% }); %> <% } else { %>
+                  <tr>
+                    <td colspan="6" style="text-align: center; padding: 48px" class="text-muted">Masalalar topilmadi.</td>
+                  </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+
+            <% if (count > 1) { %>
+            <div class="flex justify-center mt-4">
+              <nav class="flex gap-1">
+                <% for(var i=0; i < count; i++) { %>
+                <a href="?page=<%= i %>" class="btn btn-md <%= i == page ? 'btn-primary' : '' %>" style="min-width: 32px"> <%= i + 1 %> </a>
+                <% } %>
+              </nav>
+            </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <%- include("../components/footer.ejs") %>
+  </body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="uz">
+  <head>
+    <title><%= contest.name %> — mycontest.dev</title>
+    <%- include("../components/head.ejs") %>
+  </head>
+  <body>
+    <%- include("../components/navbar.ejs") %>
+
+    <main style="padding: 16px 0 32px">
+      <div class="container">
+        <%- include("topbar.ejs") %>
+
+        <div class="row g-3">
+          <!-- Main Content -->
+          <div class="col-lg-9">
+            <div class="card" style="padding: 10px">
+              <div class="prose" style="font-size: 13px"><%- contest.content %></div>
+            </div>
+          </div>
+
+          <!-- Time Info -->
+          <div class="col-lg-3">
+            <div class="card" style="padding: 14px">
+              <div style="font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 10px">Vaqt</div>
+              <div style="font-size: 12px; display: flex; flex-direction: column; gap: 6px">
+                <div>
+                  <div class="text-muted" style="font-size: 10px">Boshlanish</div>
+                  <div style="font-weight: 500"><%= new Date(contest.start_date).toLocaleDateString('uz-UZ', { day: 'numeric', month: 'short', year: 'numeric' }) %>, <%= new Date(contest.start_date).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' }) %></div>
+                </div>
+                <div>
+                  <div class="text-muted" style="font-size: 10px">Tugash</div>
+                  <div style="font-weight: 500"><%= new Date(contest.end_date).toLocaleDateString('uz-UZ', { day: 'numeric', month: 'short', year: 'numeric' }) %>, <%= new Date(contest.end_date).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' }) %></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <%- include("../components/footer.ejs") %>
+  </body>
+</html>

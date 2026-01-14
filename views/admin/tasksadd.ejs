@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="uz">
+  <head>
+    <title><%= task.task_id ? 'Masalani tahrirlash' : 'Yangi masala' %> — Admin</title>
+    <%- include("../components/head.ejs") %>
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    <script>
+      var quill = {};
+    </script>
+    <style>
+      .ql-toolbar.ql-snow {
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius) var(--radius) 0 0;
+        background: var(--bg-secondary);
+      }
+      .ql-container.ql-snow {
+        border: 1px solid var(--border-light);
+        border-top: none;
+        border-radius: 0 0 var(--radius) var(--radius);
+        min-height: 180px;
+        font-family: var(--font-sans);
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body style="background: var(--bg-secondary)">
+    <%- include("../components/navbar.ejs") %>
+
+    <main style="padding: 16px 0 32px">
+      <div class="container">
+        <div class="row g-4">
+          <%- include("./sidebar.ejs") %>
+
+          <div class="col-lg-9">
+            <div class="mb-5">
+              <h1 class="mb-1"><%= task.task_id ? 'Masalani tahrirlash' : 'Yangi masala qo\'shish' %></h1>
+              <p class="text-muted">Masala tafsilotlari va test drayverlarini sozlash.</p>
+            </div>
+
+            <form method="post">
+              <input type="hidden" name="task_id" value="<%= task.task_id || 0 %>" />
+
+              <div class="card mb-4">
+                <div style="margin-bottom: 20px; border-bottom: 1px solid var(--border-light); padding-bottom: 12px">
+                  <h3 style="font-size: 14px; margin: 0">Asosiy ma'lumotlar</h3>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Masala nomi</label>
+                  <input type="text" name="name" class="form-control" placeholder="Masalan: A + B masalasi" value="<%= task.name || '' %>" required />
+                </div>
+
+                <div class="row g-3 mb-4">
+                  <div class="col-md-3">
+                    <label class="form-label">Vaqt chegarasi (ms)</label>
+                    <input type="number" name="time_ms" class="form-control" placeholder="1000" value="<%= task.time_ms || 1000 %>" required />
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Xotira (Kb)</label>
+                    <input type="number" name="memory_kb" class="form-control" placeholder="65536" value="<%= task.memory_kb || 65536 %>" required />
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Ochiq testlar</label>
+                    <input type="number" name="test_public" class="form-control" placeholder="2" value="<%= task.test_public || 1 %>" required />
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Jami testlar</label>
+                    <input type="number" name="test_all" class="form-control" placeholder="10" value="<%= task.test_all || 1 %>" required />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Masala matni</label>
+                  <%- include("./textarea.ejs", { id: "question_content", value: task.question_content || '' }) %>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Kirish formati</label>
+                  <%- include("./textarea.ejs", { id: "input_content", value: task.input_content || '' }) %>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Chiqish formati</label>
+                  <%- include("./textarea.ejs", { id: "output_content", value: task.output_content || '' }) %>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Yechim tahlili <span class="text-muted font-normal">(ixtiyoriy)</span></label>
+                  <%- include("./textarea.ejs", { id: "comment_content", value: task.comment_content || '' }) %>
+                </div>
+
+                <div class="flex justify-end gap-2 mt-4">
+                  <a href="/admin/tasks" class="btn">Bekor qilish</a>
+                  <button type="submit" class="btn btn-primary btn-md">
+                    <i class="bi bi-check-lg"></i>
+                    Saqlash
+                  </button>
+                </div>
+              </div>
+            </form>
+
+            <% if(task.task_id > 0) { %>
+            <div class="card" style="padding: 0; overflow: hidden">
+              <div class="card-header flex justify-between items-center" style="margin: 0; border-radius: 0">
+                <span class="card-title">Test Case yuklash</span>
+              </div>
+
+              <div class="p-4 border-bottom">
+                <form action="/admin/taskszip" method="POST" enctype="multipart/form-data">
+                  <input type="hidden" name="task_id" value="<%= task.task_id %>" />
+                  <div class="flex gap-2 items-end">
+                    <div style="flex: 1">
+                      <input type="file" name="zip_file" class="form-control form-control-sm" accept=".zip" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-md">
+                      <i class="bi bi-upload"></i>
+                      Yuklash
+                    </button>
+                  </div>
+                  <p class="form-text mt-2">Zip fayl strukturasi: input1.txt, output1.txt, input2.txt, ...</p>
+                </form>
+              </div>
+
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width: 50px">#</th>
+                    <th>Fayl nomi</th>
+                    <th style="width: 80px; text-align: center">Turi</th>
+                    <th style="width: 80px; text-align: center">Hajmi</th>
+                    <th style="width: 140px; text-align: right">O'zgartirilgan</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if(typeof files !== 'undefined' && files.length > 0) { %> <% files.forEach((file, i) => { %>
+                  <tr>
+                    <td style="color: var(--text-muted)"><%= i + 1 %></td>
+                    <td style="font-weight: 500; font-family: var(--font-mono); font-size: 12px"><%= file.name %></td>
+                    <td style="text-align: center"><span class="badge"><%= file.type %></span></td>
+                    <td style="text-align: center; font-size: 12px"><%= file.size %> KB</td>
+                    <td style="text-align: right; font-size: 12px" class="text-muted"><%= file.last_modified %></td>
+                  </tr>
+                  <% }); %> <% } else { %>
+                  <tr>
+                    <td colspan="5" style="text-align: center; padding: 32px" class="text-muted">Testlar yuklanmagan.</td>
+                  </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <%- include("../components/footer.ejs") %>
+  </body>
+</html>

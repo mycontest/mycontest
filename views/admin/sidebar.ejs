@@ -1,0 +1,42 @@
+<aside class="col-lg-3">
+  <div class="card admin-sidebar" style="padding: 0; overflow: hidden">
+    <div style="padding: 14px 16px; border-bottom: 1px solid var(--border-light)">
+      <div class="stat-label" style="margin: 0">Admin Panel</div>
+    </div>
+
+    <nav class="admin-nav">
+      <a href="/admin" class="admin-nav-item <%= page_info == 'home' ? 'active' : '' %>">
+        <i class="bi bi-grid-1x2"></i>
+        Dashboard
+      </a>
+
+      <div class="admin-nav-divider"></div>
+
+      <a href="/admin/contest" class="admin-nav-item <%= page_info == 'contest' ? 'active' : '' %>">
+        <i class="bi bi-trophy"></i>
+        Musobaqalar
+      </a>
+      <a href="/admin/contestadd" class="admin-nav-item <%= page_info == 'contestadd' ? 'active' : '' %>">
+        <i class="bi bi-calendar-plus"></i>
+        Yangi musobaqa
+      </a>
+
+      <div class="admin-nav-divider"></div>
+
+      <a href="/admin/tasks" class="admin-nav-item <%= page_info == 'tasks' ? 'active' : '' %>">
+        <i class="bi bi-collection"></i>
+        Masalalar
+      </a>
+      <a href="/admin/tasksadd" class="admin-nav-item <%= page_info == 'tasksadd' ? 'active' : '' %>">
+        <i class="bi bi-plus-lg"></i>
+        Yangi masala
+      </a>
+
+      <a href="https://drive.google.com/drive/folders/1txRhuDlGdtO2Gjud-zTVSO42lcjWd5qQ?usp=sharing" target="_blank" class="admin-nav-item">
+        <i class="bi bi-folder2-open"></i>
+        Public Files
+        <i class="bi bi-box-arrow-up-right text-muted" style="font-size: 10px; margin-left: auto"></i>
+      </a>
+    </nav>
+  </div>
+</aside>

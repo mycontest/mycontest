@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="uz">
+  <head>
+    <title><%= contest.contest_id ? 'Musobaqani tahrirlash' : 'Yangi musobaqa' %> — Admin Panel</title>
+    <%- include("../components/head.ejs") %>
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    <script>
+      quill = {};
+    </script>
+    <style>
+      .ql-container {
+        border-radius: 0 0 var(--radius) var(--radius);
+      }
+      .ql-toolbar {
+        border-radius: var(--radius) var(--radius) 0 0;
+        background: var(--bg-secondary);
+      }
+      .ql-editor {
+        min-height: 200px;
+        font-family: var(--font-sans);
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body style="background: var(--bg-secondary)">
+    <%- include("../components/navbar.ejs") %>
+
+    <main style="padding: 16px 0 32px">
+      <div class="container">
+        <div class="row g-4">
+          <%- include("./sidebar.ejs") %>
+
+          <div class="col-lg-9">
+            <!-- Page Header -->
+            <div class="mb-5">
+              <h1 class="mb-1"><%= contest.contest_id ? 'Musobaqani tahrirlash' : 'Yangi musobaqa yaratish' %></h1>
+              <p class="text-muted">Musobaqa ma'lumotlarini to'ldiring.</p>
+            </div>
+
+            <!-- Contest Form -->
+            <div class="card mb-4">
+              <form method="post">
+                <input type="hidden" name="contest_id" value="<%= contest.contest_id %>" />
+
+                <div class="form-group">
+                  <label class="form-label">Musobaqa nomi</label>
+                  <input type="text" name="name" class="form-control" placeholder="Round 1" value="<%= contest.name %>" required />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Tavsif</label>
+                  <%- include("./textarea.ejs", { id: "content", value: contest.content }) %>
+                </div>
+
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="form-label">Boshlanish vaqti</label>
+                      <input type="datetime-local" name="start_date" id="start_date" class="form-control" value="<%= contest.start_date %>" required />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="form-label">Tugash vaqti</label>
+                      <input type="datetime-local" name="end_date" id="end_date" class="form-control" value="<%= contest.end_date %>" required />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex justify-end gap-2 mt-4">
+                  <a href="/admin/contest" class="btn">Bekor qilish</a>
+                  <button type="submit" class="btn btn-primary btn-md">
+                    <i class="bi bi-check-lg"></i>
+                    Saqlash
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <% if(contest.contest_id) { %>
+            <!-- Tasks Section -->
+            <div class="card" style="padding: 0; overflow: hidden">
+              <div class="card-header flex justify-between items-center" style="margin: 0; border-radius: 0">
+                <span class="card-title">Bog'langan masalalar</span>
+              </div>
+
+              <div class="p-4 border-bottom">
+                <form action="/admin/addtasks" method="post" class="flex gap-2">
+                  <input type="hidden" name="contest_id" value="<%= contest_id %>" />
+                  <input type="text" class="form-control form-control-sm" name="task_id" placeholder="Masala ID raqami" style="max-width: 200px" />
+                  <button type="submit" class="btn btn-primary btn-md">
+                    <i class="bi bi-plus-lg"></i>
+                    Qo'shish
+                  </button>
+                </form>
+              </div>
+
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width: 60px">ID</th>
+                    <th>Nomi</th>
+                    <th style="width: 80px; text-align: center">Kod</th>
+                    <th style="width: 100px; text-align: center">Testlar</th>
+                    <th style="width: 100px; text-align: right">Amallar</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if(tasks && tasks.length > 0) { %> <% for(var i=0; i < tasks.length; i++) { %>
+                  <tr>
+                    <td style="font-weight: 600; color: var(--text-muted)">#<%= tasks[i].task_id %></td>
+                    <td style="font-weight: 500"><%= tasks[i].name %></td>
+                    <td style="text-align: center; font-family: var(--font-mono); font-size: 12px"><%= tasks[i].code %></td>
+                    <td style="text-align: center"><span class="badge badge-info"><%= tasks[i].all_test %></span></td>
+                    <td style="text-align: right">
+                      <div class="flex justify-end gap-1">
+                        <a href="/admin/tasksadd?task_id=<%= tasks[i].task_id %>" class="btn btn-ghost btn-md btn-icon">
+                          <i class="bi bi-pencil"></i>
+                        </a>
+                        <a href="/admin/deltasks?task_id=<%= tasks[i].task_id %>&contest_id=<%= contest_id %>" class="btn btn-ghost btn-md btn-icon" style="color: var(--error)">
+                          <i class="bi bi-trash"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  <% } %> <% } else { %>
+                  <tr>
+                    <td colspan="5" style="text-align: center; padding: 32px" class="text-muted">Masalalar hali qo'shilmagan.</td>
+                  </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <%- include("../components/footer.ejs") %>
+  </body>
+</html>

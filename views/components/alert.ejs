@@ -1,0 +1,33 @@
+<!-- Toast Notification Container -->
+<div id="toast-container" style="position: fixed !important; bottom: 20px !important; right: 20px !important; z-index: 9999 !important; width: auto; max-width: 350px">
+  <% if(error && error.length > 0) { %> <% error.forEach(function(msg) { %>
+  <div class="alert alert-danger shadow justify-content-between align-items-center d-flex p-3 mb-2 bg-white border-danger text-danger rounded" role="alert" style="border-left: 4px solid #dc3545">
+    <div class="d-flex align-items-center gap-2">
+      <i class="bi bi-exclamation-triangle-fill fs-6"></i>
+      <span class="fw-medium"><%= msg %></span>
+    </div>
+    <button type="button" class="btn-close ms-2 small" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <% }); %> <% } %> <% if(success && success.length > 0) { %> <% success.forEach(function(msg) { %>
+  <div class="alert alert-success shadow justify-content-between align-items-center d-flex p-3 mb-2 bg-white border-success text-success rounded" role="alert" style="border-left: 4px solid #198754">
+    <div class="d-flex align-items-center gap-2">
+      <i class="bi bi-check-circle-fill fs-6"></i>
+      <span class="fw-medium"><%= msg %></span>
+    </div>
+    <button type="button" class="btn-close ms-2 small" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <% }); %> <% } %>
+</div>
+
+<script>
+  setTimeout(function () {
+    const alerts = document.querySelectorAll(".alert");
+    alerts.forEach(function (alert) {
+      alert.style.transition = "opacity 0.5s ease";
+      alert.style.opacity = "0";
+      setTimeout(function () {
+        alert.remove();
+      }, 500);
+    });
+  }, 5000);
+</script>

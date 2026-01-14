@@ -1,0 +1,43 @@
+<nav class="navbar">
+  <div class="container navbar-inner">
+    <div class="flex items-center">
+      <a href="/" class="nav-brand">
+        <div class="nav-brand-icon">
+          <i class="bi bi-code-slash"></i>
+        </div>
+        <span>mycontest</span>
+      </a>
+    </div>
+
+    <div class="nav-actions">
+      <% if(user) { %>
+      <div class="dropdown">
+        <button class="btn btn-ghost btn-md dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-person-circle"></i>
+          <span class="hidden-mobile"><%= user.username %></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+          <% if(user.role === 'admin') { %>
+          <li>
+            <a class="dropdown-item" href="/admin">
+              <i class="bi bi-grid text-muted"></i>
+              Admin Panel
+            </a>
+          </li>
+          <li><hr class="dropdown-divider" /></li>
+          <% } %>
+          <li>
+            <a class="dropdown-item" href="/logout" style="color: var(--error)">
+              <i class="bi bi-box-arrow-right"></i>
+              Chiqish
+            </a>
+          </li>
+        </ul>
+      </div>
+      <% } else { %>
+      <a href="/sign-in" class="btn btn-ghost btn-md">Kirish</a>
+      <a href="/sign-up" class="btn btn-primary btn-md">Ro'yxatdan o'tish</a>
+      <% } %>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="uz">
+  <head>
+    <title><%= task ? task.name : 'Masalalar' %> — mycontest.dev</title>
+    <%- include("../components/head.ejs") %>
+    <link rel="stylesheet" href="/codemirror/codemirror.css" />
+    <link rel="stylesheet" href="/codemirror/seti.css" />
+  </head>
+  <body>
+    <%- include("../components/navbar.ejs") %>
+
+    <main style="padding: 16px 0 32px">
+      <div class="container">
+        <%- include("topbar.ejs") %>
+
+        <!-- Quick Task Navigation -->
+
+        <!-- Problem Description -->
+        <div class="card mb-3" style="padding: 14px">
+          <div class="flex justify-between items-center mb-2">
+            <h2 style="font-size: 15px; font-weight: 600; margin: 0"><%= task.name %></h2>
+            <div style="font-size: 10px">
+              <span class="badge"><%= task.time_ms %>ms</span>
+              <span class="badge"><%= Math.round(task.memory_kb/1024) %>MB</span>
+            </div>
+          </div>
+          <div class="prose" style="font-size: 12px"><%- task.question_content %></div>
+
+          <div style="margin-top: 12px">
+            <div style="font-size: 10px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px">KIRISH</div>
+            <div class="prose" style="font-size: 12px"><%- task.input_content %></div>
+          </div>
+
+          <div style="margin-top: 12px">
+            <div style="font-size: 10px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px">CHIQISH</div>
+            <div class="prose" style="font-size: 12px"><%- task.output_content %></div>
+          </div>
+
+          <% for (var i = 0; i < task.public_tests.length; i++) { %>
+          <div style="margin-top: 12px">
+            <div style="font-size: 10px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px">MISOL #<%= i + 1 %></div>
+            <div class="row g-2">
+              <div class="col-6"><div class="example-box"><%- task.public_tests[i].inp %></div></div>
+              <div class="col-6"><div class="example-box"><%- task.public_tests[i].out %></div></div>
+            </div>
+          </div>
+          <% } %>
+        </div>
+
+        <!-- Code Editor & Submit -->
+        <% if(user) { %>
+        <form method="POST" id="form_code" action="/contest/<%= contest.contest_id %>/problem">
+          <div class="card" style="padding: 0; overflow: hidden">
+            <div style="padding: 8px 12px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center">
+              <span style="font-size: 12px; font-weight: 600">Yechimni yuborish</span>
+              <select name="language" id="language" onchange="languageSelect()" class="form-control form-control-sm" style="width: auto; font-size: 11px; padding: 4px 8px">
+                <% for(var j = 0; j < languages.length; j++){ %>
+                <option value="<%= languages[j].editor_mode %>"><%= languages[j].language_name %></option>
+                <% } %>
+              </select>
+            </div>
+            <textarea id="code-view"></textarea>
+            <div style="padding: 8px 12px; border-top: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center">
+              <span class="text-muted" style="font-size: 10px"><i class="bi bi-check-circle me-1"></i>Auto-save</span>
+              <button type="button" class="btn btn-primary btn-md" onclick="sendCode()"><i class="bi bi-play-fill"></i> Yuborish</button>
+            </div>
+          </div>
+          <input type="hidden" name="task_id" value="<%= task.task_id %>" />
+          <input type="hidden" id="code" name="code" />
+        </form>
+        <% } else { %>
+        <div class="card" style="padding: 20px; text-align: center">
+          <p class="text-muted mb-2">Yechim yuborish uchun tizimga kiring</p>
+          <a href="/sign-in" class="btn btn-primary btn-md">Kirish</a>
+        </div>
+        <% } %> <% if(attempts && attempts.length > 0) { %>
+        <div class="card mt-3" style="padding: 0; overflow: hidden">
+          <div style="padding: 8px 14px; border-bottom: 1px solid var(--border-light); font-weight: 600; font-size: 13px">Urinishlar tarixi</div>
+          <div id="attempts-table" class="table-wrapper" style="max-height: 220px; overflow-y: auto">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 60px">#</th>
+                  <th>Vaqt</th>
+                  <th>Til</th>
+                  <th>Holat</th>
+                  <th style="width: 80px; text-align: right">Vaqt</th>
+                  <th style="width: 80px; text-align: right">Xotira</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% attempts.forEach((att) => { %>
+                <tr class="clickable" onclick="showAttempt('<%= att.attempt_id %>')">
+                  <td><%= att.attempt_id %></td>
+                  <td><%= new Date(att.created_dt).toLocaleString() %></td>
+                  <td><%= att.language_used %></td>
+                  <td><% if(att.status_code == 1) { %> <span class="badge badge-success">Accepted</span> <% } else if(att.status_code == 0) { %> <span class="badge badge-warning">Running</span> <% } else { %> <span class="badge badge-error"><%= att.status_message %></span> <% } %></td>
+                  <td><%= att.time_ms || 0 %>ms</td>
+                  <td><%= att.memory_kb || 0 %>KB</td>
+                </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+          <div class="flex justify-end gap-2 mt-4" style="margin-bottom: 20px">
+            <button class="btn btn-md" onclick="setPage(-1)">
+              <i class="bi bi-chevron-left"></i>
+              Oldingi
+            </button>
+            <button class="btn btn-md" onclick="setPage(1)">
+              Keyingi
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <div id="attempt-modal" class="modal" tabindex="-1" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center">
+          <div class="modal-content card" style="width: 80%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; padding: 0">
+            <div style="padding: 12px 16px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center">
+              <h5 style="margin: 0; font-size: 14px; font-weight: 600">Urinish #<span id="modal-id"></span></h5>
+              <button onclick="closeModal()" class="btn btn-ghost btn-sm"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div style="padding: 16px; overflow-y: auto">
+              <div style="margin-bottom: 12px; display: flex; gap: 12px; font-size: 12px">
+                <span id="modal-status" class="badge"></span>
+                <span class="badge"><i class="bi bi-clock me-1"></i><span id="modal-time"></span>ms</span>
+                <span class="badge"><i class="bi bi-cpu me-1"></i><span id="modal-memory"></span>KB</span>
+              </div>
+              <pre id="modal-code" style="background: var(--bg-tertiary); padding: 12px; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 12px; overflow-x: auto; max-height: 400px"></pre>
+              <div id="modal-error" style="margin-top: 12px; color: var(--error); font-size: 12px; white-space: pre-wrap; display: none"></div>
+            </div>
+          </div>
+        </div>
+        <% } %>
+      </div>
+    </main>
+
+    <%- include("../components/footer.ejs") %>
+
+    <script src="/codemirror/codemirror.js"></script>
+    <script src="/codemirror/matchbrackets.js"></script>
+    <script src="/codemirror/javascript.js"></script>
+    <script src="/codemirror/clike.js"></script>
+    <script src="/codemirror/go.js"></script>
+    <script src="/codemirror/python.js"></script>
+
+    <script>
+      const task_id = "<%= task.task_id %>";
+      const contest_id = "<%= contest.contest_id %>";
+      const group_id = "<%= task.group_id %>";
+      let editor;
+      let attempts = [];
+      let current_page = 0;
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const language = localStorage.getItem(`language_${group_id}`);
+        if (language) document.getElementById("language").value = language;
+
+        editor = CodeMirror.fromTextArea(document.getElementById("code-view"), {
+          lineNumbers: true,
+          matchBrackets: true,
+          mode: document.getElementById("language").value,
+          theme: "seti",
+          lineWrapping: true,
+          indentWithTabs: true,
+        });
+        editor.setSize(null, "auto");
+
+        const code = localStorage.getItem(`code_${group_id}_${task_id}_${document.getElementById("language").value}`);
+        if (code) editor.setValue(code);
+
+        editor.on("change", (cm) => {
+          localStorage.setItem(`code_${group_id}_${task_id}_${document.getElementById("language").value}`, cm.getValue());
+        });
+      });
+
+      function languageSelect() {
+        const language = document.getElementById("language").value;
+        localStorage.setItem(`language_${group_id}`, language);
+        editor.setOption("mode", language);
+        editor.setValue(localStorage.getItem(`code_${group_id}_${task_id}_${language}`) || "");
+      }
+
+      function sendCode() {
+        document.getElementById("code").value = editor.getValue();
+        document.getElementById("form_code").submit();
+      }
+
+      function getBadge(code, msg) {
+        if (code == 1) return '<span class="badge badge-success">Accepted</span>';
+        if (code == 0) return '<span class="badge badge-warning">Running</span>';
+        return `<span class="badge badge-error">${msg}</span>`;
+      }
+
+      function setPage(inc) {
+        current_page = Math.max(0, current_page + inc);
+        loadAttempts();
+      }
+
+      function loadAttempts() {
+        fetch(`/contest/${contest_id}/attempts/one?task_id=${task_id}&page=${current_page}`)
+          .then((res) => res.json())
+          .then((data) => {
+            const tbody = document.querySelector("#attempts-table tbody");
+            if (!data || !tbody) return;
+
+            if (data.length === 0 && current_page > 0) {
+              current_page--;
+              return;
+            }
+
+            attempts = data;
+            tbody.innerHTML = data
+              .map(
+                (att) => `
+                <tr class="clickable" onclick="showAttempt('${att.attempt_id}')">
+                  <td>${att.attempt_id}</td>
+                  <td>${new Date(att.created_dt).toLocaleString()}</td>
+                  <td style="font-size: 11px; color: var(--text-muted)">${att.language_used}</td>
+                  <td >
+                    ${getBadge(att.status_code, att.status_message)}
+                  </td>
+                  <td style="text-align: right; font-family: var(--font-mono); font-size: 12px">${att.time_ms || 0}ms</td>
+                  <td style="text-align: right; font-family: var(--font-mono); font-size: 12px">${att.memory_kb || 0}KB</td>
+                </tr>`
+              )
+              .join("");
+          })
+          .catch(console.error);
+      }
+
+      loadAttempts();
+      setInterval(loadAttempts, 3000);
+
+      function showAttempt(id) {
+        const attempt = attempts.find((a) => a.attempt_id == id);
+        if (!attempt) return;
+
+        document.getElementById("modal-id").innerText = attempt.attempt_id;
+        document.getElementById("modal-code").innerText = attempt.code || "// Kod topilmadi (eski urinish)";
+        document.getElementById("modal-time").innerText = attempt.time_ms || 0;
+        document.getElementById("modal-memory").innerText = attempt.memory_kb || 0;
+
+        const statusSpan = document.getElementById("modal-status");
+        statusSpan.className = "badge";
+        if (attempt.status_code == 1) {
+          statusSpan.classList.add("badge-success");
+          statusSpan.innerText = "Accepted";
+        } else if (attempt.status_code == 0) {
+          statusSpan.classList.add("badge-warning");
+          statusSpan.innerText = "Running";
+        } else {
+          statusSpan.classList.add("badge-error");
+          statusSpan.innerText = attempt.status_message || "Error";
+        }
+
+        const errorDiv = document.getElementById("modal-error");
+        if (attempt.error_details) {
+          errorDiv.style.display = "block";
+          errorDiv.innerText = attempt.error_details;
+        } else {
+          errorDiv.style.display = "none";
+        }
+
+        document.getElementById("attempt-modal").style.display = "flex";
+      }
+
+      function closeModal() {
+        document.getElementById("attempt-modal").style.display = "none";
+      }
+
+      document.getElementById("attempt-modal").addEventListener("click", function (e) {
+        if (e.target === this) closeModal();
+      });
+    </script>
+  </body>
+</html>
