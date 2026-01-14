@@ -1,15 +1,15 @@
 
 -- Insert users
 insert into users (full_name, email, username, password, role)
-values ('Utkir Khujaev', 'balkibumen@gmail.com', 'admin', md5('admin:SecretKey123!'), 'admin'),
-       ('Test User', 'user@example.com', 'user', md5('user123:SecretKey123!'), 'user');
+values ('Utkir Khujaev', 'balkibumen@gmail.com', 'admin', md5('admin:SecretKey123!MyContest2026'), 'admin'),
+       ('Test User', 'user@example.com', 'user', md5('user123:SecretKey123!MyContest2026'), 'user');
 
 -- Insert contest
 insert into contest (name, content, start_date, end_date) 
 values ('Sinov #0', '<header><h4>Buxoro Davlat Universiteti Saralash Bosqichi</h4></header>', now(), date_add(now(), interval 7 day));
 
--- Insert tasks (updated column names and added group_id)
-insert into tasks (group_id, name, question_content, input_content, output_content, time_ms, memory_kb, test_public, test_all, comment_content) values
+-- Insert problems
+insert into problems (group_id, name, question_content, input_content, output_content, time_ms, memory_kb, test_public, test_all, comment_content) values
 (1, 'Solve Linear Equation',  
  'Solve the linear equation ax + b = 0 for x.', 
  'Input: Two integers a and b (a != 0).', 
@@ -24,10 +24,10 @@ insert into tasks (group_id, name, question_content, input_content, output_conte
  1000, 131072, 2, 2, 
  'Make sure to handle both positive and negative integers.');
 
--- Insert contest_tasks
-insert into contest_tasks (contest_id, task_id) values (1, 1), (1, 2);
+-- Insert contest_problems
+insert into contest_problems (contest_id, problem_id) values (1, 1), (1, 2);
 
--- Insert languages (updated column name)
+-- Insert languages
 insert into languages (group_id, file_extension, editor_mode, language_name, compile_script, run_script, docker_image) values
 (1, 'cpp', 'text/x-c++src', 'GNU GCC C++20', 'g++ source.cpp -o executable -std=c++20', './executable', 'checker-cpp'),
 (1, 'java', 'text/x-java', 'Java 21.0.5', 'javac Main.java', 'java Main', 'checker-java'),

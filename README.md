@@ -27,6 +27,19 @@ A modern, scalable online judge system for hosting programming contests with mul
 - **Responsive UI** - EJS templates with modern design
 - **Flash Messages** - User-friendly notifications
 
+### 🆕 V2 Features (Latest Update)
+
+- **Email Verification** - Secure user registration with email confirmation
+- **Contest Types** - Public (open to all) and Private (invitation-only) contests
+- **Participant Management** - Add/remove users from private contests
+- **Email Notifications** - Bulk email announcements for contests
+- **Multi-Admin Support** - Track content ownership by admin
+- **Admin Checker** - Test problems before publishing
+- **User Management** - Comprehensive user list and management
+- **Enhanced Security** - File upload limits, email validation
+
+> 📚 **V2 Documentation**: See `data/docs/CHANGELOG_V2.md`, `data/docs/SETUP_V2.md`, and `data/docs/ADMIN_GUIDE.md` for complete details.
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -229,13 +242,26 @@ LIMIT=50mb
 
 ## 📖 Documentation
 
-Comprehensive documentation available in `data/docs/`:
+Comprehensive documentation available:
+
+### Core Documentation (`data/docs/`)
 
 - **[STARTUP_GUIDE.md](data/docs/STARTUP_GUIDE.md)** - Complete setup instructions
 - **[DATABASE_FINAL.md](data/docs/DATABASE_FINAL.md)** - Database schema documentation
 - **[LANGUAGES_MIGRATION.md](data/docs/LANGUAGES_MIGRATION.md)** - Language table details
 - **[OPTIMIZATION_COMPLETE.md](data/docs/OPTIMIZATION_COMPLETE.md)** - All improvements made
 - **[checker/README.md](checker/README.md)** - Checker system documentation
+
+### V2 Documentation (`data/docs/`)
+
+- **[CHANGELOG_V2.md](data/docs/CHANGELOG_V2.md)** - Complete V2 feature documentation
+- **[SETUP_V2.md](data/docs/SETUP_V2.md)** - V2 setup and migration guide
+- **[ADMIN_GUIDE.md](data/docs/ADMIN_GUIDE.md)** - Admin panel quick reference
+- **[ARCHITECTURE.md](data/docs/ARCHITECTURE.md)** - System architecture diagrams
+- **[TODO.md](data/docs/TODO.md)** - Future enhancements roadmap
+- **[SUMMARY.md](data/docs/SUMMARY.md)** - V2 implementation summary
+- **[DEPLOYMENT_CHECKLIST.md](data/docs/DEPLOYMENT_CHECKLIST.md)** - Deployment guide
+- **[FINAL_UPDATE.md](data/docs/FINAL_UPDATE.md)** - Final implementation notes
 
 ## 🤝 Contributing
 

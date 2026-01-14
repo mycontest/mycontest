@@ -23,14 +23,14 @@
                 </tr>
               </thead>
               <tbody>
-                <% if(tasks && tasks.length > 0) { %> <% tasks.forEach((t) => { %>
+                <% if(problems && problems.length > 0) { %> <% problems.forEach((p) => { %>
                 <tr>
-                  <td style="text-align: center"><%= t.task_id %></td>
-                  <td><a href="/contest/<%= contest.contest_id %>/problem?task_id=<%= t.task_id %>" style="font-weight: 500"><%= t.name %></a></td>
+                  <td style="text-align: center"><%= p.problem_id %></td>
+                  <td><a href="/contest/<%= contest.contest_id %>/problem?problem_id=<%= p.problem_id %>" target="_blank" style="font-weight: 500"><%= p.name %></a></td>
                   <td style="text-align: center">
-                    <% if(t.status == 1) { %>
+                    <% if(p.status == 1) { %>
                     <span>✅</span>
-                    <% } else if(t.status > 1 && t.status < 10) { %>
+                    <% } else if(p.status > 1 && p.status < 10) { %>
                     <span>❌</span>
                     <% } else { %>
                     <span>-</span>

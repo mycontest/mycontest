@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="uz">
   <head>
-    <title><%= task ? task.name : 'Masalalar' %> — mycontest.dev</title>
+    <title><%= problem ? problem.name : 'Masalalar' %> — mycontest.dev</title>
     <%- include("../components/head.ejs") %>
     <link rel="stylesheet" href="/codemirror/codemirror.css" />
     <link rel="stylesheet" href="/codemirror/seti.css" />
@@ -18,30 +18,30 @@
         <!-- Problem Description -->
         <div class="card mb-3" style="padding: 14px">
           <div class="flex justify-between items-center mb-2">
-            <h2 style="font-size: 15px; font-weight: 600; margin: 0"><%= task.name %></h2>
+            <h2 style="font-size: 15px; font-weight: 600; margin: 0"><%= problem.name %></h2>
             <div style="font-size: 10px">
-              <span class="badge"><%= task.time_ms %>ms</span>
-              <span class="badge"><%= Math.round(task.memory_kb/1024) %>MB</span>
+              <span class="badge"><%= problem.time_ms %>ms</span>
+              <span class="badge"><%= Math.round(problem.memory_kb/1024) %>MB</span>
             </div>
           </div>
-          <div class="prose" style="font-size: 12px"><%- task.question_content %></div>
+          <div class="prose" style="font-size: 12px"><%- problem.question_content %></div>
 
           <div style="margin-top: 12px">
             <div style="font-size: 10px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px">KIRISH</div>
-            <div class="prose" style="font-size: 12px"><%- task.input_content %></div>
+            <div class="prose" style="font-size: 12px"><%- problem.input_content %></div>
           </div>
 
           <div style="margin-top: 12px">
             <div style="font-size: 10px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px">CHIQISH</div>
-            <div class="prose" style="font-size: 12px"><%- task.output_content %></div>
+            <div class="prose" style="font-size: 12px"><%- problem.output_content %></div>
           </div>
 
-          <% for (var i = 0; i < task.public_tests.length; i++) { %>
+          <% for (var i = 0; i < problem.public_tests.length; i++) { %>
           <div style="margin-top: 12px">
             <div style="font-size: 10px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px">MISOL #<%= i + 1 %></div>
             <div class="row g-2">
-              <div class="col-6"><div class="example-box"><%- task.public_tests[i].inp %></div></div>
-              <div class="col-6"><div class="example-box"><%- task.public_tests[i].out %></div></div>
+              <div class="col-6"><div class="example-box"><%- problem.public_tests[i].inp %></div></div>
+              <div class="col-6"><div class="example-box"><%- problem.public_tests[i].out %></div></div>
             </div>
           </div>
           <% } %>
@@ -65,7 +65,7 @@
               <button type="button" class="btn btn-primary btn-md" onclick="sendCode()"><i class="bi bi-play-fill"></i> Yuborish</button>
             </div>
           </div>
-          <input type="hidden" name="task_id" value="<%= task.task_id %>" />
+          <input type="hidden" name="problem_id" value="<%= problem.problem_id %>" />
           <input type="hidden" id="code" name="code" />
         </form>
         <% } else { %>
@@ -145,9 +145,9 @@
     <script src="/codemirror/python.js"></script>
 
     <script>
-      const task_id = "<%= task.task_id %>";
+      const problem_id = "<%= problem.problem_id %>";
       const contest_id = "<%= contest.contest_id %>";
-      const group_id = "<%= task.group_id %>";
+      const group_id = "<%= problem.group_id %>";
       let editor;
       let attempts = [];
       let current_page = 0;
@@ -166,11 +166,11 @@
         });
         editor.setSize(null, "auto");
 
-        const code = localStorage.getItem(`code_${group_id}_${task_id}_${document.getElementById("language").value}`);
+        const code = localStorage.getItem(`code_${group_id}_${problem_id}_${document.getElementById("language").value}`);
         if (code) editor.setValue(code);
 
         editor.on("change", (cm) => {
-          localStorage.setItem(`code_${group_id}_${task_id}_${document.getElementById("language").value}`, cm.getValue());
+          localStorage.setItem(`code_${group_id}_${problem_id}_${document.getElementById("language").value}`, cm.getValue());
         });
       });
 
@@ -178,7 +178,7 @@
         const language = document.getElementById("language").value;
         localStorage.setItem(`language_${group_id}`, language);
         editor.setOption("mode", language);
-        editor.setValue(localStorage.getItem(`code_${group_id}_${task_id}_${language}`) || "");
+        editor.setValue(localStorage.getItem(`code_${group_id}_${problem_id}_${language}`) || "");
       }
 
       function sendCode() {
@@ -198,7 +198,7 @@
       }
 
       function loadAttempts() {
-        fetch(`/contest/${contest_id}/attempts/one?task_id=${task_id}&page=${current_page}`)
+        fetch(`/contest/${contest_id}/attempts/one?problem_id=${problem_id}&page=${current_page}`)
           .then((res) => res.json())
           .then((data) => {
             const tbody = document.querySelector("#attempts-table tbody");

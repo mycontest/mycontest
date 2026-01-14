@@ -56,6 +56,9 @@
                       <a href="/admin/contestadd?contest_id=<%= contests[i].contest_id %>" class="btn btn-ghost btn-md btn-icon">
                         <i class="bi bi-pencil"></i>
                       </a>
+                      <a href="/admin/delcontest?contest_id=<%= contests[i].contest_id %>" class="btn btn-ghost btn-md btn-icon" onclick="return confirm('Rostdan ham o\'chirmoqchimisiz?')" style="color: var(--error)">
+                        <i class="bi bi-trash"></i>
+                      </a>
                     </td>
                   </tr>
                   <% } %> <% } else { %>

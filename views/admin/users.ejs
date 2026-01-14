@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="uz">
+  <head>
+    <title>Foydalanuvchilar — Admin Panel</title>
+    <%- include("../components/head.ejs") %>
+  </head>
+  <body style="background: var(--bg-secondary)">
+    <%- include("../components/navbar.ejs") %>
+
+    <main style="padding: 16px 0 32px">
+      <div class="container">
+        <div class="row g-4">
+          <%- include("./sidebar.ejs") %>
+
+          <div class="col-lg-9">
+            <div class="mb-5">
+              <h1 class="mb-1">Foydalanuvchilar</h1>
+              <p class="text-muted">Barcha ro'yxatdan o'tgan foydalanuvchilar.</p>
+            </div>
+
+            <div class="card" style="padding: 0; overflow: hidden">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width: 60px">ID</th>
+                    <th>Username</th>
+                    <th>To'liq ism</th>
+                    <th>Email</th>
+                    <th style="width: 100px; text-align: center">Tasdiqlangan</th>
+                    <th style="width: 80px; text-align: center">Rol</th>
+                    <th style="width: 140px; text-align: right">Ro'yxatdan o'tgan</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if(users && users.length > 0) { %> <% users.forEach(user => { %>
+                  <tr>
+                    <td style="font-weight: 600; color: var(--text-muted)">#<%= user.user_id %></td>
+                    <td style="font-weight: 500"><%= user.username %></td>
+                    <td><%= user.full_name %></td>
+                    <td style="font-size: 12px"><%= user.email || '-' %></td>
+                    <td style="text-align: center">
+                      <% if(user.email_verified) { %>
+                      <span class="badge badge-success">✓</span>
+                      <% } else { %>
+                      <span class="badge">✗</span>
+                      <% } %>
+                    </td>
+                    <td style="text-align: center">
+                      <% if(user.role === 'admin') { %>
+                      <span class="badge badge-primary">Admin</span>
+                      <% } else { %>
+                      <span class="badge">User</span>
+                      <% } %>
+                    </td>
+                    <td style="text-align: right; font-size: 12px" class="text-muted"><%= new Date(user.created_dt).toLocaleDateString() %></td>
+                  </tr>
+                  <% }); %> <% } else { %>
+                  <tr>
+                    <td colspan="7" style="text-align: center; padding: 32px" class="text-muted">Foydalanuvchilar topilmadi.</td>
+                  </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Pagination -->
+            <% if(count > 1) { %>
+            <div class="flex justify-center gap-2 mt-4">
+              <% for(let i = 0; i < count; i++) { %>
+              <a href="/admin/users?page=<%= i %>" class="btn <%= page == i ? 'btn-primary' : '' %> btn-md"> <%= i + 1 %> </a>
+              <% } %>
+            </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <%- include("../components/footer.ejs") %>
+  </body>
+</html>

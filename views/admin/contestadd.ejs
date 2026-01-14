@@ -40,7 +40,7 @@
 
             <!-- Contest Form -->
             <div class="card mb-4">
-              <form method="post">
+              <form method="post" id="contestForm">
                 <input type="hidden" name="contest_id" value="<%= contest.contest_id %>" />
 
                 <div class="form-group">
@@ -56,7 +56,28 @@
                 <div class="row g-3">
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label class="form-label">Boshlanish vaqti</label>
+                      <label class="form-label">Contest turi</label>
+                      <select name="contest_type" class="form-control" required>
+                        <option value="public" <%= contest.contest_type === 'public' ? 'selected' : '' %>>Public (Hamma)</option>
+                        <option value="private" <%= contest.contest_type === 'private' ? 'selected' : '' %>>Private (Faqat ishtirokchilar)</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="form-label">Guruh</label>
+                      <select name="group_id" class="form-control" required>
+                        <option value="1" <%= contest.group_id == 1 ? 'selected' : '' %>>Programming</option>
+                        <option value="2" <%= contest.group_id == 2 ? 'selected' : '' %>>SQL</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="form-label">Boshlani sh vaqti</label>
                       <input type="datetime-local" name="start_date" id="start_date" class="form-control" value="<%= contest.start_date %>" required />
                     </div>
                   </div>
@@ -68,17 +89,46 @@
                   </div>
                 </div>
 
-                <div class="flex justify-end gap-2 mt-4">
-                  <a href="/admin/contest" class="btn">Bekor qilish</a>
-                  <button type="submit" class="btn btn-primary btn-md">
-                    <i class="bi bi-check-lg"></i>
-                    Saqlash
-                  </button>
-                </div>
               </form>
+              
+              <div class="flex justify-end gap-2 mt-4" style="padding-top: 20px; border-top: 1px solid var(--border-light)">
+                <a href="/admin/contest" class="btn">Bekor qilish</a>
+                
+                <% if(contest.contest_id) { %>
+                <a href="/admin/delcontest?contest_id=<%= contest.contest_id %>" class="btn btn-ghost btn-md" onclick="return confirm('Rostdan ham o\'chirmoqchimisiz?')" style="color: var(--error)">
+                  <i class="bi bi-trash"></i> O'chirish
+                </a>
+                
+                <form action="/admin/notify" method="POST" style="display: inline;">
+                  <input type="hidden" name="contest_id" value="<%= contest.contest_id %>" />
+                  <button type="submit" class="btn btn-info btn-md">
+                    <i class="bi bi-envelope"></i>
+                    Email yuborish
+                  </button>
+                </form>
+                <% } %>
+                
+                <button type="submit" form="contestForm" class="btn btn-primary btn-md">
+                  <i class="bi bi-check-lg"></i>
+                  Saqlash
+                </button>
+              </div>
             </div>
 
             <% if(contest.contest_id) { %>
+            <!-- Participants Section (for private contests) -->
+            <% if(contest.contest_type === 'private') { %>
+            <div class="card mb-4">
+              <div class="flex justify-between items-center">
+                <h3 style="font-size: 14px; margin: 0">Ishtirokchilar</h3>
+                <a href="/admin/participants?contest_id=<%= contest_id %>" class="btn btn-primary btn-md">
+                  <i class="bi bi-people"></i>
+                  Ishtirokchilarni boshqarish
+                </a>
+              </div>
+            </div>
+            <% } %>
+
             <!-- Tasks Section -->
             <div class="card" style="padding: 0; overflow: hidden">
               <div class="card-header flex justify-between items-center" style="margin: 0; border-radius: 0">
@@ -86,9 +136,9 @@
               </div>
 
               <div class="p-4 border-bottom">
-                <form action="/admin/addtasks" method="post" class="flex gap-2">
+                <form action="/admin/addproblems" method="post" class="flex gap-2">
                   <input type="hidden" name="contest_id" value="<%= contest_id %>" />
-                  <input type="text" class="form-control form-control-sm" name="task_id" placeholder="Masala ID raqami" style="max-width: 200px" />
+                  <input type="text" class="form-control form-control-sm" name="problem_id" placeholder="Masala ID raqami" style="max-width: 200px" />
                   <button type="submit" class="btn btn-primary btn-md">
                     <i class="bi bi-plus-lg"></i>
                     Qo'shish
@@ -107,18 +157,18 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <% if(tasks && tasks.length > 0) { %> <% for(var i=0; i < tasks.length; i++) { %>
+                  <% if(problems && problems.length > 0) { %> <% for(var i=0; i < problems.length; i++) { %>
                   <tr>
-                    <td style="font-weight: 600; color: var(--text-muted)">#<%= tasks[i].task_id %></td>
-                    <td style="font-weight: 500"><%= tasks[i].name %></td>
-                    <td style="text-align: center; font-family: var(--font-mono); font-size: 12px"><%= tasks[i].code %></td>
-                    <td style="text-align: center"><span class="badge badge-info"><%= tasks[i].all_test %></span></td>
+                    <td style="font-weight: 600; color: var(--text-muted)">#<%= problems[i].problem_id %></td>
+                    <td style="font-weight: 500"><%= problems[i].name %></td>
+                    <td style="text-align: center; font-family: var(--font-mono); font-size: 12px"><%= problems[i].code %></td>
+                    <td style="text-align: center"><span class="badge badge-info"><%= problems[i].all_test %></span></td>
                     <td style="text-align: right">
                       <div class="flex justify-end gap-1">
-                        <a href="/admin/tasksadd?task_id=<%= tasks[i].task_id %>" class="btn btn-ghost btn-md btn-icon">
+                        <a href="/admin/problemsadd?problem_id=<%= problems[i].problem_id %>" class="btn btn-ghost btn-md btn-icon">
                           <i class="bi bi-pencil"></i>
                         </a>
-                        <a href="/admin/deltasks?task_id=<%= tasks[i].task_id %>&contest_id=<%= contest_id %>" class="btn btn-ghost btn-md btn-icon" style="color: var(--error)">
+                        <a href="/admin/delproblems?problem_id=<%= problems[i].problem_id %>&contest_id=<%= contest_id %>" class="btn btn-ghost btn-md btn-icon" style="color: var(--error)">
                           <i class="bi bi-trash"></i>
                         </a>
                       </div>

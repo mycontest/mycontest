@@ -12,30 +12,28 @@
 
       <div class="admin-nav-divider"></div>
 
-      <a href="/admin/contest" class="admin-nav-item <%= page_info == 'contest' ? 'active' : '' %>">
-        <i class="bi bi-trophy"></i>
-        Musobaqalar
-      </a>
-      <a href="/admin/contestadd" class="admin-nav-item <%= page_info == 'contestadd' ? 'active' : '' %>">
-        <i class="bi bi-calendar-plus"></i>
-        Yangi musobaqa
+      <a href="/admin/emaillogs" class="admin-nav-item <%= page_info == 'emaillogs' ? 'active' : '' %>">
+        <i class="bi bi-envelope-paper"></i>
+        Email Logs
       </a>
 
       <div class="admin-nav-divider"></div>
 
-      <a href="/admin/tasks" class="admin-nav-item <%= page_info == 'tasks' ? 'active' : '' %>">
+      <a href="/admin/contest" class="admin-nav-item <%= page_info == 'contest' || page_info == 'contestadd' || page_info == 'participants' ? 'active' : '' %>">
+        <i class="bi bi-trophy"></i>
+        Musobaqalar
+      </a>
+
+      <a href="/admin/problems" class="admin-nav-item <%= page_info == 'problems' || page_info == 'problemsadd' || page_info == 'checker' ? 'active' : '' %>">
         <i class="bi bi-collection"></i>
         Masalalar
       </a>
-      <a href="/admin/tasksadd" class="admin-nav-item <%= page_info == 'tasksadd' ? 'active' : '' %>">
-        <i class="bi bi-plus-lg"></i>
-        Yangi masala
-      </a>
 
-      <a href="https://drive.google.com/drive/folders/1txRhuDlGdtO2Gjud-zTVSO42lcjWd5qQ?usp=sharing" target="_blank" class="admin-nav-item">
-        <i class="bi bi-folder2-open"></i>
-        Public Files
-        <i class="bi bi-box-arrow-up-right text-muted" style="font-size: 10px; margin-left: auto"></i>
+      <div class="admin-nav-divider"></div>
+
+      <a href="/admin/users" class="admin-nav-item <%= page_info == 'users' ? 'active' : '' %>">
+        <i class="bi bi-people"></i>
+        Foydalanuvchilar
       </a>
     </nav>
   </div>

@@ -4,7 +4,7 @@
     <a class="nav-link <%= typeof page_info !== 'undefined' && page_info === 'contest' ? 'active' : '' %>" href="/contest/<%= contest.contest_id %>"> <i class="bi bi-info-circle me-1"></i> Ma'lumot </a>
   </li>
   <li class="nav-item">
-    <a class="nav-link <%= typeof page_info !== 'undefined' && (page_info === 'tasks' || page_info === 'problems' || page_info === 'problem') ? 'active' : '' %>" href="/contest/<%= contest.contest_id %>/problems"> <i class="bi bi-file-earmark-code me-1"></i> Masalalar </a>
+    <a class="nav-link <%= typeof page_info !== 'undefined' && (page_info === 'problems' || page_info === 'problem') ? 'active' : '' %>" href="/contest/<%= contest.contest_id %>/problems"> <i class="bi bi-file-earmark-code me-1"></i> Masalalar </a>
   </li>
   <li class="nav-item">
     <a class="nav-link <%= typeof page_info !== 'undefined' && page_info === 'attempts' ? 'active' : '' %>" href="/contest/<%= contest.contest_id %>/attempts"> <i class="bi bi-clock-history me-1"></i> Urinishlar </a>

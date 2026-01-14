@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="uz">
+  <head>
+    <title>Checker — <%= problem.name %></title>
+    <%- include("../components/head.ejs") %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/clike/clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <style>
+      .CodeMirror {
+        height: 400px;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius);
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body style="background: var(--bg-secondary)">
+    <%- include("../components/navbar.ejs") %>
+
+    <main style="padding: 16px 0 32px">
+      <div class="container">
+        <div class="row g-4">
+          <%- include("./sidebar.ejs") %>
+
+          <div class="col-lg-9">
+            <div class="mb-5">
+              <h1 class="mb-1">Checker — <%= problem.name %></h1>
+              <p class="text-muted">Test qilish uchun kod yozing va tekshiring.</p>
+            </div>
+
+            <div class="card mb-4">
+              <h3 style="font-size: 14px; margin-bottom: 16px">Masala ma'lumotlari</h3>
+              <div class="row g-3">
+                <div class="col-md-3">
+                  <div style="font-size: 12px; color: var(--text-muted)">Vaqt chegarasi</div>
+                  <div style="font-weight: 500"><%= problem.time_ms %> ms</div>
+                </div>
+                <div class="col-md-3">
+                  <div style="font-size: 12px; color: var(--text-muted)">Xotira</div>
+                  <div style="font-weight: 500"><%= problem.memory_kb %> KB</div>
+                </div>
+                <div class="col-md-3">
+                  <div style="font-size: 12px; color: var(--text-muted)">Ochiq testlar</div>
+                  <div style="font-weight: 500"><%= problem.test_public %></div>
+                </div>
+                <div class="col-md-3">
+                  <div style="font-size: 12px; color: var(--text-muted)">Jami testlar</div>
+                  <div style="font-weight: 500"><%= problem.test_all %></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <form action="/submit" method="POST" target="_blank">
+                <input type="hidden" name="problem_id" value="<%= problem.problem_id %>" />
+                <input type="hidden" name="contest_id" value="1" />
+
+                <div class="form-group">
+                  <label class="form-label">Dasturlash tili</label>
+                  <select name="language_id" id="language_select" class="form-control" required>
+                    <% languages.forEach(lang => { %>
+                    <option value="<%= lang.language_id %>" data-mode="<%= lang.editor_mode %>"><%= lang.language_name %></option>
+                    <% }); %>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Kod</label>
+                  <textarea id="code_editor" name="code" required></textarea>
+                </div>
+
+                <div class="flex justify-end gap-2 mt-4">
+                  <a href="/admin/problemsadd?problem_id=<%= problem.problem_id %>" class="btn">
+                    <i class="bi bi-arrow-left"></i>
+                    Orqaga
+                  </a>
+                  <button type="submit" class="btn btn-primary btn-md">
+                    <i class="bi bi-play-fill"></i>
+                    Tekshirish
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <%- include("../components/footer.ejs") %>
+
+    <script>
+      // Initialize CodeMirror
+      const editor = CodeMirror.fromTextArea(document.getElementById("code_editor"), {
+        lineNumbers: true,
+        mode: "text/x-c++src",
+        theme: "default",
+        indentUnit: 4,
+        indentWithTabs: false,
+        lineWrapping: true,
+      });
+
+      // Change mode based on language selection
+      document.getElementById("language_select").addEventListener("change", function () {
+        const selectedOption = this.options[this.selectedIndex];
+        const mode = selectedOption.getAttribute("data-mode");
+        editor.setOption("mode", mode);
+      });
+
+      // Set initial code template
+      editor.setValue(`#include <iostream>
+using namespace std;
+
+int main() {
+    // Your code here
+    return 0;
+}`);
+    </script>
+  </body>
+</html>

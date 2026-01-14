@@ -14,8 +14,34 @@
         <div class="row g-3">
           <!-- Main Content -->
           <div class="col-lg-9">
-            <div class="card" style="padding: 10px">
-              <div class="prose" style="font-size: 13px"><%- contest.content %></div>
+            <!-- Contest Header & Description -->
+            <div class="card" style="padding: 16px; margin-bottom: 12px">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px">
+                <h1 style="font-size: 15px; font-weight: 600; margin: 0"><%= contest.name %></h1>
+                <% if (contest.event === 'Faol') { %>
+                <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600">Faol</span>
+                <% } else if (contest.event === 'Tugagan') { %>
+                <span style="background: #6b7280; color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600">Tugagan</span>
+                <% } else { %>
+                <span style="background: #3b82f6; color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600">Boshlanmadi</span>
+                <% } %>
+              </div>
+              <div class="prose" style="font-size: 12px"><%- contest.content %></div>
+            </div>
+
+            <!-- Contest Rules -->
+            <div class="card" style="padding: 16px">
+              <h3 style="font-size: 14px; font-weight: 600; margin: 0 0 12px 0">Contest Qoidalari</h3>
+              <div style="font-size: 12px; line-height: 1.6; color: var(--text-secondary)">
+                <ul style="margin: 0; padding-left: 20px">
+                  <li style="margin-bottom: 6px">Har bir masala uchun cheksiz urinish imkoniyati mavjud</li>
+                  <li style="margin-bottom: 6px">Noto'g'ri yechimlar uchun 10 daqiqa jarima qo'shiladi</li>
+                  <li style="margin-bottom: 6px">Natijalar real vaqtda yangilanadi</li>
+                  <li style="margin-bottom: 6px">Plagiat tekshiruvi amalga oshiriladi</li>
+                  <li style="margin-bottom: 6px">Faqat ruxsat etilgan dasturlash tillari ishlatiladi</li>
+                  <li style="margin-bottom: 6px">Vaqt va xotira chegaralariga rioya qiling</li>
+                </ul>
+              </div>
             </div>
           </div>
 

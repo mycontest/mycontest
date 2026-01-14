@@ -18,7 +18,7 @@
                 <h1 class="mb-1">Masalalar</h1>
                 <p class="text-muted">Barcha mavjud masalalar va ularning holati.</p>
               </div>
-              <a href="/admin/tasksadd" class="btn btn-primary btn-md">
+              <a href="/admin/problemsadd" class="btn btn-primary btn-md">
                 <i class="bi bi-plus-lg"></i>
                 Yangi qo'shish
               </a>
@@ -37,17 +37,25 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <% if (typeof tasks_list !== 'undefined' && tasks_list.length > 0) { %> <% tasks_list.forEach(task => { %>
+                  <% if (typeof problems_list !== 'undefined' && problems_list.length > 0) { %> <% problems_list.forEach(problem => { %>
                   <tr>
-                    <td style="font-weight: 600; color: var(--text-muted)">#<%= task.task_id %></td>
-                    <td style="font-weight: 500"><%= task.name %></td>
-                    <td style="text-align: center"><span class="badge badge-info"><%= task.test_all %></span></td>
-                    <td style="text-align: center; font-family: var(--font-mono); font-size: 12px"><%= task.time_ms %>ms</td>
-                    <td style="text-align: center; font-family: var(--font-mono); font-size: 12px"><%= Math.round(task.memory_kb/1024) %>MB</td>
+                    <td style="font-weight: 600; color: var(--text-muted)">#<%= problem.problem_id %></td>
+                    <td style="font-weight: 500"><%= problem.name %></td>
+                    <td style="text-align: center"><span class="badge badge-info"><%= problem.test_all %></span></td>
+                    <td style="text-align: center; font-family: var(--font-mono); font-size: 12px"><%= problem.time_ms %>ms</td>
+                    <td style="text-align: center; font-family: var(--font-mono); font-size: 12px"><%= Math.round(problem.memory_kb/1024) %>MB</td>
                     <td style="text-align: right">
-                      <a href="/admin/tasksadd?task_id=<%= task.task_id %>" class="btn btn-ghost btn-md btn-icon">
-                        <i class="bi bi-pencil"></i>
-                      </a>
+                      <div class="flex justify-end gap-1">
+                        <a href="/admin/checker?problem_id=<%= problem.problem_id %>" class="btn btn-ghost btn-md btn-icon" title="Test qilish">
+                          <i class="bi bi-play-circle"></i>
+                        </a>
+                        <a href="/admin/problemsadd?problem_id=<%= problem.problem_id %>" class="btn btn-ghost btn-md btn-icon" title="Tahrirlash">
+                          <i class="bi bi-pencil"></i>
+                        </a>
+                        <a href="/admin/delproblem?problem_id=<%= problem.problem_id %>" class="btn btn-ghost btn-md btn-icon" title="O'chirish" onclick="return confirm('Rostdan ham o\'chirmoqchimisiz?')" style="color: var(--error)">
+                          <i class="bi bi-trash"></i>
+                        </a>
+                      </div>
                     </td>
                   </tr>
                   <% }); %> <% } else { %>

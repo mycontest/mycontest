@@ -7,7 +7,10 @@ select
     c.start_date,
     c.end_date,
     c.content,
-    count(ct.task_id) as task_count,
+    c.contest_type,
+    c.group_id,
+    c.admin_id,
+    count(ct.problem_id) as problem_count,
     CONCAT(
         CASE
             WHEN CHAR_LENGTH(FLOOR(TIMESTAMPDIFF(SECOND, c.start_date, c.end_date) / 3600)) < 2 THEN LPAD(FLOOR(TIMESTAMPDIFF(SECOND, c.start_date, c.end_date) / 3600), 2, '0')
@@ -32,18 +35,18 @@ select
 from
     contest c
 left join
-    contest_tasks ct on c.contest_id = ct.contest_id
+    contest_problems ct on c.contest_id = ct.contest_id
 group by
-    c.contest_id, c.name, c.start_date, c.end_date
+    c.contest_id, c.name, c.start_date, c.end_date, c.contest_type, c.group_id, c.admin_id
 order by c.start_date desc, c.end_date desc;
 
-drop view if exists vw_tasks;
-create view vw_tasks as
+drop view if exists vw_problems;
+create view vw_problems as
     select
         t1.contest_id,
         t2.*
-    from contest_tasks t1
-    left join tasks t2 on t1.task_id = t2.task_id;
+    from contest_problems t1
+    left join problems t2 on t1.problem_id = t2.problem_id;
 
 drop view if exists vw_attempts;
 create view vw_attempts as

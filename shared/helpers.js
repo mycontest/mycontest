@@ -1,12 +1,12 @@
 const fs = require("fs");
 const path = require("path");
 
-exports.fnReadPublicTests = async (task) => {
+exports.fnReadPublicTests = async (problem) => {
   let public_tests = [];
   try {
-    for (let i = 1; i <= task.test_public; i++) {
-      let inp = fs.readFileSync(path.join(__dirname, `../data/checker/testcase/${task.task_id}/input${i}.txt`));
-      let out = fs.readFileSync(path.join(__dirname, `../data/checker/testcase/${task.task_id}/output${i}.txt`));
+    for (let i = 1; i <= problem.test_public; i++) {
+      let inp = fs.readFileSync(path.join(__dirname, `../data/checker/testcase/${problem.problem_id}/input${i}.txt`));
+      let out = fs.readFileSync(path.join(__dirname, `../data/checker/testcase/${problem.problem_id}/output${i}.txt`));
       public_tests.push({ inp, out });
     }
   } catch (err) {
@@ -42,10 +42,12 @@ exports.fnGetFolderInfo = (folder_path) => {
   }
 };
 
-exports.fnGetRatingBoard = (tasks) => {
+exports.fnGetRatingBoard = (problems) => {
   let str = "";
-  for (let i = 0; i < tasks.length; i++) {
-    str += `COALESCE(MAX(CASE WHEN task_id = ${tasks[i].task_id} THEN count END),0) count${i + 1}, COALESCE(MAX(CASE WHEN task_id = ${tasks[i].task_id} THEN accept END),0) is_accept${i + 1}, COALESCE(MAX(CASE WHEN task_id = ${tasks[i].task_id} THEN accept_time END),0) accept_time${i + 1},`;
+  for (let i = 0; i < problems.length; i++) {
+    str += `COALESCE(MAX(CASE WHEN problem_id = ${problems[i].problem_id} THEN count END),0) count${i + 1}, COALESCE(MAX(CASE WHEN problem_id = ${problems[i].problem_id} THEN accept END),0) is_accept${i + 1}, COALESCE(MAX(CASE WHEN problem_id = ${
+      problems[i].problem_id
+    } THEN accept_time END),0) accept_time${i + 1},`;
   }
 
   return `
@@ -53,7 +55,7 @@ exports.fnGetRatingBoard = (tasks) => {
 
         with cte as (
             select user_id,
-                task_id,
+                problem_id,
                 count(*) as count ,
                 max(if(status_code = 1, 1, 0)) as accept,
                 min(CONCAT(
@@ -70,7 +72,7 @@ exports.fnGetRatingBoard = (tasks) => {
                 sum(if(status_code > 1, 1, 0)) * 10 + COALESCE(TIMESTAMPDIFF(MINUTE, @contest_time, min(if(status_code = 1, created_dt, null))), 0) as penalty
             from attempts
             where contest_id = ?
-            group by user_id, task_id
+            group by user_id, problem_id
         )
 
         SELECT
@@ -81,18 +83,18 @@ exports.fnGetRatingBoard = (tasks) => {
             COALESCE(SUM(accept), 0) as accept,
             dense_rank() over (ORDER BY COALESCE(SUM(accept),0) desc, COALESCE(SUM(if(accept=1, penalty, 0)),0)) as num
         FROM cte
-        INNER JOIN users ON cte.user_id = users.user_id and users.role <> 'admin'
+        INNER JOIN users ON cte.user_id = users.user_id
         GROUP BY users.username, users.full_name
         ORDER BY accept desc, penalty`;
 };
 
-exports.fnGetTasksQuery = () => {
-  return `SELECT t1.name, t1.task_id, ifnull(status, 0) as status FROM vw_tasks t1
+exports.fnGetProblemsQuery = () => {
+  return `SELECT t1.name, t1.problem_id, ifnull(status, 0) as status FROM vw_problems t1
           LEFT JOIN (
-              SELECT contest_id, task_id, min(if(status_code > 0, status_code, 10)) as status FROM attempts
+              SELECT contest_id, problem_id, min(if(status_code > 0, status_code, 10)) as status FROM attempts
               WHERE user_id = ?
-              GROUP BY contest_id, task_id
+              GROUP BY contest_id, problem_id
           ) as t2
-          ON t1.contest_id = t2.contest_id and t1.task_id = t2.task_id
+          ON t1.contest_id = t2.contest_id and t1.problem_id = t2.problem_id
           WHERE t1.contest_id = ?`;
 };

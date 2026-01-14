@@ -49,6 +49,7 @@
     "joi": "^17.9.0",
     "md5": "^2.3.0",
     "mysql2": "^3.6.0",
+    "nodemailer": "^7.0.12",
     "redis": "^4.6.0"
   },
   "devDependencies": {

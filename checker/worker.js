@@ -86,7 +86,7 @@ function fnParseTimeLog(log) {
   return result;
 }
 
-async function fnRunDockerChecker(attempt_id, task_id, temp_dir, test_count, time_limit, memory_limit, script_compilation, script_run, image_name) {
+async function fnRunDockerChecker(attempt_id, problem_id, temp_dir, test_count, time_limit, memory_limit, script_compilation, script_run, image_name) {
   // Determine volume path for Docker (needs host path if running in container)
   let volume_path = temp_dir;
   if (process.env.HOST_DATA_PATH) {
@@ -115,7 +115,7 @@ async function fnRunDockerChecker(attempt_id, task_id, temp_dir, test_count, tim
       if (output.status == "compilation") return fnUpdateAttemptStatus(attempt_id, "Compilation error", 5, time_run, 0, output.message);
       if (output.status == "runtime") return fnUpdateAttemptStatus(attempt_id, "Runtime error", 7, time_run, 0, output.message);
 
-      const expected_output = fs.readFileSync(path.join(__dirname, `../data/checker/testcase/${task_id}/output${test_number}.txt`), { encoding: "utf8" });
+      const expected_output = fs.readFileSync(path.join(__dirname, `../data/checker/testcase/${problem_id}/output${test_number}.txt`), { encoding: "utf8" });
       const current_output = fs.readFileSync(path.join(__dirname, `../data/checker/temp/${attempt_id}/output${test_number}.txt`), { encoding: "utf8" });
       const info_log = fnParseTimeLog(fs.readFileSync(path.join(__dirname, `../data/checker/temp/${attempt_id}/info${test_number}.log`), { encoding: "utf8" }));
 
@@ -144,37 +144,37 @@ async function fnRunDockerChecker(attempt_id, task_id, temp_dir, test_count, tim
   });
 }
 
-async function fnProcessAttempt(attempt_id, contest_id, task_id, language_id, code, is_rerun = false) {
+async function fnProcessAttempt(attempt_id, contest_id, problem_id, language_id, code, is_rerun = false) {
   try {
-    const [task, language] = await Promise.all([
+    const [problem, language] = await Promise.all([
       //
-      dbQueryOne(`SELECT * FROM tasks WHERE task_id = ?`, [task_id]),
-      dbQueryOne("SELECT * FROM languages WHERE group_id in (SELECT group_id FROM vw_tasks WHERE task_id = ? and contest_id = ?) AND language_id = ?", [task_id, contest_id, language_id]),
+      dbQueryOne(`SELECT * FROM problems WHERE problem_id = ?`, [problem_id]),
+      dbQueryOne("SELECT * FROM languages WHERE group_id in (SELECT group_id FROM vw_problems WHERE problem_id = ? and contest_id = ?) AND language_id = ?", [problem_id, contest_id, language_id]),
     ]);
 
-    console.log(attempt_id, contest_id, task_id, language_id, code, task, language);
-    if (!task || !language) {
+    console.log(attempt_id, contest_id, problem_id, language_id, code, problem, language);
+    if (!problem || !language) {
       throw new Error("Task or language not found");
     }
 
     const temp_dir = path.join(__dirname, `../data/checker/temp/${attempt_id}`);
-    const test_input = path.join(__dirname, `../data/checker/testcase/${task_id}`, "input*.txt");
+    const test_input = path.join(__dirname, `../data/checker/testcase/${problem_id}`, "input*.txt");
     const source_file = path.join(temp_dir, `${language.file_extension == "java" ? "Main" : "source"}.${language.file_extension}`);
 
     fs.mkdirSync(temp_dir, { recursive: true });
     if (!is_rerun) fs.writeFileSync(source_file, code);
 
     execSync(`cp ${test_input} ${temp_dir}`);
-    await fnRunDockerChecker(attempt_id, task_id, temp_dir, task.test_all, task.time_ms, task.memory_kb, language.compile_script, language.run_script, language.docker_image);
+    await fnRunDockerChecker(attempt_id, problem_id, temp_dir, problem.test_all, problem.time_ms, problem.memory_kb, language.compile_script, language.run_script, language.docker_image);
   } catch (err) {
     console.error(`Error in fnProcessAttempt: ${err.message}`);
     fnUpdateAttemptStatus(attempt_id, "Server Error", 10, 0, 0, err.message);
   }
 }
 
-async function fnAddToQueue(attempt_id, contest_id, task_id, language_id, code) {
+async function fnAddToQueue(attempt_id, contest_id, problem_id, language_id, code) {
   try {
-    await fnQueuePush(QUEUE_NAME, { attempt_id, contest_id, task_id, language_id, code });
+    await fnQueuePush(QUEUE_NAME, { attempt_id, contest_id, problem_id, language_id, code });
     console.log(`[Queue] Added attempt ${attempt_id} to queue`);
   } catch (err) {
     console.error(`[Queue] Failed to add to queue: ${err.message}`);
@@ -193,9 +193,9 @@ async function fnProcessQueue() {
 
       const job = await fnQueuePop(QUEUE_NAME);
       if (job) {
-        const { attempt_id, contest_id, task_id, language_id, code } = job;
+        const { attempt_id, contest_id, problem_id, language_id, code } = job;
         console.log(`[Queue Worker] Processing attempt ${attempt_id}`);
-        await fnProcessAttempt(attempt_id, contest_id, task_id, language_id, code);
+        await fnProcessAttempt(attempt_id, contest_id, problem_id, language_id, code);
       } else {
         // No jobs, wait a bit
         await new Promise((resolve) => setTimeout(resolve, 1000));
