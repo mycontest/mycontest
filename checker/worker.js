@@ -149,7 +149,7 @@ async function fnProcessAttempt(attempt_id, contest_id, problem_id, language_id,
     const [problem, language] = await Promise.all([
       //
       dbQueryOne(`SELECT * FROM problems WHERE problem_id = ?`, [problem_id]),
-      dbQueryOne("SELECT * FROM languages WHERE group_id in (SELECT group_id FROM vw_problems WHERE problem_id = ? and contest_id = ?) AND language_id = ?", [problem_id, contest_id, language_id]),
+      dbQueryOne("SELECT * FROM languages WHERE group_id = (SELECT group_id FROM problems WHERE problem_id = ?) AND language_id = ?", [problem_id, language_id]),
     ]);
 
     console.log(attempt_id, contest_id, problem_id, language_id, code, problem, language);

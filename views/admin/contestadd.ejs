@@ -95,9 +95,8 @@
                 <a href="/admin/contest" class="btn">Bekor qilish</a>
                 
                 <% if(contest.contest_id) { %>
-                <a href="/admin/delcontest?contest_id=<%= contest.contest_id %>" class="btn btn-ghost btn-md" onclick="return confirm('Rostdan ham o\'chirmoqchimisiz?')" style="color: var(--error)">
-                  <i class="bi bi-trash"></i> O'chirish
-                </a>
+                <!-- Delete button removed as per request -->
+
                 
                 <form action="/admin/notify" method="POST" style="display: inline;">
                   <input type="hidden" name="contest_id" value="<%= contest.contest_id %>" />

@@ -5,6 +5,10 @@ const { fnAuthStop } = require("../auth/auth.middleware");
 
 router.get("/", controller.fnContestHome);
 
+// Join (Public)
+router.post("/join", controller.fnJoinContest);
+router.get("/participants", controller.fnParticipantsPage);
+
 // Problem (Task)
 router.get("/problems", controller.fnProblemsPage);
 router.get("/problem", controller.fnProblemPage);

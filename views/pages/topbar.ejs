@@ -12,5 +12,8 @@
   <li class="nav-item">
     <a class="nav-link <%= typeof page_info !== 'undefined' && page_info === 'ratings' ? 'active' : '' %>" href="/contest/<%= contest.contest_id %>/rating"> <i class="bi bi-trophy me-1"></i> Natijalar </a>
   </li>
+  <li class="nav-item">
+    <a class="nav-link <%= typeof page_info !== 'undefined' && page_info === 'participants' ? 'active' : '' %>" href="/contest/<%= contest.contest_id %>/participants"> <i class="bi bi-people me-1"></i> Ishtirokchilar </a>
+  </li>
 </ul>
 <% } %>

@@ -18,15 +18,32 @@
             <div class="card" style="padding: 16px; margin-bottom: 12px">
               <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px">
                 <h1 style="font-size: 15px; font-weight: 600; margin: 0"><%= contest.name %></h1>
-                <% if (contest.event === 'Faol') { %>
-                <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600">Faol</span>
-                <% } else if (contest.event === 'Tugagan') { %>
-                <span style="background: #6b7280; color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600">Tugagan</span>
-                <% } else { %>
-                <span style="background: #3b82f6; color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600">Boshlanmadi</span>
-                <% } %>
+                <div class="flex items-center gap-2">
+                  <% if (contest.event === 'Faol') { %>
+                  <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600">Faol</span>
+                  <% } else if (contest.event === 'Tugagan') { %>
+                  <span style="background: #6b7280; color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600">Tugagan</span>
+                  <% } else { %>
+                  <span style="background: #3b82f6; color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600">Boshlanmadi</span>
+                  <% } %>
+                </div>
               </div>
               <div class="prose" style="font-size: 12px"><%- contest.content %></div>
+
+              <% if (!is_participant && !is_admin && contest.contest_type !== 'private') { %>
+              <div style="margin-top: 20px; text-align: center; padding: 20px; background: var(--bg-tertiary); border-radius: 8px">
+                <h4 style="font-size: 14px; margin-bottom: 10px">Musobaqada qatnashish</h4>
+                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px">Masalalarni ko'rish va yechim yuborish uchun musobaqaga qo'shiling.</p>
+                <form action="/contest/<%= contest.contest_id %>/join" method="POST">
+                  <button type="submit" class="btn btn-primary btn-md">Qo'shilish</button>
+                </form>
+              </div>
+              <% } else if (!is_participant && !is_admin && contest.contest_type === 'private') { %>
+              <div style="margin-top: 20px; text-align: center; padding: 20px; background: var(--bg-error-light); border-radius: 8px">
+                <h4 style="font-size: 14px; margin-bottom: 10px; color: var(--error)">Yopiq musobaqa</h4>
+                <p style="font-size: 12px; color: var(--text-muted)">Ushbu musobaqada qatnashish faqat taklifnoma orqali mumkin.</p>
+              </div>
+              <% } %>
             </div>
 
             <!-- Contest Rules -->

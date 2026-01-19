@@ -43,20 +43,10 @@
 </nav>
 
 <!-- Flash Messages -->
-<% if (success && success.length > 0) { %>
-<div class="container" style="margin-top: 16px">
-  <div class="alert alert-success alert-dismissible fade show" role="alert" style="font-size: 13px">
-    <i class="bi bi-check-circle-fill"></i>
-    <%= success[0] %>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-</div>
-<% } %> <% if (error && error.length > 0) { %>
-<div class="container" style="margin-top: 16px">
-  <div class="alert alert-danger alert-dismissible fade show" role="alert" style="font-size: 13px">
-    <i class="bi bi-exclamation-triangle-fill"></i>
-    <%= error[0] %>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-</div>
-<% } %>
+<!-- Flash Messages -->
+<style>
+  .dropdown-item {
+    padding: 8px 16px;
+  }
+</style>
+<%- include("alert.ejs") %>

@@ -54,9 +54,9 @@
             </div>
 
             <div class="card">
-              <form action="/submit" method="POST" target="_blank">
+              <form action="/admin/checker" method="POST">
                 <input type="hidden" name="problem_id" value="<%= problem.problem_id %>" />
-                <input type="hidden" name="contest_id" value="1" />
+                <input type="hidden" name="contest_id" value="0" />
 
                 <div class="form-group">
                   <label class="form-label">Dasturlash tili</label>
@@ -84,6 +84,44 @@
                 </div>
               </form>
             </div>
+
+            <% if(attempts && attempts.length > 0) { %>
+            <div class="card mt-4" style="padding: 0; overflow: hidden">
+              <div style="padding: 8px 14px; border-bottom: 1px solid var(--border-light); font-weight: 600; font-size: 13px">Natijalar tarixi (Admin)</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width: 60px">#</th>
+                    <th>Vaqt</th>
+                    <th>Til</th>
+                    <th>Holat</th>
+                    <th style="width: 80px; text-align: right">Vaqt</th>
+                    <th style="width: 80px; text-align: right">Xotira</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% attempts.forEach((att) => { %>
+                  <tr class="clickable" onclick="showAttempt('<%= att.attempt_id %>')" style="cursor: pointer">
+                    <td><%= att.attempt_id %></td>
+                    <td><%= new Date(att.created_dt).toLocaleString() %></td>
+                    <td style="font-size: 11px; color: var(--text-muted)"><%= att.language_used %></td>
+                    <td>
+                      <% if(att.status_code == 1) { %>
+                      <span class="badge badge-success">Accepted</span>
+                      <% } else if(att.status_code == 0) { %>
+                      <span class="badge badge-warning">Running</span>
+                      <% } else { %>
+                      <span class="badge badge-error" title="<%= att.error_details %>"><%= att.status_message %></span>
+                      <% } %>
+                    </td>
+                    <td style="text-align: right; font-family: var(--font-mono); font-size: 12px"><%= att.time_ms || 0 %>ms</td>
+                    <td style="text-align: right; font-family: var(--font-mono); font-size: 12px"><%= att.memory_kb || 0 %>KB</td>
+                  </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+            <% } %>
           </div>
         </div>
       </div>
@@ -91,32 +129,103 @@
 
     <%- include("../components/footer.ejs") %>
 
+    <!-- Attempt Modal -->
+    <div id="attempt-modal" class="modal" tabindex="-1" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center">
+      <div class="modal-content card" style="width: 80%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; padding: 0">
+        <div style="padding: 12px 16px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center">
+          <h5 style="margin: 0; font-size: 14px; font-weight: 600">Urinish #<span id="modal-id"></span></h5>
+          <button onclick="closeModal()" class="btn btn-ghost btn-sm"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div style="padding: 16px; overflow-y: auto">
+          <div style="margin-bottom: 12px; display: flex; gap: 12px; font-size: 12px">
+            <span id="modal-status" class="badge"></span>
+            <span class="badge"><i class="bi bi-clock me-1"></i><span id="modal-time"></span>ms</span>
+            <span class="badge"><i class="bi bi-cpu me-1"></i><span id="modal-memory"></span>KB</span>
+          </div>
+          <pre id="modal-code" style="background: var(--bg-tertiary); padding: 12px; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 12px; overflow-x: auto; max-height: 400px"></pre>
+          <div id="modal-error" style="margin-top: 12px; color: var(--error); font-size: 12px; white-space: pre-wrap; display: none"></div>
+        </div>
+      </div>
+    </div>
+
     <script>
-      // Initialize CodeMirror
-      const editor = CodeMirror.fromTextArea(document.getElementById("code_editor"), {
-        lineNumbers: true,
-        mode: "text/x-c++src",
-        theme: "default",
-        indentUnit: 4,
-        indentWithTabs: false,
-        lineWrapping: true,
-      });
+            // Initialize CodeMirror
+            const editor = CodeMirror.fromTextArea(document.getElementById("code_editor"), {
+              lineNumbers: true,
+              mode: "text/x-c++src",
+              theme: "default",
+              indentUnit: 4,
+              indentWithTabs: false,
+              lineWrapping: true,
+            });
 
-      // Change mode based on language selection
-      document.getElementById("language_select").addEventListener("change", function () {
-        const selectedOption = this.options[this.selectedIndex];
-        const mode = selectedOption.getAttribute("data-mode");
-        editor.setOption("mode", mode);
-      });
+            // Change mode based on language selection
+            document.getElementById("language_select").addEventListener("change", function () {
+              const selectedOption = this.options[this.selectedIndex];
+              const mode = selectedOption.getAttribute("data-mode");
+              editor.setOption("mode", mode);
+            });
 
-      // Set initial code template
-      editor.setValue(`#include <iostream>
-using namespace std;
+            // Set initial code template
+            editor.setValue(`#include <iostream>
+      using namespace std;
 
-int main() {
-    // Your code here
-    return 0;
-}`);
+      int main() {
+          // Your code here
+          return 0;
+      }`);
+
+            // Sync CodeMirror content to textarea on every change
+            editor.on("change", function (cm) {
+              document.getElementById("code_editor").value = cm.getValue();
+            });
+
+            // Initial sync
+            document.getElementById("code_editor").value = editor.getValue();
+
+            // Modal Logic
+            const attempts = <%- JSON.stringify(attempts || []) %>;
+
+            function showAttempt(id) {
+              const attempt = attempts.find((a) => a.attempt_id == id);
+              if (!attempt) return;
+
+              document.getElementById("modal-id").innerText = attempt.attempt_id;
+              document.getElementById("modal-code").innerText = attempt.code || "// Kod topilmadi";
+              document.getElementById("modal-time").innerText = attempt.time_ms || 0;
+              document.getElementById("modal-memory").innerText = attempt.memory_kb || 0;
+
+              const statusSpan = document.getElementById("modal-status");
+              statusSpan.className = "badge";
+              if (attempt.status_code == 1) {
+                statusSpan.classList.add("badge-success");
+                statusSpan.innerText = "Accepted";
+              } else if (attempt.status_code == 0) {
+                statusSpan.classList.add("badge-warning");
+                statusSpan.innerText = "Running";
+              } else {
+                statusSpan.classList.add("badge-error");
+                statusSpan.innerText = attempt.status_message || "Error";
+              }
+
+              const errorDiv = document.getElementById("modal-error");
+              if (attempt.error_details) {
+                errorDiv.style.display = "block";
+                errorDiv.innerText = attempt.error_details;
+              } else {
+                errorDiv.style.display = "none";
+              }
+
+              document.getElementById("attempt-modal").style.display = "flex";
+            }
+
+            function closeModal() {
+              document.getElementById("attempt-modal").style.display = "none";
+            }
+
+            document.getElementById("attempt-modal").addEventListener("click", function (e) {
+              if (e.target === this) closeModal();
+            });
     </script>
   </body>
 </html>

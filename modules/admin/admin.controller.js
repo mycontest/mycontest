@@ -371,6 +371,37 @@ exports.fnSendContestNotification = async (req, res) => {
 };
 
 // ==================== ADMIN CHECKER ====================
+exports.fnCheckerSubmit = async (req, res) => {
+  try {
+    const { problem_id, language_id, code } = req.body;
+    const user_id = req.session.data.user_id;
+
+    // Fetch language details (independently of contest)
+    const language = await dbQueryOne("SELECT * FROM languages WHERE group_id = (SELECT group_id FROM problems WHERE problem_id = ?) AND language_id = ?", [problem_id, language_id]);
+
+    if (!language) {
+      req.flash("error", "Dasturlash tili topilmadi!");
+      return res.redirect(`/admin/checker?problem_id=${problem_id}`);
+    }
+
+    // Insert attempt with contest_id = 0 (or a dedicated ADMIN_CONTEST_ID) to hide from main leaderboards
+    const contest_id = 0;
+
+    // Insert into attempts
+    const ins = await dbQueryMany("INSERT INTO attempts (problem_id, user_id, contest_id, language_used, code) VALUES (?, ?, ?, ?, ?)", [problem_id, user_id, contest_id, language.language_name, code]);
+
+    // Add to checker queue
+    const { fnAddToQueue } = require("../../checker/worker");
+    fnAddToQueue(ins.insertId, contest_id, problem_id, language.language_id, code);
+
+    req.flash("success", "Yechim yuborildi. Natija tez orada yangilanadi.");
+    res.redirect(`/admin/checker?problem_id=${problem_id}`); // Stay on checker page or redirect to a results view if preferred
+  } catch (err) {
+    req.flash("error", err.message);
+    res.redirect(`/admin/checker?problem_id=${req.body.problem_id}`);
+  }
+};
+
 exports.fnCheckerPage = async (req, res) => {
   try {
     const problem_id = req.query.problem_id;
@@ -382,7 +413,11 @@ exports.fnCheckerPage = async (req, res) => {
     }
 
     const languages = await dbQueryMany("SELECT * FROM languages ORDER BY language_name");
-    res.render("admin/checker", { page_info: "checker", problem, languages });
+
+    // Optional: Fetch recent admin attempts for this problem to show in the UI
+    const attempts = await dbQueryMany("SELECT * FROM attempts WHERE problem_id = ? AND user_id = ? ORDER BY attempt_id DESC LIMIT 5", [problem_id, req.session.data.user_id]);
+
+    res.render("admin/checker", { page_info: "checker", problem, languages, attempts });
   } catch (err) {
     req.flash("error", err.message);
     res.redirect(`/admin/problems`);

@@ -29,5 +29,6 @@ router.post("/notify", controller.fnSendContestNotification);
 
 // Admin checker
 router.get("/checker", controller.fnCheckerPage);
+router.post("/checker", controller.fnCheckerSubmit);
 
 module.exports = router;
