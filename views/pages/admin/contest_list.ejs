@@ -1,0 +1,83 @@
+<div class="content">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1>Contests</h1>
+        <a href="/admin/contests/add" class="btn-action">Add new</a>
+    </div>
+
+    <table class="narrow">
+        <thead>
+            <tr>
+                <th class="id-col">ID</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Start Date</th>
+                <th>Duration</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% contests.forEach(c => { %>
+                <tr>
+                    <td><%= c.id %></td>
+                    <td>
+                        <a href="/admin/contests/edit/<%= c.id %>" style="font-weight: bold;"><%= c.name %></a>
+                    </td>
+                    <td>
+                        <% if(c.type === 'public') { %>
+                            <span style="color: green; font-weight: 500;">Public</span>
+                        <% } else { %>
+                            <span style="color: #d97706; font-weight: 500;">Private</span>
+                        <% } %>
+                    </td>
+                    <td><%= new Date(c.start_date).toLocaleString() %></td>
+                    <td><%= c.duration_min %> min</td>
+                    <td>
+                        <a href="/admin/contests/<%= c.id %>/problems" style="margin-right: 10px;" title="Problems"><i class="fas fa-list"></i></a>
+                        <a href="/admin/contests/<%= c.id %>/participants" style="margin-right: 10px;" title="Participants"><i class="fas fa-users"></i></a>
+                        <a href="/admin/contests/edit/<%= c.id %>" class="edit-link" title="Edit"><i class="fas fa-edit"></i></a>
+                    </td>
+                </tr>
+            <% }) %>
+            <% if (contests.length === 0) { %>
+                <tr>
+                    <td colspan="6" style="text-align: center; color: gray; padding: 20px;">No contests found.</td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+
+    <% if (total_pages > 1) { %>
+        <div class="pager">
+            <% if (current_page > 1) { %>
+                <a href="/admin/contests?page=<%= current_page - 1 %>" class="prev" title="Previous">Previous</a>
+            <% } else { %>
+                <span class="prev disabled" title="Previous">Previous</span>
+            <% } %>
+
+            <% for(let i = 1; i <= total_pages; i++) { %>
+                <a href="/admin/contests?page=<%= i %>" class="<%= current_page === i ? 'current' : '' %>"><%= i %></a>
+            <% } %>
+
+            <% if (current_page < total_pages) { %>
+                <a href="/admin/contests?page=<%= current_page + 1 %>" class="next" title="Next">Next</a>
+            <% } else { %>
+                <span class="next disabled" title="Next">Next</span>
+            <% } %>
+        </div>
+    <% } %>
+</div>
+
+<style>
+.btn-action {
+    background: #4f46e5;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+}
+.btn-action:hover {
+    background: #4338ca;
+    color: white;
+}
+</style>

@@ -1,10 +1,10 @@
 <h1>Add Contest</h1>
 <form action="/admin/contests/add" method="POST" class="simple-form" style="max-width: 600px">
-  <label>Name</label>
-  <input type="text" name="name" required />
+  <label for="name">Name</label>
+  <input type="text" name="name" id="name" required />
 
-  <label>Content (Description)</label>
-  <textarea name="content" rows="5"></textarea>
+  <label for="content">Content (Description)</label>
+  <textarea name="content" rows="5" id="content"></textarea>
 
   <label>Type</label>
   <select name="type">
@@ -12,11 +12,11 @@
     <option value="private">Private</option>
   </select>
 
-  <label>Start Date</label>
-  <input type="datetime-local" name="start_date" required />
+  <label for="start_date">Start Date</label>
+  <input type="datetime-local" name="start_date" id="start_date" required />
 
-  <label>Duration (Minutes)</label>
-  <input type="number" name="duration_min" value="120" required />
+  <label for="duration_min">Duration (Minutes)</label>
+  <input type="number" name="duration_min" id="duration_min" value="120" required />
 
   <input type="submit" value="Create Contest" class="btn" />
 </form>

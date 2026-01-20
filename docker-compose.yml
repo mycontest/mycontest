@@ -12,6 +12,7 @@ services:
       - ./data/mysql:/var/lib/mysql
       - ./shared/setup/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./shared/setup/seed.sql:/docker-entrypoint-initdb.d/seed.sql
+      - ./shared/setup/view.sql:/docker-entrypoint-initdb.d/view.sql
   redis:
     image: redis:alpine
     restart: always

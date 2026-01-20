@@ -14,7 +14,7 @@
     <div>
         <h1>Recent Problems</h1>
         <ul class="task-list">
-            <% recentProblems.forEach(p => { %>
+            <% recent_problems.forEach(p => { %>
                 <li class="task">
                     <a href="/admin/problems/edit/<%= p.id %>"><%= p.name %></a>
                     <div class="samp-actions">
@@ -30,7 +30,7 @@
     <div>
         <h1>Recent Contests</h1>
         <ul class="task-list">
-            <% recentContests.forEach(c => { %>
+            <% recent_contests.forEach(c => { %>
                 <li class="task">
                     <a href="/admin/contests/edit/<%= c.id %>"><%= c.name %></a>
                     <div class="samp-actions">

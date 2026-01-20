@@ -1,23 +1,57 @@
 <div class="content">
-  <h1>Profile</h1>
-
-  <table class="narrow">
+  <h2>User information</h2>
+  <table class="summary-table narrow">
     <tbody>
       <tr>
-        <th>Username</th>
-        <td><%= user.username %></td>
-      </tr>
-      <tr>
-        <th>Email</th>
-        <td><%= user.email || 'N/A' %></td>
-      </tr>
-      <tr>
-        <th>Name</th>
+        <td>Name:</td>
         <td><%= user.name %></td>
       </tr>
       <tr>
-        <th>Role</th>
-        <td><%= user.role %></td>
+        <td>Country:</td>
+        <td>Uzbekistan</td>
+      </tr>
+      <tr>
+        <td>Submission count:</td>
+        <td>88</td>
+      </tr>
+      <tr>
+        <td>First submission:</td>
+        <td>2021-08-09 22:11:15</td>
+      </tr>
+      <tr>
+        <td>Last submission:</td>
+        <td>2026-01-20 00:29:04</td>
+      </tr>
+      <tr>
+        <td>Actions:</td>
+        <td>
+          <i class="fas fa-angle-double-right"></i> <a href="/user/<%= user.id %>/edit/">Edit personal data</a><br />
+          <i class="fas fa-angle-double-right"></i> <a href="/user/<%= user.id %>/password/">Change password</a><br />
+          <i class="fas fa-angle-double-right"></i> <a href="/user/<%= user.id %>/friends/">Edit friends list</a><br />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Languages</h2>
+  <table class="narrow">
+    <thead>
+      <tr>
+        <th>language</th>
+        <th>number of submissions</th>
+        <th>share</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>C++</td>
+        <td>87</td>
+        <td>98.86%</td>
+      </tr>
+      <tr>
+        <td>Python3</td>
+        <td>1</td>
+        <td>1.14%</td>
       </tr>
     </tbody>
   </table>

@@ -1,0 +1,83 @@
+<div class="content">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1>Problems</h1>
+        <a href="/admin/problems/add" class="btn-action">Add new</a>
+    </div>
+
+    <table class="narrow">
+        <thead>
+            <tr>
+                <th class="id-col">ID</th>
+                <th>Name</th>
+                <th>Details</th>
+                <th>Created</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% problems.forEach(p => { %>
+                <tr>
+                    <td><%= p.id %></td>
+                    <td>
+                        <a href="/admin/problems/edit/<%= p.id %>" style="font-weight: bold;"><%= p.name %></a>
+                        <% if(p.is_public) { %>
+                             <span style="background: #e0ffe0; color: #008800; font-size: 0.8em; padding: 2px 5px; border-radius: 4px; margin-left: 5px;">Public</span>
+                        <% } else { %>
+                             <span style="background: #eee; color: #666; font-size: 0.8em; padding: 2px 5px; border-radius: 4px; margin-left: 5px;">Hidden</span>
+                        <% } %>
+                    </td>
+                    <td>
+                        <div style="font-size: 0.9em; color: #666;">
+                            Points: <%= p.points %> | Time: <%= p.time_ms %>ms | Memory: <%= Math.round(p.memory_kb/1024) %>MB
+                        </div>
+                    </td>
+                    <td><%= new Date(p.created_dt).toLocaleDateString() %></td>
+                    <td>
+                        <a href="/admin/problems/<%= p.id %>/languages" style="margin-right: 10px;" title="Languages"><i class="fas fa-code"></i></a>
+                        <a href="/admin/problems/edit/<%= p.id %>" class="edit-link" title="Edit"><i class="fas fa-edit"></i></a>
+                    </td>
+                </tr>
+            <% }) %>
+            <% if (problems.length === 0) { %>
+                <tr>
+                    <td colspan="5" style="text-align: center; color: gray; padding: 20px;">No problems found.</td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+
+    <% if (total_pages > 1) { %>
+        <div class="pager">
+            <% if (current_page > 1) { %>
+                <a href="/admin/problems?page=<%= current_page - 1 %>" class="prev" title="Previous">Previous</a>
+            <% } else { %>
+                <span class="prev disabled" title="Previous">Previous</span>
+            <% } %>
+
+            <% for(let i = 1; i <= total_pages; i++) { %>
+                <a href="/admin/problems?page=<%= i %>" class="<%= current_page === i ? 'current' : '' %>"><%= i %></a>
+            <% } %>
+
+            <% if (current_page < total_pages) { %>
+                <a href="/admin/problems?page=<%= current_page + 1 %>" class="next" title="Next">Next</a>
+            <% } else { %>
+                <span class="next disabled" title="Next">Next</span>
+            <% } %>
+        </div>
+    <% } %>
+</div>
+
+<style>
+.btn-action {
+    background: #4f46e5;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+}
+.btn-action:hover {
+    background: #4338ca;
+    color: white;
+}
+</style>

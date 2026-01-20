@@ -1,18 +1,18 @@
 <h1>Edit Contest: <%= contest.name %></h1>
 <form action="/admin/contests/edit/<%= contest.id %>" method="POST" class="simple-form" style="max-width: 600px;">
-    <label>Name</label>
+    <label for="name">Name</label>
     <input type="text" name="name" value="<%= contest.name %>" required>
     
-    <label>Content (Description)</label>
-    <textarea name="content" rows="5"><%= contest.content %></textarea>
+    <label for="content">Content (Description)</label>
+    <textarea name="content" rows="5" id="content"><%= contest.content %></textarea>
     
-    <label>Type</label>
-    <select name="type">
+    <label for="type">Type</label>
+    <select name="type" id="type">
         <option value="public" <%= contest.type === 'public' ? 'selected' : '' %>>Public</option>
         <option value="private" <%= contest.type === 'private' ? 'selected' : '' %>>Private</option>
     </select>
     
-    <label>Start Date</label>
+    <label for="start_date">Start Date</label>
     <% 
         // Helper to format date for datetime-local
         const d = new Date(contest.start_date);
@@ -22,10 +22,10 @@
             ('0' + d.getHours()).slice(-2) + ':' + 
             ('0' + d.getMinutes()).slice(-2);
     %>
-    <input type="datetime-local" name="start_date" value="<%= dateStr %>" required>
+    <input type="datetime-local" name="start_date" id="start_date" value="<%= dateStr %>" required>
     
-    <label>Duration (Minutes)</label>
-    <input type="number" name="duration_min" value="<%= contest.duration_min %>" required>
+    <label for="duration_min">Duration (Minutes)</label>
+    <input type="number" name="duration_min" id="duration_min" value="<%= contest.duration_min %>" required>
     
     <input type="submit" value="Update Contest" class="btn">
 </form>

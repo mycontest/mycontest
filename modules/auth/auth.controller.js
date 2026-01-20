@@ -27,7 +27,7 @@ exports.postLogin = async (req, res) => {
       return res.redirect("/auth/login");
     }
 
-    req.session.user = { id: user.id, name: user.name, username: user.username, role: user.role };
+    req.session.user = { id: user.id, name: user.name, username: user.username, email: user.email, role: user.role };
     req.session.success = "Logged in successfully";
     res.redirect("/");
   } catch (error) {

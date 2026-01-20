@@ -32,8 +32,9 @@ CREATE TABLE IF NOT EXISTS problem_details (
     output_format TEXT,
     time_ms INT DEFAULT 1000,
     memory_kb INT DEFAULT 256000,
-    test_public TEXT,
-    test_all TEXT,
+    test_public INT DEFAULT 0,
+    test_all INT DEFAULT 0,
+    is_public BOOLEAN DEFAULT FALSE,
     comment TEXT,
     created_dt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_dt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -46,8 +47,8 @@ CREATE TABLE IF NOT EXISTS problem_languages (
     default_code TEXT,
     created_dt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_dt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (language_id) REFERENCES languages(id),
-    FOREIGN KEY (problem_id) REFERENCES problem_details(id)
+    FOREIGN KEY (language_id) REFERENCES languages (id),
+    FOREIGN KEY (problem_id) REFERENCES problem_details (id)
 );
 
 CREATE TABLE IF NOT EXISTS contest_details (
@@ -74,9 +75,9 @@ CREATE TABLE IF NOT EXISTS problem_submissions (
     error_details TEXT,
     language_id INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (problem_id) REFERENCES problem_details(id),
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (language_id) REFERENCES languages(id)
+    FOREIGN KEY (problem_id) REFERENCES problem_details (id),
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (language_id) REFERENCES languages (id)
 );
 
 CREATE TABLE IF NOT EXISTS contest_problems (
@@ -85,8 +86,8 @@ CREATE TABLE IF NOT EXISTS contest_problems (
     problem_id INT,
     created_dt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_dt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (contest_id) REFERENCES contest_details(id),
-    FOREIGN KEY (problem_id) REFERENCES problem_details(id)
+    FOREIGN KEY (contest_id) REFERENCES contest_details (id),
+    FOREIGN KEY (problem_id) REFERENCES problem_details (id)
 );
 
 CREATE TABLE IF NOT EXISTS contest_participants (
@@ -94,6 +95,6 @@ CREATE TABLE IF NOT EXISTS contest_participants (
     contest_id INT,
     user_id INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (contest_id) REFERENCES contest_details(id),
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (contest_id) REFERENCES contest_details (id),
+    FOREIGN KEY (user_id) REFERENCES users (id)
 );

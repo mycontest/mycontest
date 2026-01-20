@@ -23,16 +23,16 @@
         <h3>Submit Solution</h3>
         <form action="/problems/<%= problem.id %>/submit" method="POST" enctype="multipart/form-data">
             <div class="form-group">
-                <label>Language</label>
-                <select name="language_id">
+                <label for="language_id">Language</label>
+                <select name="language_id" id="language_id">
                     <% languages.forEach(lang => { %>
                         <option value="<%= lang.id %>"><%= lang.name %></option>
                     <% }) %>
                 </select>
             </div>
             <div class="form-group">
-                <label>Source Code</label>
-                <textarea name="code" rows="10" style="width: 100%; font-family: monospace;"></textarea>
+                <label for="code">Source Code</label>
+                <textarea name="code" rows="10" style="width: 100%; font-family: monospace;" id="code"></textarea>
             </div>
             <button type="submit" class="btn">Submit</button>
         </form>

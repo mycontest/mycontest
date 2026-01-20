@@ -19,6 +19,7 @@ router.get("/", adminController.getDashboard);
 router.get("/users", adminController.getUserList);
 
 // Problems
+router.get("/problems", adminController.getProblemList);
 router.get("/problems/add", adminController.getAddProblem);
 router.post("/problems/add", adminController.postAddProblem);
 router.get("/problems/edit/:id", adminController.getEditProblem);
@@ -27,6 +28,7 @@ router.get("/problems/:id/languages", adminController.getProblemLanguages);
 router.post("/problems/:id/languages", adminController.postProblemLanguages);
 
 // Contests
+router.get("/contests", adminController.getContestList);
 router.get("/contests/add", adminController.getAddContest);
 router.post("/contests/add", adminController.postAddContest);
 router.get("/contests/edit/:id", adminController.getEditContest);
