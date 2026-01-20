@@ -1,425 +1,199 @@
-const { dbQueryMany, dbQueryOne } = require("../../shared/mysql");
-const { fnGetFolderInfo } = require("../../shared/helpers");
-const path = require("path");
-const fs = require("fs");
-const { exec } = require("child_process");
+const { dbQueryOne, dbQueryMany } = require("../../shared/utils/mysql");
+const { asyncHandler } = require("../../shared/utils/handler");
 
-exports.fnHome = async (req, res) => {
-  try {
-    let active_contests = (await dbQueryOne("SELECT count(*) as count FROM contest WHERE now() BETWEEN start_date AND end_date"))?.count || 0;
-    let problems_count = (await dbQueryOne("SELECT count(*) as count FROM problems"))?.count || 0;
-    let users_count = (await dbQueryOne("SELECT count(*) as count FROM users"))?.count || 0;
+// Dashboard
+exports.getDashboard = asyncHandler(async (req, res) => {
+  const stats = {
+    users: (await dbQueryOne("SELECT COUNT(*) as c FROM users")).c,
+    problems: (await dbQueryOne("SELECT COUNT(*) as c FROM problem_details")).c,
+    contests: (await dbQueryOne("SELECT COUNT(*) as c FROM contest_details")).c,
+    submissions: (await dbQueryOne("SELECT COUNT(*) as c FROM problem_submissions")).c,
+  };
 
-    let recent_contests = await dbQueryMany("SELECT * FROM contest ORDER BY contest_id DESC LIMIT 5");
-    let recent_problems = await dbQueryMany("SELECT * FROM problems ORDER BY problem_id DESC LIMIT 5");
+  // Recent items for quick access
+  const recentProblems = await dbQueryMany("SELECT * FROM problem_details ORDER BY id DESC LIMIT 5");
+  const recentContests = await dbQueryMany("SELECT * FROM contest_details ORDER BY id DESC LIMIT 5");
 
-    return res.render("admin/index", {
-      page_info: "home",
-      active_contests,
-      problems_count,
-      users_count,
-      recent_contests,
-      recent_problems,
-    });
-  } catch (err) {
-    req.flash("error", err.message);
-    res.redirect(`/admin`);
-  }
-};
+  res.render("layout", {
+    page: "admin/dashboard",
+    navbar: "admin",
+    title: "Admin Dashboard",
+    user: req.session.user,
+    stats,
+    recentProblems,
+    recentContests,
+  });
+});
 
-exports.fnContestList = async (req, res) => {
-  try {
-    let page = req.query.page || 0;
-    let count = (await dbQueryOne("SELECT count(*) as count FROM vw_contest ")).count / 20 + 1;
-    let contests = await dbQueryMany("SELECT * FROM vw_contest ORDER BY contest_id DESC LIMIT ?,20", [page * 20]);
-    res.render("admin/contest", { page_info: "contest", contests, page, count });
-  } catch (err) {
-    req.flash("error", err.message);
-    res.redirect(`/`);
-  }
-};
+exports.getUserList = asyncHandler(async (req, res) => {
+  const users = await dbQueryMany("SELECT * FROM users ORDER BY id DESC");
+  res.render("layout", { page: "admin/user_list", navbar: "admin", title: "Users", users });
+});
 
-exports.fnContestForm = async (req, res) => {
-  try {
-    let contest_id = req.query.contest_id;
-    let contest = (await dbQueryOne("SELECT * FROM contest WHERE contest_id = ?", [contest_id])) || {};
+// Problems
+exports.getAddProblem = asyncHandler(async (req, res) => {
+  res.render("layout", {
+    page: "admin/problem_add",
+    navbar: "admin",
+    title: "Add Problem",
+    user: req.session.user,
+  });
+});
 
-    // Convert MySQL datetime to HTML5 datetime-local format (YYYY-MM-DDTHH:MM)
-    if (contest.start_date) {
-      contest.start_date = new Date(contest.start_date).toISOString().slice(0, 16);
-    }
-    if (contest.end_date) {
-      contest.end_date = new Date(contest.end_date).toISOString().slice(0, 16);
-    }
+exports.postAddProblem = asyncHandler(async (req, res) => {
+  const { name, content, points, input_format, output_format, time_ms, memory_kb, test_public, test_all, comment } = req.body;
+  await dbQueryMany(
+    `INSERT INTO problem_details 
+        (name, content, points, input_format, output_format, time_ms, memory_kb, test_public, test_all, comment) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [name, content, points, input_format, output_format, time_ms, memory_kb, test_public, test_all, comment],
+  );
+  req.session.success = "Problem added successfully";
+  res.redirect("/admin");
+});
 
-    let problems = await dbQueryMany("SELECT * FROM problems WHERE problem_id in (SELECT problem_id FROM contest_problems WHERE contest_id=?)", [contest_id]);
-    res.render("admin/contestadd", { page_info: "contestadd", contest, problems, contest_id: req.query.contest_id });
-  } catch (err) {
-    req.flash("error", err.message);
-    res.redirect(`/admin`);
-  }
-};
+exports.getEditProblem = asyncHandler(async (req, res) => {
+  const problem = await dbQueryOne("SELECT * FROM problem_details WHERE id = ?", [req.params.id]);
+  if (!problem) return res.redirect("/admin");
+  res.render("layout", { page: "admin/problem_edit", navbar: "admin", title: "Edit Problem", problem });
+});
 
-exports.fnContestRemoveProblem = async (req, res) => {
-  try {
-    let { problem_id, contest_id } = req.query;
-    await dbQueryMany("DELETE FROM contest_problems WHERE problem_id = ? and contest_id=?", [problem_id, contest_id]);
-    res.redirect("/admin/contestadd?contest_id=" + contest_id);
-  } catch (err) {
-    req.flash("error", err.message);
-    res.redirect(`/admin`);
-  }
-};
+exports.postEditProblem = asyncHandler(async (req, res) => {
+  const { name, content, points, input_format, output_format, time_ms, memory_kb, test_public, test_all, comment } = req.body;
+  await dbQueryMany(
+    `UPDATE problem_details SET 
+        name=?, content=?, points=?, input_format=?, output_format=?, time_ms=?, memory_kb=?, test_public=?, test_all=?, comment=? 
+        WHERE id=?`,
+    [name, content, points, input_format, output_format, time_ms, memory_kb, test_public, test_all, comment, req.params.id],
+  );
+  req.session.success = "Problem updated successfully";
+  res.redirect("/admin");
+});
 
-exports.fnContestSave = async (req, res) => {
-  try {
-    let { contest_id, start_date, end_date, name, content, contest_type, group_id } = req.body;
-    const admin_id = req.session.data.user_id;
-    contest_id = parseInt(contest_id);
+exports.getProblemLanguages = asyncHandler(async (req, res) => {
+  const problem = await dbQueryOne("SELECT * FROM problem_details WHERE id = ?", [req.params.id]);
+  const allLanguages = await dbQueryMany("SELECT * FROM languages");
+  const activeLanguages = await dbQueryMany("SELECT * FROM problem_languages WHERE problem_id = ?", [req.params.id]);
 
-    if (contest_id > 0) {
-      await dbQueryMany("UPDATE contest SET start_date=?, end_date=?, name=?, content=?, contest_type=?, group_id=?, admin_id=? WHERE contest_id = ?", [start_date, end_date, name, content, contest_type || "public", group_id || 1, admin_id, contest_id]);
+  // Map active languages for easy lookup
+  const activeMap = {};
+  activeLanguages.forEach((l) => (activeMap[l.language_id] = l));
+
+  res.render("layout", { page: "admin/problem_languages", navbar: "admin", title: "Problem Languages", problem, allLanguages, activeMap });
+});
+
+exports.postProblemLanguages = asyncHandler(async (req, res) => {
+  const { language_id, default_code, action } = req.body;
+  const problemId = req.params.id;
+
+  if (action === "add") {
+    // Check if exists
+    const exists = await dbQueryOne("SELECT * FROM problem_languages WHERE problem_id=? AND language_id=?", [problemId, language_id]);
+    if (exists) {
+      await dbQueryMany("UPDATE problem_languages SET default_code=? WHERE id=?", [default_code, exists.id]);
     } else {
-      contest_id = (await dbQueryMany("INSERT INTO contest (start_date, end_date, name, content, contest_type, group_id, admin_id) VALUE (?,?,?,?,?,?,?)", [start_date, end_date, name, content, contest_type || "public", group_id || 1, admin_id])).insertId;
+      await dbQueryMany("INSERT INTO problem_languages (problem_id, language_id, default_code) VALUES (?, ?, ?)", [problemId, language_id, default_code]);
     }
-    res.redirect("/admin/contestadd?contest_id=" + contest_id);
-  } catch (err) {
-    req.flash("error", err.message);
-    res.redirect(`/admin`);
+  } else if (action === "remove") {
+    await dbQueryMany("DELETE FROM problem_languages WHERE problem_id=? AND language_id=?", [problemId, language_id]);
   }
-};
 
-exports.fnContestDelete = async (req, res) => {
-  try {
-    const contest_id = req.query.contest_id;
-    await dbQueryMany("DELETE FROM contest WHERE contest_id = ?", [contest_id]);
-    req.flash("success", "Musobaqa o'chirildi");
-    res.redirect("/admin/contest");
-  } catch (err) {
-    req.flash("error", err.message);
-    res.redirect("/admin/contest");
-  }
-};
+  res.redirect(`/admin/problems/${problemId}/languages`);
+});
 
-exports.fnContestAddProblem = async (req, res) => {
-  try {
-    let { problem_id, contest_id } = req.body;
-    await dbQueryMany("INSERT INTO contest_problems (problem_id, contest_id) VALUE (?, ?)", [problem_id, contest_id]);
-    res.redirect("/admin/contestadd?contest_id=" + contest_id);
-  } catch (err) {
-    req.flash("error", err.message);
-    res.redirect(`/admin`);
-  }
-};
+// Contests
+exports.getAddContest = asyncHandler(async (req, res) => {
+  res.render("layout", {
+    page: "admin/contest_add",
+    navbar: "admin",
+    title: "Add Contest",
+    user: req.session.user,
+  });
+});
 
-exports.fnProblemList = async (req, res) => {
-  try {
-    let page = req.query.page || 0;
-    let count = (await dbQueryOne("SELECT count(*) as count FROM problems")).count / 20 + 1;
-    let problems_list = await dbQueryMany("SELECT * FROM problems ORDER BY problem_id DESC LIMIT ?, 20", [page * 20]);
-    res.render("admin/problems", { page_info: "problems", problems_list, page, count });
-  } catch (err) {
-    req.flash("error", err.message);
-    req.session.save(() => res.redirect(`/admin`));
-  }
-};
+exports.postAddContest = asyncHandler(async (req, res) => {
+  const { name, content, type, start_date, duration_min } = req.body;
+  await dbQueryMany(
+    `INSERT INTO contest_details (name, content, type, start_date, duration_min) 
+        VALUES (?, ?, ?, ?, ?)`,
+    [name, content, type, start_date, duration_min],
+  );
+  req.session.success = "Contest added successfully";
+  res.redirect("/admin");
+});
 
-exports.fnProblemForm = async (req, res) => {
-  try {
-    let problem_id = req.query.problem_id;
-    let problem = (await dbQueryOne("SELECT * FROM problems WHERE problem_id = ?", [problem_id])) || {};
-    let files = fnGetFolderInfo(path.join(__dirname, "../../data/checker/testcase", problem_id || "-1"));
-    res.render("admin/problemsadd", { page_info: "problemsadd", problem, files });
-  } catch (err) {
-    req.flash("error", err.message);
-    res.redirect(`/admin`);
-  }
-};
+exports.getEditContest = asyncHandler(async (req, res) => {
+  const contest = await dbQueryOne("SELECT * FROM contest_details WHERE id = ?", [req.params.id]);
+  if (!contest) return res.redirect("/admin");
+  res.render("layout", { page: "admin/contest_edit", navbar: "admin", title: "Edit Contest", contest });
+});
 
-exports.fnProblemSave = async (req, res) => {
-  try {
-    let { problem_id, name, question_content, input_content, output_content, time_ms, memory_kb, test_public, test_all, comment_content, group_id } = req.body;
-    const admin_id = req.session.data.user_id;
-    problem_id = parseInt(problem_id);
+exports.postEditContest = asyncHandler(async (req, res) => {
+  const { name, content, type, start_date, duration_min } = req.body;
+  await dbQueryMany(`UPDATE contest_details SET name=?, content=?, type=?, start_date=?, duration_min=? WHERE id=?`, [name, content, type, start_date, duration_min, req.params.id]);
+  req.session.success = "Contest updated successfully";
+  res.redirect("/admin");
+});
 
-    if (problem_id > 0)
-      await dbQueryMany("UPDATE problems SET name=?, question_content=?, input_content=?, output_content=?, time_ms=?, memory_kb=?, test_public=?, test_all=?, comment_content=?, group_id=?, admin_id=? WHERE problem_id=?", [
-        name,
-        question_content,
-        input_content,
-        output_content,
-        time_ms,
-        memory_kb,
-        test_public,
-        test_all,
-        comment_content,
-        group_id || 1,
-        admin_id,
-        problem_id,
-      ]);
-    else
-      problem_id = (
-        await dbQueryMany("INSERT INTO problems (name, question_content, input_content, output_content, time_ms, memory_kb, test_public, test_all, comment_content, group_id, admin_id) VALUE (?,?,?,?,?,?,?,?,?,?,?) ", [
-          name,
-          question_content,
-          input_content,
-          output_content,
-          time_ms,
-          memory_kb,
-          test_public,
-          test_all,
-          comment_content,
-          group_id || 1,
-          admin_id,
-        ])
-      ).insertId;
-    res.redirect("/admin/problemsadd?problem_id=" + problem_id);
-  } catch (err) {
-    req.flash("error", err.message);
-    res.redirect(`/admin`);
-  }
-};
+exports.getContestProblems = asyncHandler(async (req, res) => {
+  const contest = await dbQueryOne("SELECT * FROM contest_details WHERE id = ?", [req.params.id]);
+  const addedProblems = await dbQueryMany(
+    `SELECT cp.*, pd.name FROM contest_problems cp 
+         JOIN problem_details pd ON cp.problem_id = pd.id 
+         WHERE cp.contest_id = ?`,
+    [req.params.id],
+  );
+  const allProblems = await dbQueryMany("SELECT * FROM problem_details");
 
-exports.fnProblemDelete = async (req, res) => {
-  try {
-    const problem_id = req.query.problem_id;
-    // Also remove test cases? Maybe.
-    const upload_path = path.join(__dirname, "../../data/checker/testcase", problem_id.toString());
-    if (fs.existsSync(upload_path)) {
-      fs.rmSync(upload_path, { recursive: true, force: true });
+  res.render("layout", { page: "admin/contest_problems", navbar: "admin", title: "Contest Problems", contest, addedProblems, allProblems });
+});
+
+exports.postContestProblems = asyncHandler(async (req, res) => {
+  const { problem_id, action } = req.body;
+  const contestId = req.params.id;
+
+  if (action === "add") {
+    const exists = await dbQueryOne("SELECT * FROM contest_problems WHERE contest_id=? AND problem_id=?", [contestId, problem_id]);
+    if (!exists) {
+      await dbQueryMany("INSERT INTO contest_problems (contest_id, problem_id) VALUES (?, ?)", [contestId, problem_id]);
     }
-
-    await dbQueryMany("DELETE FROM problems WHERE problem_id = ?", [problem_id]);
-    req.flash("success", "Masala o'chirildi");
-    res.redirect("/admin/problems");
-  } catch (err) {
-    req.flash("error", err.message);
-    res.redirect("/admin/problems");
+  } else if (action === "remove") {
+    await dbQueryMany("DELETE FROM contest_problems WHERE contest_id=? AND problem_id=?", [contestId, problem_id]);
   }
-};
+  res.redirect(`/admin/contests/${contestId}/problems`);
+});
 
-exports.fnProblemUpload = async (req, res) => {
-  try {
-    const problem_id = req.body.problem_id;
-    const upload_path = path.join(__dirname, "../../data/checker/testcase", problem_id);
+exports.getContestParticipants = asyncHandler(async (req, res) => {
+  const contest = await dbQueryOne("SELECT * FROM contest_details WHERE id = ?", [req.params.id]);
+  const participants = await dbQueryMany(
+    `SELECT cp.*, u.username, u.email FROM contest_participants cp 
+         JOIN users u ON cp.user_id = u.id 
+         WHERE cp.contest_id = ?`,
+    [req.params.id],
+  );
+  res.render("layout", { page: "admin/contest_participants", navbar: "admin", title: "Contest Participants", contest, participants });
+});
 
-    // Ensure a file was uploaded
-    if (!req.files || !req.files.zip_file) {
-      req.flash("error", "No file uploaded.");
-      return res.redirect(`/admin/problemsadd?problem_id=${problem_id}`);
-    }
+exports.postContestParticipants = asyncHandler(async (req, res) => {
+  const { username, action, user_id } = req.body;
+  const contestId = req.params.id;
 
-    const zip_file = req.files.zip_file;
-
-    // Check file size limit (10MB)
-    const max_size = 10 * 1024 * 1024; // 10MB in bytes
-    if (zip_file.size > max_size) {
-      req.flash("error", "Fayl hajmi 10MB dan oshmasligi kerak.");
-      return res.redirect(`/admin/problemsadd?problem_id=${problem_id}`);
-    }
-
-    // Ensure the upload path is ready
-    if (fs.existsSync(upload_path)) {
-      fs.rmSync(upload_path, { recursive: true, force: true });
-    }
-    fs.mkdirSync(upload_path, { recursive: true });
-
-    const temp_zip_path = path.join(upload_path, "temp.zip");
-
-    // Move the uploaded file to a temporary location
-    await zip_file.mv(temp_zip_path);
-
-    // Extract the ZIP file using the 'unzip' command
-    exec(`unzip -o ${temp_zip_path} -d ${upload_path}`, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Unzip error: ${error.message}`);
-        req.flash("error", `Unzip failed: ${error.message}`);
-        return res.redirect(`/admin`);
+  if (action === "add") {
+    const user = await dbQueryOne("SELECT * FROM users WHERE username = ?", [username]);
+    if (user) {
+      const exists = await dbQueryOne("SELECT * FROM contest_participants WHERE contest_id=? AND user_id=?", [contestId, user.id]);
+      if (!exists) {
+        await dbQueryMany("INSERT INTO contest_participants (contest_id, user_id) VALUES (?, ?)", [contestId, user.id]);
+        req.session.success = `User ${username} added.`;
+      } else {
+        req.session.error = `User ${username} already assigned.`;
       }
-
-      if (stderr) {
-        console.warn(`Unzip stderr: ${stderr}`);
-      }
-
-      // Clean up temporary ZIP file
-      fs.unlinkSync(temp_zip_path);
-
-      req.flash("success", `File unzipped to ${upload_path}`);
-      res.redirect(`/admin/problemsadd?problem_id=${problem_id}`);
-    });
-  } catch (error) {
-    console.error("Error during file upload or extraction:", error);
-    req.flash("error", error.message);
-    res.redirect(`/admin`);
-  }
-};
-
-exports.fnEmailLogs = async (req, res) => {
-  try {
-    let page = req.query.page || 0;
-    let count = (await dbQueryOne("SELECT count(*) as count FROM email_logs")).count / 20 + 1;
-    let logs = await dbQueryMany("SELECT * FROM email_logs ORDER BY created_dt DESC LIMIT ?, 20", [page * 20]);
-    res.render("admin/emaillogs", { page_info: "emaillogs", logs, page, count });
-  } catch (err) {
-    req.flash("error", err.message);
-    res.redirect(`/admin`);
-  }
-};
-
-// ==================== USER MANAGEMENT ====================
-exports.fnUserList = async (req, res) => {
-  try {
-    let page = req.query.page || 0;
-    let count = (await dbQueryOne("SELECT count(*) as count FROM users")).count / 20 + 1;
-    let users = await dbQueryMany("SELECT user_id, username, full_name, email, email_verified, role, created_dt FROM users ORDER BY user_id DESC LIMIT ?, 20", [page * 20]);
-    res.render("admin/users", { page_info: "users", users, page, count });
-  } catch (err) {
-    req.flash("error", err.message);
-    res.redirect(`/admin`);
-  }
-};
-
-// ==================== CONTEST PARTICIPANTS ====================
-exports.fnContestParticipants = async (req, res) => {
-  try {
-    const contest_id = req.query.contest_id;
-    const contest = await dbQueryOne("SELECT * FROM contest WHERE contest_id = ?", [contest_id]);
-
-    if (!contest) {
-      req.flash("error", "Contest topilmadi");
-      return res.redirect("/admin/contest");
+    } else {
+      req.session.error = `User ${username} not found.`;
     }
-
-    const participants = await dbQueryMany(
-      `SELECT u.user_id, u.username, u.full_name, u.email, cp.created_dt
-       FROM contest_participants cp
-       JOIN users u ON cp.user_id = u.user_id
-       WHERE cp.contest_id = ?
-       ORDER BY cp.created_dt DESC`,
-      [contest_id]
-    );
-
-    const all_users = await dbQueryMany("SELECT user_id, username, full_name, email FROM users ORDER BY username");
-
-    res.render("admin/participants", {
-      page_info: "participants",
-      contest,
-      participants,
-      all_users,
-      contest_id,
-    });
-  } catch (err) {
-    req.flash("error", err.message);
-    res.redirect(`/admin/contest`);
+  } else if (action === "remove") {
+    await dbQueryMany("DELETE FROM contest_participants WHERE contest_id=? AND user_id=?", [contestId, user_id]);
+    req.session.success = "Participant removed.";
   }
-};
-
-exports.fnAddParticipant = async (req, res) => {
-  try {
-    const { contest_id, user_id } = req.body;
-    await dbQueryMany("INSERT IGNORE INTO contest_participants (contest_id, user_id) VALUES (?, ?)", [contest_id, user_id]);
-    req.flash("success", "Ishtirokchi qo'shildi");
-    res.redirect(`/admin/participants?contest_id=${contest_id}`);
-  } catch (err) {
-    req.flash("error", err.message);
-    res.redirect(`/admin/contest`);
-  }
-};
-
-exports.fnRemoveParticipant = async (req, res) => {
-  try {
-    const { contest_id, user_id } = req.query;
-    await dbQueryMany("DELETE FROM contest_participants WHERE contest_id = ? AND user_id = ?", [contest_id, user_id]);
-    req.flash("success", "Ishtirokchi o'chirildi");
-    res.redirect(`/admin/participants?contest_id=${contest_id}`);
-  } catch (err) {
-    req.flash("error", err.message);
-    res.redirect(`/admin/contest`);
-  }
-};
-
-// ==================== EMAIL NOTIFICATIONS ====================
-exports.fnSendContestNotification = async (req, res) => {
-  try {
-    const { contest_id } = req.body;
-    const { sendContestNotification } = require("../../shared/email");
-
-    const contest = await dbQueryOne("SELECT * FROM contest WHERE contest_id = ?", [contest_id]);
-    if (!contest) {
-      req.flash("error", "Contest topilmadi");
-      return res.redirect("/admin/contest");
-    }
-
-    // Get top 1000 active users (users with at least one submission)
-    const active_users = await dbQueryMany(
-      `SELECT DISTINCT u.user_id, u.username, u.full_name, u.email
-       FROM users u
-       JOIN attempts a ON u.user_id = a.user_id
-       WHERE u.email IS NOT NULL AND u.email_verified = TRUE
-       ORDER BY a.created_dt DESC
-       LIMIT 1000`,
-      []
-    );
-
-    const result = await sendContestNotification(active_users, contest);
-    req.flash("success", `Email yuborildi: ${result.sent} muvaffaqiyatli, ${result.failed} xato`);
-    res.redirect(`/admin/contestadd?contest_id=${contest_id}`);
-  } catch (err) {
-    req.flash("error", err.message);
-    res.redirect(`/admin/contest`);
-  }
-};
-
-// ==================== ADMIN CHECKER ====================
-exports.fnCheckerSubmit = async (req, res) => {
-  try {
-    const { problem_id, language_id, code } = req.body;
-    const user_id = req.session.data.user_id;
-
-    // Fetch language details (independently of contest)
-    const language = await dbQueryOne("SELECT * FROM languages WHERE group_id = (SELECT group_id FROM problems WHERE problem_id = ?) AND language_id = ?", [problem_id, language_id]);
-
-    if (!language) {
-      req.flash("error", "Dasturlash tili topilmadi!");
-      return res.redirect(`/admin/checker?problem_id=${problem_id}`);
-    }
-
-    // Insert attempt with contest_id = 0 (or a dedicated ADMIN_CONTEST_ID) to hide from main leaderboards
-    const contest_id = 0;
-
-    // Insert into attempts
-    const ins = await dbQueryMany("INSERT INTO attempts (problem_id, user_id, contest_id, language_used, code) VALUES (?, ?, ?, ?, ?)", [problem_id, user_id, contest_id, language.language_name, code]);
-
-    // Add to checker queue
-    const { fnAddToQueue } = require("../../checker/worker");
-    fnAddToQueue(ins.insertId, contest_id, problem_id, language.language_id, code);
-
-    req.flash("success", "Yechim yuborildi. Natija tez orada yangilanadi.");
-    res.redirect(`/admin/checker?problem_id=${problem_id}`); // Stay on checker page or redirect to a results view if preferred
-  } catch (err) {
-    req.flash("error", err.message);
-    res.redirect(`/admin/checker?problem_id=${req.body.problem_id}`);
-  }
-};
-
-exports.fnCheckerPage = async (req, res) => {
-  try {
-    const problem_id = req.query.problem_id;
-    const problem = await dbQueryOne("SELECT * FROM problems WHERE problem_id = ?", [problem_id]);
-
-    if (!problem) {
-      req.flash("error", "Problem topilmadi");
-      return res.redirect("/admin/problems");
-    }
-
-    const languages = await dbQueryMany("SELECT * FROM languages ORDER BY language_name");
-
-    // Optional: Fetch recent admin attempts for this problem to show in the UI
-    const attempts = await dbQueryMany("SELECT * FROM attempts WHERE problem_id = ? AND user_id = ? ORDER BY attempt_id DESC LIMIT 5", [problem_id, req.session.data.user_id]);
-
-    res.render("admin/checker", { page_info: "checker", problem, languages, attempts });
-  } catch (err) {
-    req.flash("error", err.message);
-    res.redirect(`/admin/problems`);
-  }
-};
+  res.redirect(`/admin/contests/${contestId}/participants`);
+});

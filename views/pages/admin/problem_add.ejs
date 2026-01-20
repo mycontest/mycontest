@@ -1,0 +1,34 @@
+<h1>Add Challenge</h1>
+<form action="/admin/problems/add" method="POST" class="simple-form" style="max-width: 800px">
+  <label>Name</label>
+  <input type="text" name="name" required />
+
+  <label>Content (Description)</label>
+  <textarea name="content" rows="10"></textarea>
+
+  <label>Points</label>
+  <input type="number" name="points" value="100" />
+
+  <label>Input Format</label>
+  <textarea name="input_format" rows="3"></textarea>
+
+  <label>Output Format</label>
+  <textarea name="output_format" rows="3"></textarea>
+
+  <label>Time Limit (ms)</label>
+  <input type="number" name="time_ms" value="1000" />
+
+  <label>Memory Limit (KB)</label>
+  <input type="number" name="memory_kb" value="256000" />
+
+  <label>Public Tests (JSON or Text)</label>
+  <textarea name="test_public" rows="3"></textarea>
+
+  <label>All Tests (JSON or Text)</label>
+  <textarea name="test_all" rows="3"></textarea>
+
+  <label>Comment (Admin Note)</label>
+  <textarea name="comment" rows="2"></textarea>
+
+  <input type="submit" value="Save Problem" class="btn" />
+</form>

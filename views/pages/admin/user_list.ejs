@@ -1,0 +1,23 @@
+<h1>User List</h1>
+<table class="summary-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% users.forEach(u => { %>
+            <tr>
+                <td><%= u.id %></td>
+                <td><%= u.name %></td>
+                <td><%= u.username %></td>
+                <td><%= u.email %></td>
+                <td><%= u.role %></td>
+            </tr>
+        <% }) %>
+    </tbody>
+</table>

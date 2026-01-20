@@ -1,83 +1,22 @@
-version: '3.8'
-
+version: "3.8"
 services:
-  app:
-    build: .
-    container_name: mycontest_app
-    ports:
-      - "3000:3000"
-    env_file:
-      - .env
-    volumes:
-      - .:/usr/src/app
-      - /var/run/docker.sock:/var/run/docker.sock
-    depends_on:
-      - mysql
-      - redis
-    networks:
-      - mycontest_net
-
   mysql:
     image: mysql:8.0
-    container_name: mycontest_mysql
-    command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "3306:3306"
     volumes:
-      - ./data/setup:/docker-entrypoint-initdb.d
       - ./data/mysql:/var/lib/mysql
-    networks:
-      - mycontest_net
-
+      - ./shared/setup/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./shared/setup/seed.sql:/docker-entrypoint-initdb.d/seed.sql
   redis:
     image: redis:alpine
-    container_name: mycontest_redis
-    command: redis-server --requirepass ${REDIS_PASSWORD}
     restart: always
+    command: redis-server --requirepass ${REDIS_PASSWORD}
     ports:
       - "6379:6379"
     volumes:
       - ./data/redis:/data
-    networks:
-      - mycontest_net
-
-  adminer:
-    image: adminer
-    container_name: mycontest_adminer
-    restart: always
-    ports:
-      - "8080:8080"
-    networks:
-      - mycontest_net
-
-  checker:
-    build:
-      context: .
-      dockerfile: checker/Dockerfile
-    container_name: mycontest_checker
-    env_file:
-      - .env
-    environment:
-      - HOST_DATA_PATH=${PWD}/data
-      - REDIS_HOST=redis
-      - MYSQL_HOST=mysql
-    volumes:
-      - ./checker:/usr/src/app/checker
-      - ./data:/usr/src/app/data
-      - ./shared:/usr/src/app/shared
-      - /var/run/docker.sock:/var/run/docker.sock
-    command: node checker/worker.js
-    depends_on:
-      - mysql
-      - redis
-    networks:
-      - mycontest_net
-    restart: always
-
-networks:
-  mycontest_net:
-    driver: bridge

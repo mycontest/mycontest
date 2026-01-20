@@ -1,0 +1,43 @@
+ 
+<ul class="task-constraints">
+    <li><b>Time limit:</b> <%= problem.time_ms %>ms </li>
+    <li><b>Memory limit:</b> <%= problem.memory_kb / 1000 %>MB </li>
+    <li><b>Points:</b> <%= problem.points %> </li>
+</ul>
+
+<div class="md">
+    <p><%= problem.content %></p>
+
+    <h1>Input</h1>
+    <p><%= problem.input_format %></p>
+
+    <h1>Output</h1>
+    <p><%= problem.output_format %></p>
+
+    <% if (problem.test_public) { %>
+        <h1>Example</h1>
+        <p><%= problem.test_public %></p>
+    <% } %>
+    <% if (user) { %>
+        <hr>
+        <h3>Submit Solution</h3>
+        <form action="/problems/<%= problem.id %>/submit" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label>Language</label>
+                <select name="language_id">
+                    <% languages.forEach(lang => { %>
+                        <option value="<%= lang.id %>"><%= lang.name %></option>
+                    <% }) %>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Source Code</label>
+                <textarea name="code" rows="10" style="width: 100%; font-family: monospace;"></textarea>
+            </div>
+            <button type="submit" class="btn">Submit</button>
+        </form>
+    <% } else { %>
+        <p>Please <a href="/auth/login">login</a> to submit.</p>
+    <% } %>
+
+</div>

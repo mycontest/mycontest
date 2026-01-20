@@ -1,0 +1,46 @@
+<h1>Admin Dashboard</h1>
+    
+<div class="boxes">
+    <div>
+        <h1>Stats</h1>
+        <ul class="task-list">
+            <li class="task">Users: <%= stats.users %></li>
+            <li class="task">Problems: <%= stats.problems %></li>
+            <li class="task">Contests: <%= stats.contests %></li>
+            <li class="task">Submissions: <%= stats.submissions %></li>
+        </ul>
+    </div>
+    
+    <div>
+        <h1>Recent Problems</h1>
+        <ul class="task-list">
+            <% recentProblems.forEach(p => { %>
+                <li class="task">
+                    <a href="/admin/problems/edit/<%= p.id %>"><%= p.name %></a>
+                    <div class="samp-actions">
+                        <a href="/admin/problems/edit/<%= p.id %>" title="Edit"><i class="fas fa-edit"></i></a>
+                        <a href="/admin/problems/<%= p.id %>/languages" title="Languages"><i class="fas fa-code"></i></a>
+                    </div>
+                </li>
+            <% }) %>
+        </ul>
+        <div style="margin-top:10px;"><a href="/admin/problems/add" class="btn">Add New Problem</a></div>
+    </div>
+
+    <div>
+        <h1>Recent Contests</h1>
+        <ul class="task-list">
+            <% recentContests.forEach(c => { %>
+                <li class="task">
+                    <a href="/admin/contests/edit/<%= c.id %>"><%= c.name %></a>
+                    <div class="samp-actions">
+                        <a href="/admin/contests/edit/<%= c.id %>" title="Edit"><i class="fas fa-edit"></i></a>
+                        <a href="/admin/contests/<%= c.id %>/problems" title="Problems"><i class="fas fa-list"></i></a>
+                        <a href="/admin/contests/<%= c.id %>/participants" title="Participants"><i class="fas fa-users"></i></a>
+                    </div>
+                </li>
+            <% }) %>
+        </ul>
+        <div style="margin-top:10px;"><a href="/admin/contests/add" class="btn">Add New Contest</a></div>
+    </div>
+</div>

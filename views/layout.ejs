@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <title><%= typeof title !== 'undefined' ? title : 'mycontest' %></title>
+    <%- include("components/head.ejs") %>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <a href="/" class="logo">
+                <span style="font-weight: bold; font-size: 1.2rem;">mycontest</span>
+            </a>
+            <div class="controls">
+                <% if (user) { %>
+                    <a href="/profile" class="account"><%= user.username %></a>
+                    <span>—</span>
+                    <a href="/auth/logout">Logout</a>
+                <% } else { %>
+                    <a href="/auth/login">Login</a>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <div class="skeleton">
+        <%- include("navbar/" + navbar) %>
+
+        <div class="content-wrapper">
+          <div class="content">
+            <% if (error) { %>
+                <div style="background: #fdd; border: 1px solid #faa; padding: 10px; margin-bottom: 20px; color: #a00;">
+                    <%= error %>
+                </div>
+            <% } %>
+            <% if (success) { %>
+                <div style="background: #dfd; border: 1px solid #afa; padding: 10px; margin-bottom: 20px; color: #0a0;">
+                    <%= success %>
+                </div>
+            <% } %>
+            <%- include("pages/" + page) %>
+          </div>
+        </div>
+    </div>
+ 
+    <%- include("components/footer.ejs") %>
+</body>
+</html>

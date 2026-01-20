@@ -1,0 +1,34 @@
+<h1>Edit Problem: <%= problem.name %></h1>
+<form action="/admin/problems/edit/<%= problem.id %>" method="POST" class="simple-form" style="max-width: 800px">
+  <label>Name</label>
+  <input type="text" name="name" value="<%= problem.name %>" required />
+
+  <label>Content (Description)</label>
+  <textarea name="content" rows="10"><%= problem.content %></textarea>
+
+  <label>Points</label>
+  <input type="number" name="points" value="<%= problem.points %>" />
+
+  <label>Input Format</label>
+  <textarea name="input_format" rows="3"><%= problem.input_format %></textarea>
+
+  <label>Output Format</label>
+  <textarea name="output_format" rows="3"><%= problem.output_format %></textarea>
+
+  <label>Time Limit (ms)</label>
+  <input type="number" name="time_ms" value="<%= problem.time_ms %>" />
+
+  <label>Memory Limit (KB)</label>
+  <input type="number" name="memory_kb" value="<%= problem.memory_kb %>" />
+
+  <label>Public Tests (JSON or Text)</label>
+  <textarea name="test_public" rows="3"><%= problem.test_public %></textarea>
+
+  <label>All Tests (JSON or Text)</label>
+  <textarea name="test_all" rows="3"><%= problem.test_all %></textarea>
+
+  <label>Comment (Admin Note)</label>
+  <textarea name="comment" rows="2"><%= problem.comment %></textarea>
+
+  <input type="submit" value="Update Problem" class="btn" />
+</form>

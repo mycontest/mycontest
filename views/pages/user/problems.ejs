@@ -1,0 +1,13 @@
+<!-- Problems List using task-list style -->
+<ul class="task-list">
+    <% if (locals.problems && problems.length > 0) { %>
+        <% problems.forEach(p => { %>
+            <li class="task">
+                <a href="/problems/<%= p.id %>"><%= p.name %></a>
+                <span class="task-score icon"></span> <!-- Placeholder for score/status -->
+            </li>
+        <% }) %>
+    <% } else { %>
+        <li class="task">No problems found.</li>
+    <% } %>
+</ul>

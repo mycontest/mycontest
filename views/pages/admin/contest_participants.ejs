@@ -1,0 +1,30 @@
+<h1>Manage Participants: <%= contest.name %></h1>
+
+<div class="boxes">
+    <div style="width: 60%;">
+        <h3>Participants</h3>
+        <ul class="task-list">
+            <% participants.forEach(u => { %>
+                <li class="task">
+                    <span><%= u.username %> (<%= u.email %>)</span>
+                    <div class="samp-actions">
+                        <form action="/admin/contests/<%= contest.id %>/participants" method="POST" style="display:inline;">
+                            <input type="hidden" name="action" value="remove">
+                            <input type="hidden" name="user_id" value="<%= u.user_id %>">
+                            <button type="submit" class="delete icon" title="Remove"></button>
+                        </form>
+                    </div>
+                </li>
+            <% }) %>
+        </ul>
+    </div>
+    <div style="width: 38%;">
+        <h3>Add User</h3>
+        <form action="/admin/contests/<%= contest.id %>/participants" method="POST" class="simple-form">
+            <input type="hidden" name="action" value="add">
+            <label>Username</label>
+            <input type="text" name="username" required placeholder="Enter username">
+            <input type="submit" value="Add" class="btn">
+        </form>
+    </div>
+</div>

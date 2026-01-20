@@ -1,117 +1,56 @@
-const { dbQueryOne, dbQueryMany } = require("../../shared/mysql");
-const { signSchema } = require("./auth.schema");
-const { sendVerificationEmail } = require("../../shared/email");
-const crypto = require("crypto");
+const bcrypt = require("bcrypt");
+const { dbQueryOne, dbQueryMany } = require("../../shared/utils/mysql");
 
-exports.fnGetSignIn = async (req, res) => {
-  return res.render("pages/signin");
+exports.getLogin = (req, res) => {
+  res.render("layout", { page: "user/login", navbar: "empty", title: "Login - mycontest" });
 };
 
-exports.fnGetHome = async (req, res) => {
-  try {
-    let contests = await dbQueryMany("SELECT * FROM vw_contest ORDER BY contest_id DESC");
-    res.render("pages/home", { contests });
-  } catch (err) {
-    req.flash("error", err.message);
-    res.render("pages/home", { contests: [] });
-  }
+exports.getRegister = (req, res) => {
+  res.render("layout", { page: "user/register", navbar: "empty", title: "Register - mycontest" });
 };
 
-exports.fnPostSignIn = async (req, res) => {
+exports.postLogin = async (req, res) => {
+  const { username, password } = req.body;
+
   try {
-    let { username, password } = req.body;
-    let user = await dbQueryOne("SELECT * FROM users WHERE username = ? and password = md5(?)", [username, password + ":" + process.env.SECRET]);
+    const user = await dbQueryOne("SELECT * FROM users WHERE username = ?", [username]);
+
     if (!user) {
-      req.flash("error", "Noto'g'ri foydalanuvchi nomi yoki parol");
-      return res.redirect("/sign-in");
+      req.session.error = "Invalid username or password";
+      return res.redirect("/auth/login");
     }
-    req.session.data = user;
+
+    const match = await bcrypt.compare(password, user.password);
+
+    if (!match) {
+      req.session.error = "Invalid username or password";
+      return res.redirect("/auth/login");
+    }
+
+    req.session.user = { id: user.id, name: user.name, username: user.username, role: user.role };
+    req.session.success = "Logged in successfully";
     res.redirect("/");
-  } catch (err) {
-    req.flash("error", err.message);
-    res.redirect("/sign-in");
+  } catch (error) {
+    req.session.error = error.message;
+    res.redirect("/auth/login");
   }
 };
 
-exports.fnGetSignUp = async (req, res) => {
-  res.render("pages/signup");
-};
-
-exports.fnPostSignUp = async (req, res) => {
+exports.postRegister = async (req, res) => {
+  const { name, username, email, password } = req.body;
   try {
-    const { username, password, full_name, email } = req.body;
-    await signSchema.validateAsync({ username, password, full_name, email });
-
-    // Check if username exists
-    let user = await dbQueryOne("SELECT * FROM users WHERE username = ?", [username]);
-    if (user) {
-      req.flash("error", "Bunaqa username mavjud!");
-      return res.redirect("/sign-up");
-    }
-
-    // Check if email exists
-    let emailExists = await dbQueryOne("SELECT * FROM users WHERE email = ?", [email]);
-    if (emailExists) {
-      req.flash("error", "Bunaqa email mavjud!");
-      return res.redirect("/sign-up");
-    }
-
-    // Generate verification token
-    const verificationToken = crypto.randomBytes(32).toString("hex");
-
-    // Insert user
-    await dbQueryMany("INSERT INTO users (username, password, full_name, email, verification_token, email_verified) values (?, md5(?), ?, ?, ?, FALSE)", [username, password + ":" + process.env.SECRET, full_name, email, verificationToken]);
-
-    // Send verification email
-    try {
-      await sendVerificationEmail({ email, full_name }, verificationToken);
-      req.flash("success", "Ro'yxatdan muvaffaqiyatli o'tdingiz. Emailingizni tekshiring!");
-    } catch (emailErr) {
-      console.error("Email sending failed:", emailErr);
-      req.flash("success", "Ro'yxatdan muvaffaqiyatli o'tdingiz.");
-    }
-
-    res.redirect("/sign-in");
-  } catch (err) {
-    req.flash("error", "Kiritilgan ma'lumotlar noto'g'ri.");
-    res.redirect("/sign-up");
+    const salt = await bcrypt.genSalt(10);
+    const hashed_password = await bcrypt.hash(password, salt);
+    await dbQueryMany("INSERT INTO users (name, username, email, password) VALUES (?, ?, ?, ?)", [name, username, email, hashed_password]);
+    req.session.success = "Registration successful! Please login.";
+    res.redirect("/auth/login");
+  } catch (error) {
+    req.session.error = "Registration failed: " + error.message;
+    res.redirect("/auth/register");
   }
 };
 
-exports.fnVerifyEmail = async (req, res) => {
-  try {
-    const { token } = req.query;
-
-    if (!token) {
-      req.flash("error", "Verification token topilmadi.");
-      return res.redirect("/sign-in");
-    }
-
-    // Find user with this token
-    const user = await dbQueryOne("SELECT * FROM users WHERE verification_token = ?", [token]);
-
-    if (!user) {
-      req.flash("error", "Noto'g'ri yoki muddati o'tgan token.");
-      return res.redirect("/sign-in");
-    }
-
-    if (user.email_verified) {
-      req.flash("info", "Email allaqachon tasdiqlangan.");
-      return res.redirect("/sign-in");
-    }
-
-    // Verify email
-    await dbQueryMany("UPDATE users SET email_verified = TRUE, verification_token = NULL WHERE user_id = ?", [user.user_id]);
-
-    req.flash("success", "Email muvaffaqiyatli tasdiqlandi! Endi tizimga kirishingiz mumkin.");
-    res.redirect("/sign-in");
-  } catch (err) {
-    req.flash("error", err.message);
-    res.redirect("/sign-in");
-  }
-};
-
-exports.fnLogout = async (req, res) => {
+exports.logout = (req, res) => {
   req.session.destroy();
   res.redirect("/");
 };

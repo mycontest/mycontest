@@ -1,0 +1,36 @@
+<h1>Manage Languages: <%= problem.name %></h1>
+
+<div class="boxes">
+    <div style="width: 60%;">
+        <h3>Allowed Languages</h3>
+        <ul class="task-list">
+            <% for(let langId in activeMap) { %>
+                <li class="task">
+                    <span><%= allLanguages.find(l => l.id == langId).name %></span>
+                    <div class="samp-actions">
+                        <form action="/admin/problems/<%= problem.id %>/languages" method="POST" style="display:inline;">
+                            <input type="hidden" name="action" value="remove">
+                            <input type="hidden" name="language_id" value="<%= langId %>">
+                            <button type="submit" class="delete icon" title="Remove"></button>
+                        </form>
+                    </div>
+                </li>
+            <% } %>
+        </ul>
+    </div>
+    <div style="width: 38%;">
+        <h3>Add Language</h3>
+        <form action="/admin/problems/<%= problem.id %>/languages" method="POST" class="simple-form">
+            <input type="hidden" name="action" value="add">
+            <label>Language</label>
+            <select name="language_id">
+                <% allLanguages.forEach(l => { %>
+                    <option value="<%= l.id %>"><%= l.name %></option>
+                <% }) %>
+            </select>
+            <label>Default Code (Optional)</label>
+            <textarea name="default_code" rows="5"></textarea>
+            <input type="submit" value="Add" class="btn">
+        </form>
+    </div>
+</div>

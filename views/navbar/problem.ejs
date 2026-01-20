@@ -1,0 +1,11 @@
+<div class="navigation">
+  <div class="title-block">
+    <h3><%= problem.name %></h3>
+    <h1><%= problem.name %></h1>
+    <ul class="nav">
+      <li><a href="/problems/<%= problem.id %>" class="<%= (page && !page.includes('submission')) ? 'current' : '' %>">Problem</a></li>
+      <li><a href="/problems/<%= problem.id %>/submissions" class="<%= (page && page.includes('submission')) ? 'current' : '' %>">Submissions</a></li>
+      <li><a href="/problems" class="go">Back to Problems</a></li>
+    </ul>
+  </div>
+</div>

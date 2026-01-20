@@ -1,25 +1,7 @@
-# Environment & Secrets
+node_modules
+/node_modules
+
+data
+/data
+
 .env
-.env.local
-
-# Dependencies
-node_modules/
-package-lock.json
-
-# Data & Temp
-data/mysql/
-data/redis/
-data/checker/temp/
-*.log
-
-# IDE
-.vscode/
-.idea/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Build
-dist/
-build/

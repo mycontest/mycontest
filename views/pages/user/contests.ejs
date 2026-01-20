@@ -1,0 +1,16 @@
+<!-- Contest List using standard table or task-list -->
+<ul class="task-list">
+    <% if (locals.contests && contests.length > 0) { %>
+        <% contests.forEach(c => { %>
+            <li class="task">
+                <a href="/contests/<%= c.id %>"><%= c.name %></a>
+                <div class="details">
+                    <span><%= new Date(c.start_date).toLocaleString() %></span>
+                    <span><%= c.duration_min %> min</span>
+                </div>
+            </li>
+        <% }) %>
+    <% } else { %>
+        <li class="task">No active contests.</li>
+    <% } %>
+</ul>
